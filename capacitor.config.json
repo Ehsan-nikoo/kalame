@@ -1,0 +1,8 @@
+{
+  "appId": "com.kalame.game",
+  "appName": "کلمه",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#f4f1ea"
+  }
+}
