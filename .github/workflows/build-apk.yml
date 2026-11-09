@@ -1,12 +1,11 @@
 # دستورالعمل ساخت APK روی گیت‌هاب
-# هر بار که تغییری روی شاخه‌ی main فرستاده شود (یا از بخش Actions دکمه‌ی Run workflow زده شود)،
+# فقط وقتی اجرا می‌شود که در بخش Actions، دکمه‌ی Run workflow زده شود
+# (فرستادن تغییرها به گیت‌هاب به‌تنهایی APK نمی‌سازد).
 # گیت‌هاب بازی را به APK تبدیل می‌کند و آن را در بخش Releases می‌گذارد.
 
 name: ساخت APK
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
