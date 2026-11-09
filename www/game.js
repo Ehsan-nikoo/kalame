@@ -1,6 +1,25 @@
 "use strict";
 
 // ---------------------------------------------------------------------------
+// تنظیمات سکه و راهنما (برای تغییر، فقط همین عددها را عوض کنید)
+// ---------------------------------------------------------------------------
+
+const COINS_START = 50;        // هدیه‌ی شروع بازی
+const COINS_PER_LEVEL = 10;    // فقط بار اولی که یک مرحله تمام می‌شود
+const COST_HINT_LETTER = 10;   // باز کردن یک خانه
+const COST_HINT_WORD = 25;     // باز کردن یک کلمه‌ی کامل
+
+// ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد
+const THEMES = [
+  { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و صورت‌های فلکی کتاب صوفی" },
+  { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود" },
+  { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله" },
+  { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد" },
+  { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
+  { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
+];
+
+// ---------------------------------------------------------------------------
 // ابزارهای فارسی
 // ---------------------------------------------------------------------------
 
@@ -10,7 +29,7 @@ function normalize(text) {
   return text
     .replace(/[يى]/g, "ی")
     .replace(/ك/g, "ک")
-    .replace(/[ً-ٰٟـ‌‍\s]/g, "");
+    .replace(/[\p{Mn}\p{Cf}ـ\s]/gu, "");
 }
 
 function faDigits(n) {
@@ -212,29 +231,79 @@ function buildLayout(words) {
 }
 
 // ---------------------------------------------------------------------------
-// ذخیره‌ی پیشرفت
+// ذخیره‌ی پیشرفت، سکه و ظاهر
 // ---------------------------------------------------------------------------
+// unlocked: تعداد مرحله‌هایی که تمام شده‌اند (مرحله‌ی بعدی همین شماره است)
+// partial: کلمه‌های پیدا شده و خانه‌های باز شده‌ی مرحله‌هایی که نیمه‌کاره مانده‌اند
 
-const SAVE_KEY = "kalame-progress";
+const SAVE_KEY = "kalame-save";
 
-function loadProgress() {
+function loadSave() {
+  const fresh = { theme: null, unlocked: 0, coins: COINS_START, partial: {} };
   try {
     const data = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (data && Number.isInteger(data.level) && data.level >= 0) {
-      return { level: data.level, found: Array.isArray(data.found) ? data.found : [] };
+    if (data && Number.isInteger(data.unlocked) && data.unlocked >= 0) {
+      return {
+        theme: typeof data.theme === "string" ? data.theme : null,
+        unlocked: data.unlocked,
+        coins: Number.isInteger(data.coins) && data.coins >= 0 ? data.coins : COINS_START,
+        partial: data.partial && typeof data.partial === "object" ? data.partial : {},
+      };
+    }
+    // پیشرفت نسخه‌ی اول بازی که فقط شماره‌ی مرحله را نگه می‌داشت
+    const old = JSON.parse(localStorage.getItem("kalame-progress"));
+    if (old && Number.isInteger(old.level) && old.level >= 0) {
+      fresh.unlocked = old.level;
+      if (Array.isArray(old.found) && old.found.length) fresh.partial[old.level] = { found: old.found, revealed: [] };
     }
   } catch (e) {}
-  return { level: 0, found: [] };
+  return fresh;
 }
 
-function saveProgress() {
+function persist() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ level: state.level, found: state.found }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
   } catch (e) {}
 }
 
 // ---------------------------------------------------------------------------
-// وضعیت بازی و صفحه
+// ظاهرها
+// ---------------------------------------------------------------------------
+// هر فایل themes/*.js با defineTheme خودش را معرفی می‌کند:
+//   setup()       لایه‌های تزئینی را می‌سازد و یک تابع برای پاک کردنشان برمی‌گرداند
+//   name(level)   اسم هر مرحله در این ظاهر (مثلاً اسم صورت فلکی یا شهر)
+//   on: { level, submit, found, repeat, wrong, hint, shuffle, complete }  واکنش به اتفاق‌های بازی
+
+const themeDefs = {};
+let activeTheme = null;
+let themeTeardown = null;
+
+function defineTheme(id, def) {
+  themeDefs[id] = def;
+}
+
+function applyTheme(id) {
+  if (!THEMES.some((t) => t.id === id)) id = "plain";
+  if (themeTeardown) themeTeardown();
+  themeTeardown = null;
+  activeTheme = id;
+  document.documentElement.dataset.theme = id;
+  const def = themeDefs[id];
+  if (def && def.setup) themeTeardown = def.setup() || null;
+}
+
+function emit(name, detail) {
+  const def = themeDefs[activeTheme];
+  if (def && def.on && def.on[name]) def.on[name](detail);
+}
+
+function levelName(i) {
+  const def = themeDefs[activeTheme];
+  return def && def.name ? def.name(i) : "";
+}
+
+// ---------------------------------------------------------------------------
+// وضعیت بازی
 // ---------------------------------------------------------------------------
 
 const $ = (id) => document.getElementById(id);
@@ -244,38 +313,48 @@ const linesEl = $("wheelLines");
 const previewEl = $("preview");
 
 let levels = [];
-let state = loadProgress();
+let save = loadSave();
+let current = null;     // شماره‌ی مرحله‌ای که الان بازی می‌شود
+let found = [];         // کلمه‌های پیدا شده‌ی همین مرحله
 let layout = null;
 let cellEls = {};       // "r,c" -> عنصر خانه
 let letterEls = [];     // عنصر هر حرف دایره (به ترتیب حروف مرحله)
 let slots = [];         // جای هر حرف روی دایره
 let path = [];          // حروفی که الان انگشت رویشان کشیده شده
 let dragging = false;
+let dragPointer = null; // فقط همان انگشتی که کشیدن را شروع کرده دنبال می‌شود
 let pointer = null;
 let previewTimer = null;
 let locked = false;     // بین تمام شدن مرحله و شروع مرحله‌ی بعد
+let screenNow = null;
 
-function currentLevel() {
-  return levels[state.level];
-}
-
-function startLevel() {
-  if (state.level >= levels.length) {
-    showFinished();
-    return;
-  }
-  const level = currentLevel();
-  state.found = state.found.filter((w) => level.words.includes(w));
+function startLevel(i) {
+  current = i;
+  const level = levels[i];
+  const part = save.partial[i] || {};
+  found = (Array.isArray(part.found) ? part.found : []).filter((w) => level.words.includes(w));
   layout = buildLayout(level.words);
 
-  $("levelLabel").textContent = `مرحله‌ی ${faDigits(state.level + 1)} از ${faDigits(levels.length)}`;
+  const name = levelName(i);
+  $("levelLabel").textContent = `مرحله‌ی ${faDigits(i + 1)}` + (name ? " · " + name : "");
   renderBoard();
   renderWheel();
   hidePreview();
   $("overlay").classList.add("hidden");
-
   locked = false;
-  for (const w of state.found) fillWord(w, false);
+
+  for (const k of Array.isArray(part.revealed) ? part.revealed : []) {
+    if (cellEls[k]) revealCell(cellEls[k], false);
+  }
+  for (const w of found) fillWord(w, false);
+  updateCoins();
+  emit("level", { level: i });
+}
+
+function saveLevelState() {
+  const revealed = Object.keys(cellEls).filter((k) => cellEls[k].classList.contains("hinted"));
+  save.partial[current] = { found: [...found], revealed };
+  persist();
 }
 
 // ---------- جدول ----------
@@ -306,7 +385,7 @@ function renderBoard() {
 }
 
 function sizeBoard() {
-  if (!layout) return;
+  if (!layout || screenNow !== "play") return;
   const area = boardEl.parentElement;
   const gap = 5;
   const w = (area.clientWidth - gap * (layout.cols - 1)) / layout.cols;
@@ -315,20 +394,35 @@ function sizeBoard() {
   boardEl.style.setProperty("--cell", size + "px");
 }
 
+function wordCells(word) {
+  return layout.placements[word].map(({ r, c }) => cellEls[r + "," + c]);
+}
+
+function isFilled(el) {
+  return el.classList.contains("filled");
+}
+
 function fillWord(word, animate) {
-  for (const { r, c } of layout.placements[word]) {
-    const el = cellEls[r + "," + c];
+  wordCells(word).forEach((el, i) => {
     el.classList.remove("slot", "again");
-    if (!el.classList.contains("filled")) {
+    if (!isFilled(el)) {
       el.classList.add("filled");
+      el.style.setProperty("--i", i); // ترتیب پر شدن خانه‌ها، برای انیمیشن حرف به حرف
       if (!animate) el.style.animation = "none";
     }
-  }
+  });
+}
+
+// خانه‌ای که با راهنما باز شده
+function revealCell(el, animate, order = 0) {
+  el.classList.remove("slot");
+  el.classList.add("filled", "hinted");
+  el.style.setProperty("--i", order);
+  if (!animate) el.style.animation = "none";
 }
 
 function flashWord(word) {
-  for (const { r, c } of layout.placements[word]) {
-    const el = cellEls[r + "," + c];
+  for (const el of wordCells(word)) {
     el.style.animation = "";
     el.classList.remove("again");
     void el.offsetWidth;
@@ -340,7 +434,7 @@ function flashWord(word) {
 
 function renderWheel() {
   for (const el of letterEls) el.remove();
-  const letters = currentLevel().letters;
+  const letters = levels[current].letters;
   slots = letters.map((_, i) => i);
   letterEls = letters.map((ch) => {
     const el = document.createElement("div");
@@ -373,7 +467,7 @@ function positionLetters() {
 }
 
 function shuffle() {
-  if (dragging || letterEls.length < 2) return;
+  if (dragging || locked || letterEls.length < 2) return;
   const before = slots.join();
   do {
     for (let i = slots.length - 1; i > 0; i--) {
@@ -382,6 +476,7 @@ function shuffle() {
     }
   } while (slots.join() === before);
   positionLetters();
+  emit("shuffle");
 }
 
 // تبدیل مختصات صفحه به درصد داخل دایره
@@ -415,9 +510,13 @@ function drawLines() {
     `stroke-linecap="round" stroke-linejoin="round"/>`;
 }
 
+function currentWord() {
+  return path.map((i) => levels[current].letters[i]).join("");
+}
+
 function updateSelection() {
   letterEls.forEach((el, i) => el.classList.toggle("active", path.includes(i)));
-  const word = path.map((i) => currentLevel().letters[i]).join("");
+  const word = currentWord();
   clearTimeout(previewTimer);
   previewEl.className = "preview" + (word ? " show" : "");
   previewEl.textContent = word;
@@ -425,19 +524,20 @@ function updateSelection() {
 }
 
 function onPointerDown(e) {
-  if (locked) return;
+  if (locked || dragging) return;
   const p = toWheel(e);
   const i = letterAt(p);
   if (i < 0) return;
   e.preventDefault();
   dragging = true;
+  dragPointer = e.pointerId;
   path = [i];
   pointer = p;
   updateSelection();
 }
 
 function onPointerMove(e) {
-  if (!dragging) return;
+  if (!dragging || e.pointerId !== dragPointer) return;
   pointer = toWheel(e);
   const i = letterAt(pointer);
   if (i >= 0) {
@@ -447,50 +547,121 @@ function onPointerMove(e) {
   updateSelection();
 }
 
-function onPointerUp() {
-  if (!dragging) return;
+function endDrag() {
   dragging = false;
-  const word = path.map((i) => currentLevel().letters[i]).join("");
+  dragPointer = null;
   path = [];
   pointer = null;
   letterEls.forEach((el) => el.classList.remove("active"));
   drawLines();
+}
+
+function onPointerUp(e) {
+  if (!dragging || e.pointerId !== dragPointer) return;
+  const word = currentWord();
+  emit("submit", { letters: path.map((i) => letterEls[i]) });
+  endDrag();
   submitWord(word);
+}
+
+// اگر سیستم لمس را قطع کند (مثلاً پایین کشیدن نوار اعلان‌ها)، کلمه ثبت نمی‌شود
+function onPointerCancel(e) {
+  if (!dragging || e.pointerId !== dragPointer) return;
+  endDrag();
+  hidePreview();
 }
 
 // ---------- بررسی کلمه ----------
 
 function submitWord(raw) {
   const word = normalize(raw);
-  const level = currentLevel();
+  const level = levels[current];
   if (word.length < 2) {
     hidePreview();
     return;
   }
-  if (state.found.includes(word)) {
+  if (found.includes(word)) {
     flashWord(word);
     showPreview(word, "show", 600);
+    emit("repeat", { word, cells: wordCells(word) });
   } else if (level.words.includes(word)) {
-    state.found.push(word);
+    found.push(word);
     fillWord(word, true);
     showPreview(word, "right", 600);
-    if (state.found.length === level.words.length) {
-      locked = true;
-      state.level++;
-      state.found = [];
-      saveProgress();
-      setTimeout(() => levelComplete(), 700);
-    } else {
-      saveProgress();
-    }
+    emit("found", { word, cells: wordCells(word) });
+    checkDone();
   } else {
     showPreview(word, "wrong", 600);
+    emit("wrong", { word });
   }
 }
 
-function showPreview(word, kind, ms) {
+// کلمه‌ای که همه‌ی خانه‌هایش (با راهنما یا کلمه‌های دیگر) باز شده، پیدا شده حساب می‌شود
+function collectCompletedWords() {
+  for (const w of levels[current].words) {
+    if (!found.includes(w) && wordCells(w).every(isFilled)) found.push(w);
+  }
+}
+
+function checkDone() {
+  collectCompletedWords();
+  if (found.length === levels[current].words.length) finishLevel();
+  else saveLevelState();
+}
+
+// ---------- سکه و راهنما ----------
+
+function updateCoins() {
+  for (const el of document.querySelectorAll(".coin-count")) el.textContent = faDigits(save.coins);
+  $("hintLetterBtn").classList.toggle("poor", save.coins < COST_HINT_LETTER);
+  $("hintWordBtn").classList.toggle("poor", save.coins < COST_HINT_WORD);
+}
+
+function bumpCoins() {
+  for (const el of document.querySelectorAll(".coins")) {
+    el.classList.remove("bump");
+    void el.offsetWidth;
+    el.classList.add("bump");
+  }
+}
+
+function spend(cost) {
+  if (save.coins < cost) {
+    showPreview("سکه‌ی کافی نداری", "wrong note", 1400);
+    return false;
+  }
+  save.coins -= cost;
+  updateCoins();
+  bumpCoins();
+  return true;
+}
+
+function hintLetter() {
+  if (locked || dragging) return;
+  const empty = Object.values(cellEls).filter((el) => !isFilled(el));
+  if (!empty.length || !spend(COST_HINT_LETTER)) return;
+  const el = empty[Math.floor(Math.random() * empty.length)];
+  revealCell(el, true);
+  emit("hint", { cells: [el] });
+  checkDone();
+}
+
+function hintWord() {
+  if (locked || dragging) return;
+  const left = levels[current].words.filter((w) => !found.includes(w));
+  if (!left.length || !spend(COST_HINT_WORD)) return;
+  const word = left[Math.floor(Math.random() * left.length)];
+  const cells = wordCells(word).filter((el) => !isFilled(el));
+  cells.forEach((el, i) => revealCell(el, true, i));
+  emit("hint", { cells });
+  checkDone();
+}
+
+// ---------- پیام کوتاه بالای دایره ----------
+
+function showPreview(text, kind, ms) {
   clearTimeout(previewTimer);
-  previewEl.textContent = word;
+  previewEl.textContent = text;
   previewEl.className = "preview";
   void previewEl.offsetWidth;
   previewEl.className = "preview " + kind;
@@ -505,36 +676,45 @@ function hidePreview() {
 
 // ---------- پایان مرحله ----------
 
-function showOverlay(title, text, button, onClick) {
-  $("overlayTitle").textContent = title;
-  $("overlayText").textContent = text;
-  const btn = $("overlayBtn");
-  btn.textContent = button;
-  btn.onclick = onClick;
-  $("overlay").classList.remove("hidden");
-}
-
-function levelComplete() {
-  // state.level همین الان یکی جلو رفته است
-  if (state.level >= levels.length) {
-    showFinished();
-    return;
-  }
-  showOverlay("آفرین!", `مرحله‌ی ${faDigits(state.level)} تموم شد.`, "مرحله‌ی بعد", startLevel);
-}
-
-function showFinished() {
+function finishLevel() {
   locked = true;
-  showOverlay(
-    "تبریک!",
-    `همه‌ی ${faDigits(levels.length)} مرحله رو تموم کردی.`,
-    "از اول بازی کن",
-    () => {
-      state = { level: 0, found: [] };
-      saveProgress();
-      startLevel();
-    }
-  );
+  const first = current === save.unlocked;
+  if (first) {
+    save.unlocked++;
+    save.coins += COINS_PER_LEVEL;
+  }
+  delete save.partial[current];
+  persist();
+  // هر ظاهر می‌تواند با --complete-delay برای انیمیشن خودش وقت بیشتری بگیرد
+  const delay = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--complete-delay"), 10);
+  const level = current;
+  setTimeout(() => {
+    if (screenNow === "play" && current === level) showComplete(first);
+  }, delay || 700);
+}
+
+function showComplete(first) {
+  const hasNext = current + 1 < levels.length;
+  const n = faDigits(current + 1);
+  const card = document.querySelector("#overlay .card");
+  for (const el of card.querySelectorAll(".extra")) el.remove(); // تزئین‌های ظاهر قبلی
+
+  $("overlayTitle").textContent = hasNext ? "آفرین!" : "تبریک!";
+  $("overlayText").textContent = !hasNext
+    ? "همه‌ی مرحله‌ها رو تموم کردی."
+    : first ? `مرحله‌ی ${n} تموم شد.` : `مرحله‌ی ${n} دوباره تموم شد.`;
+  $("overlayReward").classList.toggle("hidden", !first);
+  $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(COINS_PER_LEVEL);
+
+  const btn = $("overlayBtn");
+  btn.textContent = hasNext ? "مرحله‌ی بعد" : "منو";
+  btn.onclick = hasNext ? () => startLevel(current + 1) : goHome;
+  $("overlayMenu").classList.toggle("hidden", !hasNext);
+  $("overlay").classList.remove("hidden");
+
+  updateCoins();
+  if (first) bumpCoins();
+  emit("complete", { level: current, finished: !hasNext, first });
 }
 
 function showErrors(errors) {
@@ -544,28 +724,150 @@ function showErrors(errors) {
 }
 
 // ---------------------------------------------------------------------------
+// صفحه‌ها: انتخاب ظاهر، منو، فهرست مرحله‌ها، بازی
+// ---------------------------------------------------------------------------
+// منو صفحه‌ی اصلی است؛ بقیه با # در آدرس باز می‌شوند تا دکمه‌ی «برگشت» اندروید هم کار کند.
+
+const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), play: $("app") };
+
+function route() {
+  let name = location.hash.slice(1);
+  if (!(name in screens)) name = "home";
+  if (!save.theme) name = "themes";                       // بار اول: انتخاب ظاهر
+  if (name === "play" && current === null) name = "home"; // مثلاً بعد از باز شدن دوباره‌ی برنامه
+
+  if (dragging) endDrag();
+  screenNow = name;
+  for (const [key, el] of Object.entries(screens)) el.classList.toggle("hidden", key !== name);
+  if (name !== "play") $("overlay").classList.add("hidden");
+
+  if (name === "themes") renderThemes();
+  if (name === "home") renderHome();
+  if (name === "levels") renderLevels();
+  if (name === "play") sizeBoard();
+  updateCoins();
+}
+
+function open(name) {
+  if (location.hash) location.replace("#" + name);  // از یک صفحه‌ی فرعی به صفحه‌ی فرعی دیگر
+  else location.hash = name;
+}
+
+function goHome() {
+  if (location.hash) history.back();
+  else route();
+}
+
+function play(i) {
+  startLevel(i);
+  open("play");
+}
+
+function renderThemes() {
+  const list = $("themeList");
+  list.innerHTML = "";
+  for (const t of THEMES) {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "tcard tc-" + t.id + (save.theme === t.id ? " selected" : "");
+    card.innerHTML = `<span class="tcard-art"></span><span class="tcard-name"></span><span class="tcard-desc"></span>`;
+    card.querySelector(".tcard-name").textContent = t.name;
+    card.querySelector(".tcard-desc").textContent = t.desc;
+    card.onclick = () => chooseTheme(t.id);
+    list.appendChild(card);
+  }
+  $("themesBack").classList.toggle("hidden", !save.theme);
+}
+
+function chooseTheme(id) {
+  const firstTime = !save.theme;
+  save.theme = id;
+  persist();
+  applyTheme(id);
+  if (firstTime) route();
+  else goHome();
+}
+
+function renderHome() {
+  $("homeSub").textContent = (THEMES.find((t) => t.id === activeTheme) || THEMES[0]).name;
+  const btn = $("continueBtn");
+  btn.disabled = levels.length === 0;
+  const next = Math.min(save.unlocked, levels.length - 1);
+  const name = levels.length ? levelName(next) : "";
+  $("continueSub").textContent =
+    levels.length && save.unlocked >= levels.length
+      ? "همه‌ی مرحله‌ها تموم شده"
+      : `مرحله‌ی ${faDigits(next + 1)}` + (name ? " · " + name : "");
+}
+
+function continueGame() {
+  if (save.unlocked >= levels.length) open("levels");
+  else play(save.unlocked);
+}
+
+function renderLevels() {
+  const grid = $("levelGrid");
+  grid.innerHTML = "";
+  levels.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    const status = i < save.unlocked ? "done" : i === save.unlocked ? "current" : "locked";
+    btn.className = "lv " + status;
+    btn.innerHTML = `<span class="lv-num"></span><small></small>`;
+    btn.querySelector(".lv-num").textContent = faDigits(i + 1);
+    btn.querySelector("small").textContent = levelName(i);
+    btn.onclick = () => {
+      if (status !== "locked") return play(i);
+      btn.classList.remove("nope");
+      void btn.offsetWidth;
+      btn.classList.add("nope");
+    };
+    grid.appendChild(btn);
+  });
+  const here = grid.querySelector(".current");
+  if (here) here.scrollIntoView({ block: "center" });
+}
+
+// ---------------------------------------------------------------------------
 // شروع
 // ---------------------------------------------------------------------------
 
 wheelEl.addEventListener("pointerdown", onPointerDown);
 window.addEventListener("pointermove", onPointerMove);
 window.addEventListener("pointerup", onPointerUp);
-window.addEventListener("pointercancel", onPointerUp);
+window.addEventListener("pointercancel", onPointerCancel);
 window.addEventListener("resize", sizeBoard);
+window.addEventListener("hashchange", route);
 $("shuffleBtn").addEventListener("click", shuffle);
+$("hintLetterBtn").addEventListener("click", hintLetter);
+$("hintWordBtn").addEventListener("click", hintWord);
+$("menuBtn").addEventListener("click", goHome);
+$("overlayMenu").addEventListener("click", goHome);
+$("continueBtn").addEventListener("click", continueGame);
+$("levelsBtn").addEventListener("click", () => open("levels"));
+$("themesBtn").addEventListener("click", () => open("themes"));
+for (const btn of document.querySelectorAll("[data-back]")) btn.addEventListener("click", goHome);
+$("hintLetterBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_LETTER);
+$("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_WORD);
 
-fetch("levels.txt", { cache: "no-store" })
-  .then((res) => {
-    if (!res.ok) throw new Error(res.status);
-    return res.text();
-  })
-  .then((text) => {
-    const result = parseLevels(text);
-    levels = result.levels;
-    if (result.errors.length) showErrors(result.errors);
-    if (levels.length === 0) return;
-    startLevel();
-  })
-  .catch(() => {
-    showErrors(["فایل مرحله‌ها خوانده نشد. بازی را با دستور npm start اجرا کنید."]);
-  });
+// فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
+document.addEventListener("DOMContentLoaded", () => {
+  applyTheme(save.theme || "plain");
+  // برنامه همیشه از منو شروع می‌شود
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+
+  fetch("levels.txt", { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error(res.status);
+      return res.text();
+    })
+    .then((text) => {
+      const result = parseLevels(text);
+      levels = result.levels;
+      if (result.errors.length) showErrors(result.errors);
+    })
+    .catch(() => {
+      showErrors(["فایل مرحله‌ها خوانده نشد. بازی را با دستور npm start اجرا کنید."]);
+    })
+    .finally(route);
+});

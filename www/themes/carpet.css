@@ -1,0 +1,183 @@
+/* ظاهر «قالی‌باف»: دار قالی، گلوله‌های کاموا، و قالی‌ای که مرحله به مرحله بافته می‌شود */
+
+:root[data-theme="carpet"] {
+  --bg: #efe2cc;
+  --surface: #fbf4e6;
+  --ink: #3a1c14;
+  --muted: #7a5a45;
+  --accent: #8e2424;       /* روناس */
+  --accent-ink: #f8eedb;
+  --accent-soft: #1e2a4a;  /* نیل */
+  --edge: #c9a35a;
+  --wrong: #a8321f;
+  --line: #b8322a;
+  --coin: #e3b34a;
+  --madder: #8e2424;
+  --indigo: #1e2a4a;
+  --ivory: #f4e9d4;
+  --saffron: #d9a441;
+  --complete-delay: 1500;
+}
+
+[data-theme="carpet"] body {
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(120, 70, 40, 0.05) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg, rgba(120, 70, 40, 0.05) 0 2px, transparent 2px 4px);
+}
+
+/* نوار گلیم بالا و پایین صفحه */
+.kilim {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 14px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, #8e2424 25%, transparent 25%) -7px 0 / 14px 14px,
+    linear-gradient(225deg, #8e2424 25%, transparent 25%) -7px 0 / 14px 14px,
+    linear-gradient(315deg, #d9a441 25%, transparent 25%) 0 0 / 14px 14px,
+    linear-gradient(45deg, #d9a441 25%, transparent 25%) 0 0 / 14px 14px,
+    #1e2a4a;
+}
+.kilim.top { top: 0; }
+.kilim.bottom { bottom: 0; }
+[data-theme="carpet"] .screen {
+  padding-top: calc(env(safe-area-inset-top) + 24px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
+}
+
+[data-theme="carpet"] .logo {
+  font-size: 70px;
+  color: var(--madder);
+  text-shadow: 0 2px 0 var(--ivory), 0 4px 0 var(--indigo);
+}
+[data-theme="carpet"] .menu-btn { border-width: 2px; border-radius: 8px; }
+[data-theme="carpet"] .menu-btn.primary,
+[data-theme="carpet"] .card-btn {
+  box-shadow: inset 0 0 0 3px var(--madder), inset 0 0 0 5px var(--ivory), inset 0 0 0 7px var(--indigo);
+  border-color: var(--saffron);
+}
+[data-theme="carpet"] .tool { color: var(--ivory); }
+
+/* سکه: گلوله‌ی نخ طلایی */
+[data-theme="carpet"] .coin-icon {
+  background:
+    repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.35) 0 1.5px, transparent 1.5px 4px),
+    radial-gradient(circle at 35% 30%, #fff1c2 0 15%, #e3b34a 55%, #a8781f 100%);
+}
+
+/* فهرست مرحله‌ها: هر مرحله یک گره‌ی لوزی */
+[data-theme="carpet"] .lv {
+  border: none;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: #e2cfae;
+}
+[data-theme="carpet"] .lv.done { background: var(--madder); }
+[data-theme="carpet"] .lv.current { background: var(--indigo); color: var(--ivory); box-shadow: none; }
+
+/* ---------- جدول: یک قالی که گره به گره بافته می‌شود ---------- */
+[data-theme="carpet"] .board {
+  position: relative;
+  gap: 3px;
+  padding: 9px;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.07) 0 3px, transparent 3px 12px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.07) 0 3px, transparent 3px 12px),
+    var(--madder);
+  box-shadow: 0 0 0 3px var(--ivory), 0 0 0 9px var(--indigo), 0 0 0 11px var(--saffron), 0 10px 24px rgba(58, 28, 20, 0.3);
+}
+/* ریشه‌های قالی */
+[data-theme="carpet"] .board::before,
+[data-theme="carpet"] .board::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 12px;
+  background: repeating-linear-gradient(90deg, var(--ivory) 0 2px, transparent 2px 6px);
+}
+[data-theme="carpet"] .board::before { top: -24px; }
+[data-theme="carpet"] .board::after { bottom: -24px; }
+
+[data-theme="carpet"] .cell { border-radius: 2px; }
+[data-theme="carpet"] .cell.slot {
+  background:
+    linear-gradient(45deg, transparent 44%, rgba(244, 233, 212, 0.16) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, rgba(244, 233, 212, 0.16) 44% 56%, transparent 56%),
+    rgba(0, 0, 0, 0.22);
+}
+[data-theme="carpet"] .cell.filled {
+  background:
+    radial-gradient(circle at 0 0, var(--indigo) 0 3px, transparent 3.5px),
+    radial-gradient(circle at 100% 0, var(--indigo) 0 3px, transparent 3.5px),
+    radial-gradient(circle at 0 100%, var(--indigo) 0 3px, transparent 3.5px),
+    radial-gradient(circle at 100% 100%, var(--indigo) 0 3px, transparent 3.5px),
+    var(--ivory);
+  color: var(--madder);
+  animation: weave 0.55s ease-out both;
+  animation-delay: calc(var(--i, 0) * 130ms + 120ms);
+}
+[data-theme="carpet"] .cell.hinted { color: var(--indigo); }
+[data-theme="carpet"] .cell.again { animation: knot-tug 0.45s ease; }
+@keyframes weave {
+  0% { clip-path: inset(0 0 0 100%); filter: brightness(1.4); }
+  100% { clip-path: inset(0 0 0 0); filter: none; }
+}
+@keyframes knot-tug { 50% { transform: scale(0.88); } }
+
+/* ---------- پیش‌نمایش کلمه ---------- */
+[data-theme="carpet"] .preview.show,
+[data-theme="carpet"] .preview.wrong { border: 2px solid var(--edge); }
+[data-theme="carpet"] .preview.right {
+  background: var(--madder);
+  color: var(--ivory);
+  box-shadow: inset 0 0 0 2px var(--ivory);
+}
+
+/* ---------- دایره‌ی حروف: دار قالی گرد با گلوله‌های کاموا ---------- */
+[data-theme="carpet"] .wheel { background: none; box-shadow: 0 10px 26px rgba(58, 28, 20, 0.3); }
+.loom { position: absolute; inset: 0; }
+.loom svg { width: 100%; height: 100%; display: block; }
+[data-theme="carpet"] .wheel-lines { filter: drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.35)); }
+[data-theme="carpet"] .wheel-lines polyline { stroke-width: 4.5; stroke-dasharray: 5 1.6; stroke-linecap: butt; }
+
+[data-theme="carpet"] .letter {
+  --yarn: #a8322f;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  background:
+    repeating-linear-gradient(55deg, rgba(255, 255, 255, 0.16) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(-35deg, rgba(0, 0, 0, 0.12) 0 1.5px, transparent 1.5px 6px),
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.45), transparent 45%),
+    var(--yarn);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+}
+[data-theme="carpet"] .letter:nth-of-type(2) { --yarn: #2b3d6b; }
+[data-theme="carpet"] .letter:nth-of-type(3) { --yarn: #c58a1e; }
+[data-theme="carpet"] .letter:nth-of-type(4) { --yarn: #4c7a4a; }
+[data-theme="carpet"] .letter:nth-of-type(5) { --yarn: #2c7a7b; }
+[data-theme="carpet"] .letter:nth-of-type(6) { --yarn: #7b3f6e; }
+[data-theme="carpet"] .letter:nth-of-type(7) { --yarn: #9a5a2a; }
+[data-theme="carpet"] .letter.active {
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 0 0 3px var(--ivory), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+[data-theme="carpet"] .wheel.snap .letter { animation: snap 0.4s ease; }
+@keyframes snap {
+  25% { rotate: -14deg; }
+  75% { rotate: 14deg; }
+}
+
+/* ---------- پایان مرحله: قالی روی دار ---------- */
+[data-theme="carpet"] .overlay { background: rgba(58, 28, 20, 0.4); }
+[data-theme="carpet"] .card {
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 3px var(--edge), 0 14px 40px rgba(58, 28, 20, 0.35);
+}
+[data-theme="carpet"] .card-title { color: var(--madder); }
+
+.loom-carpet { display: block; width: 100%; margin: -8px 0 8px; }

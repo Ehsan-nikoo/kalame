@@ -6,12 +6,58 @@
   <meta name="theme-color" content="#f4f1ea">
   <title>کلمه</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="themes/stars.css">
+  <link rel="stylesheet" href="themes/carpet.css">
+  <link rel="stylesheet" href="themes/caravan.css">
+  <link rel="stylesheet" href="themes/garden.css">
+  <link rel="stylesheet" href="themes/ink.css">
 </head>
 <body>
-  <main id="app">
+  <!-- انتخاب ظاهر -->
+  <section class="screen hidden" id="screenThemes">
+    <header class="screen-top">
+      <button class="icon-btn" id="themesBack" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">ظاهر بازی رو انتخاب کن</h1>
+    </header>
+    <div class="theme-list" id="themeList"></div>
+  </section>
+
+  <!-- منوی اصلی -->
+  <section class="screen hidden" id="screenHome">
+    <div class="home-top">
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </div>
+    <h1 class="logo">کلمه</h1>
+    <p class="home-sub" id="homeSub"></p>
+    <nav class="home-menu">
+      <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
+      <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
+      <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
+    </nav>
+  </section>
+
+  <!-- فهرست مرحله‌ها -->
+  <section class="screen hidden" id="screenLevels">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">مرحله‌ها</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <div class="level-grid" id="levelGrid"></div>
+  </section>
+
+  <!-- خود بازی -->
+  <main class="screen hidden" id="app">
     <header class="top">
-      <h1 class="title">کلمه</h1>
-      <div class="level-label" id="levelLabel">مرحله‌ی ۱</div>
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="منو">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="level-label" id="levelLabel"></div>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </header>
 
     <section class="board-area">
@@ -23,12 +69,19 @@
       <div class="wheel" id="wheel">
         <svg class="wheel-lines" id="wheelLines"></svg>
       </div>
-      <button class="shuffle" id="shuffleBtn" type="button" aria-label="بُر زدن">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>بُر زدن</span>
-      </button>
+      <div class="tools">
+        <button class="tool" id="hintWordBtn" type="button" aria-label="راهنما: یک کلمه">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5Z M12 6v13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span class="cost"><span class="coin-icon"></span><span class="cost-count"></span></span>
+        </button>
+        <button class="tool shuffle" id="shuffleBtn" type="button" aria-label="بُر زدن">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" id="hintLetterBtn" type="button" aria-label="راهنما: یک حرف">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <span class="cost"><span class="coin-icon"></span><span class="cost-count"></span></span>
+        </button>
+      </div>
     </section>
   </main>
 
@@ -36,12 +89,19 @@
     <div class="card">
       <div class="card-title" id="overlayTitle"></div>
       <div class="card-text" id="overlayText"></div>
+      <div class="reward" id="overlayReward"><span class="coin-icon"></span><span class="reward-count"></span></div>
       <button class="card-btn" id="overlayBtn" type="button"></button>
+      <button class="card-link" id="overlayMenu" type="button">منو</button>
     </div>
   </div>
 
   <div class="error hidden" id="errorBox"></div>
 
   <script src="game.js"></script>
+  <script src="themes/stars.js"></script>
+  <script src="themes/carpet.js"></script>
+  <script src="themes/caravan.js"></script>
+  <script src="themes/garden.js"></script>
+  <script src="themes/ink.js"></script>
 </body>
 </html>

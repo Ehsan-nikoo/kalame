@@ -11,16 +11,20 @@
   font-display: swap;
 }
 
+/* ظاهر «ساده»؛ بقیه‌ی ظاهرها در پوشه‌ی themes همین متغیرها را عوض می‌کنند */
 :root {
   --bg: #f4f1ea;
   --surface: #ffffff;
   --ink: #2f3a3a;
   --muted: #8a938f;
   --accent: #5f8a7a;
+  --accent-ink: #ffffff;
   --accent-soft: #dfe9e3;
+  --edge: transparent;
   --cell-empty: #e9e4da;
   --wrong: #c97b6b;
   --line: rgba(95, 138, 122, 0.55);
+  --coin: #e2b04a;
 }
 
 * { box-sizing: border-box; }
@@ -38,7 +42,11 @@ html, body {
   overscroll-behavior: none;
 }
 
-#app {
+button { font-family: inherit; cursor: pointer; }
+
+.screen {
+  position: relative;
+  z-index: 1;
   height: 100%;
   max-width: 480px;
   margin: 0 auto;
@@ -47,24 +55,205 @@ html, body {
   padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 16px);
 }
 
-/* ---------- سربرگ ---------- */
-.top {
+.hidden { display: none !important; }
+
+/* ---------- دکمه‌های کوچک و سکه ---------- */
+.icon-btn {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  color: var(--ink);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
-.title {
+.icon-btn svg { width: 20px; height: 20px; }
+
+.coins {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+}
+.coins.bump { animation: bump 0.5s ease; }
+@keyframes bump { 40% { transform: scale(1.2); } }
+
+.coin-icon {
+  flex: none;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--coin) 45%, #a8781f 100%);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- انتخاب ظاهر ---------- */
+.screen-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.screen-title {
+  flex: 1;
   margin: 0;
-  font-size: 26px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.theme-list {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+  padding: 2px 2px 10px;
+}
+.tcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px 14px;
+  border-radius: 18px;
+  border: 2px solid var(--edge);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: center;
+}
+.tcard.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.tcard-art {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.tcard-art::before { content: "ک"; }
+.tcard-name { font-weight: 700; font-size: 16px; }
+.tcard-desc { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+
+/* نمونه‌ی کوچک هر ظاهر، مستقل از ظاهری که الان انتخاب شده */
+.tc-stars .tcard-art { background: radial-gradient(circle at 50% 120%, #3b2a63, #0b0f2e 70%); color: #ffe9b0; text-shadow: 0 0 10px #ffd98a; }
+.tc-carpet .tcard-art { background: #9b2d2d; color: #f4e9d4; border-radius: 14px; box-shadow: inset 0 0 0 5px #1e2a4a, inset 0 0 0 7px #e8c46a; }
+.tc-caravan .tcard-art { background: radial-gradient(circle, #fdf6e3 0 44%, #2fa4a9 45% 68%, #1d4e89 69%); color: #1d4e89; box-shadow: 0 0 0 3px #d9a441; }
+.tc-garden .tcard-art { background: radial-gradient(circle, #5e9e5a 0 40%, #8fd3e0 41%, #3b9bb5 100%); color: #fff8ec; box-shadow: 0 0 0 4px #2fa4a9; }
+.tc-ink .tcard-art { background: #f1e4c6; color: #1b130a; font-family: "Nastaliq", serif; font-weight: 400; line-height: 2.2; padding-bottom: 14px; box-shadow: inset 0 0 0 2px #c9a14a, inset 0 0 0 7px #1f3b73, inset 0 0 0 9px #c9a14a; }
+.tc-plain .tcard-art { background: #f4f1ea; color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3; }
+
+/* ---------- منوی اصلی ---------- */
+.home-top { display: flex; justify-content: flex-end; }
+.logo {
+  margin: auto 0 0;
+  text-align: center;
+  font-size: 64px;
   font-weight: 700;
   color: var(--accent);
 }
+.home-sub { margin: 2px 0 0; text-align: center; color: var(--muted); font-size: 15px; }
+.home-menu {
+  width: 100%;
+  max-width: 300px;
+  margin: 40px auto auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.menu-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 700;
+}
+.menu-btn small { font-size: 13px; font-weight: 400; opacity: 0.85; }
+.menu-btn.primary { background: var(--accent); color: var(--accent-ink); font-size: 22px; }
+.menu-btn[disabled] { opacity: 0.5; }
+.menu-btn:active, .tool:active, .lv:active, .tcard:active { transform: scale(0.97); }
+
+/* ---------- فهرست مرحله‌ها ---------- */
+.level-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 12px;
+  align-content: start;
+  padding: 6px 4px 12px;
+}
+.lv {
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.lv small {
+  max-width: 88%;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.8;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.lv.done { background: var(--accent); color: var(--accent-ink); }
+.lv.current { box-shadow: 0 0 0 3px var(--accent); animation: lv-pulse 1.6s ease-in-out infinite; }
+.lv.locked { opacity: 0.38; }
+.lv.nope { animation: shake 0.4s ease; }
+@keyframes lv-pulse { 50% { transform: scale(1.07); } }
+
+/* ---------- سربرگ بازی ---------- */
+.top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .level-label {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
   font-size: 15px;
   color: var(--muted);
   background: var(--surface);
-  padding: 6px 14px;
+  border: 1.5px solid var(--edge);
+  padding: 8px 12px;
   border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---------- جدول کلمات ---------- */
@@ -100,6 +289,8 @@ html, body {
   background: var(--accent);
   color: #fff;
   animation: pop 0.35s ease;
+  animation-delay: calc(var(--i, 0) * 60ms);
+  animation-fill-mode: both;
 }
 .cell.again {
   animation: flash 0.5s ease;
@@ -125,6 +316,7 @@ html, body {
   align-items: center;
   justify-content: center;
   color: var(--ink);
+  white-space: nowrap;
   visibility: hidden;
 }
 .preview.show {
@@ -137,6 +329,7 @@ html, body {
   color: var(--wrong);
   animation: shake 0.4s ease;
 }
+.preview.note { font-size: 18px; }
 .preview.right {
   visibility: visible;
   background: var(--accent);
@@ -144,7 +337,7 @@ html, body {
 }
 
 .wheel {
-  --size: min(72vw, 270px);
+  --size: min(70vw, 262px, 36vh);
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
@@ -159,9 +352,11 @@ html, body {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 1;
 }
 .letter {
   position: absolute;
+  z-index: 2;
   width: 25%;
   height: 25%;
   border-radius: 50%;
@@ -179,22 +374,29 @@ html, body {
   color: #fff;
 }
 
-.shuffle {
+.tools {
   margin-top: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  border: none;
+  justify-content: center;
+  gap: 10px;
+}
+.tool {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid var(--edge);
   background: var(--accent-soft);
   color: var(--accent);
-  font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  padding: 10px 22px;
+  padding: 10px 16px;
   border-radius: 999px;
-  cursor: pointer;
 }
-.shuffle:active { transform: scale(0.96); }
+.tool svg { width: 21px; height: 21px; }
+.tool .cost { display: flex; align-items: center; gap: 4px; }
+.tool .cost .coin-icon { width: 14px; height: 14px; }
+.tool.poor { opacity: 0.45; }
 
 /* ---------- پنجره‌ی پایان مرحله ---------- */
 .overlay {
@@ -208,9 +410,10 @@ html, body {
   z-index: 10;
 }
 .card {
+  position: relative;
   background: var(--surface);
   border-radius: 20px;
-  padding: 28px 24px;
+  padding: 28px 24px 18px;
   width: 100%;
   max-width: 320px;
   text-align: center;
@@ -227,17 +430,35 @@ html, body {
   color: var(--muted);
   font-size: 16px;
 }
+.reward {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.reward .coin-icon { width: 22px; height: 22px; }
 .card-btn {
-  margin-top: 22px;
+  display: block;
+  margin: 20px auto 0;
   border: none;
   background: var(--accent);
-  color: #fff;
-  font-family: inherit;
+  color: var(--accent-ink);
   font-size: 18px;
   font-weight: 700;
   padding: 12px 32px;
   border-radius: 999px;
-  cursor: pointer;
+}
+.card-link {
+  display: block;
+  margin: 10px auto 0;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 15px;
 }
 
 .error {
@@ -255,8 +476,6 @@ html, body {
   z-index: 20;
 }
 
-.hidden { display: none !important; }
-
 @keyframes pop {
   0% { transform: scale(0.6); }
   70% { transform: scale(1.08); }
@@ -272,4 +491,8 @@ html, body {
   40% { transform: translateX(8px); }
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

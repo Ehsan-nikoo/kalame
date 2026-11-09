@@ -1,0 +1,174 @@
+/* ظاهر «صور فلکی»: آسمان شب کویر، حروف ستاره‌اند */
+
+:root[data-theme="stars"] {
+  --bg: #070a22;
+  --surface: rgba(255, 255, 255, 0.06);
+  --ink: #fff4dc;
+  --muted: #b9b2d6;
+  --accent: #ffd98a;
+  --accent-ink: #2a1c05;
+  --accent-soft: rgba(255, 217, 138, 0.12);
+  --edge: rgba(255, 217, 138, 0.25);
+  --wrong: #ff9e8c;
+  --line: #ffe9b0;
+  --coin: #ffd98a;
+  --complete-delay: 1500;
+}
+
+[data-theme="stars"] body {
+  background: radial-gradient(120% 70% at 50% 100%, #3b2a63 0%, #171a45 45%, #070a22 100%);
+}
+
+/* لایه‌های آسمان و تپه‌ها پشت همه‌ی صفحه‌ها */
+.sky {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.dunes {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 26vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="stars"] .logo,
+[data-theme="stars"] .card-title { text-shadow: 0 0 18px rgba(255, 217, 138, 0.7); }
+[data-theme="stars"] .logo { font-size: 72px; }
+[data-theme="stars"] .menu-btn.primary,
+[data-theme="stars"] .lv.done { box-shadow: 0 0 22px rgba(255, 217, 138, 0.45); }
+[data-theme="stars"] .menu-btn,
+[data-theme="stars"] .coins,
+[data-theme="stars"] .icon-btn,
+[data-theme="stars"] .level-label,
+[data-theme="stars"] .tcard { backdrop-filter: blur(3px); }
+
+/* سکه: ستاره‌ی طلایی */
+[data-theme="stars"] .coin-icon {
+  border-radius: 0;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: radial-gradient(circle, #fffbe9 0 20%, #ffd98a 55%, #d59a35 100%);
+  box-shadow: none;
+}
+
+/* فهرست مرحله‌ها: هر مرحله یک ستاره */
+[data-theme="stars"] .lv { background: radial-gradient(circle, rgba(255, 233, 176, 0.14), rgba(255, 255, 255, 0.03) 70%); }
+[data-theme="stars"] .lv.done { background: radial-gradient(circle at 50% 40%, #fffbe9 0%, #ffd98a 55%, #c98b2e 100%); }
+[data-theme="stars"] .lv.current { box-shadow: 0 0 0 2px #ffd98a, 0 0 24px rgba(255, 217, 138, 0.7); }
+
+/* ---------- جدول ---------- */
+[data-theme="stars"] .cell.slot {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 217, 138, 0.22);
+  box-shadow: inset 0 0 10px rgba(255, 217, 138, 0.08);
+}
+[data-theme="stars"] .cell.filled {
+  background: radial-gradient(circle at 50% 40%, #fffbe9 0%, #ffd98a 50%, #c98b2e 100%);
+  color: #2a1c05;
+  box-shadow: 0 0 16px rgba(255, 217, 138, 0.75);
+  animation: star-ignite 0.6s ease both;
+  animation-delay: calc(var(--i, 0) * 110ms + 420ms);
+}
+[data-theme="stars"] .cell.again { animation: star-pulse 0.6s ease; }
+
+@keyframes star-ignite {
+  0% { opacity: 0.3; transform: scale(0.5); filter: brightness(3); }
+  60% { opacity: 1; transform: scale(1.18); filter: brightness(1.6); }
+  100% { opacity: 1; transform: scale(1); filter: none; }
+}
+@keyframes star-pulse {
+  50% { box-shadow: 0 0 30px 6px rgba(255, 233, 176, 0.95); }
+}
+
+/* ---------- پیش‌نمایش کلمه ---------- */
+[data-theme="stars"] .preview.show,
+[data-theme="stars"] .preview.wrong {
+  color: var(--accent);
+  border: 1px solid var(--edge);
+}
+[data-theme="stars"] .preview.wrong { color: var(--wrong); border-color: rgba(255, 158, 140, 0.4); }
+[data-theme="stars"] .preview.right {
+  background: var(--accent);
+  color: #2a1c05;
+  box-shadow: 0 0 22px rgba(255, 217, 138, 0.8);
+}
+
+/* ---------- دایره‌ی حروف ---------- */
+[data-theme="stars"] .wheel {
+  background: radial-gradient(circle, rgba(255, 217, 138, 0.08) 0%, rgba(12, 14, 44, 0.55) 70%);
+  border: 1px solid rgba(255, 217, 138, 0.18);
+  box-shadow: 0 0 40px rgba(255, 217, 138, 0.08), inset 0 0 30px rgba(255, 217, 138, 0.06);
+}
+[data-theme="stars"] .wheel-lines { filter: drop-shadow(0 0 4px #ffd98a) drop-shadow(0 0 10px rgba(255, 217, 138, 0.6)); }
+[data-theme="stars"] .wheel-lines polyline { stroke-width: 2.2; }
+
+[data-theme="stars"] .letter {
+  color: #fff8e6;
+  text-shadow: 0 0 10px rgba(255, 217, 138, 0.95);
+  background: radial-gradient(circle, rgba(255, 233, 176, 0.32) 0%, rgba(255, 217, 138, 0) 68%);
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+[data-theme="stars"] .letter:nth-of-type(2) { animation-delay: -0.7s; }
+[data-theme="stars"] .letter:nth-of-type(3) { animation-delay: -1.5s; }
+[data-theme="stars"] .letter:nth-of-type(4) { animation-delay: -2.2s; }
+[data-theme="stars"] .letter:nth-of-type(5) { animation-delay: -2.9s; }
+[data-theme="stars"] .letter.active {
+  color: #2a1c05;
+  text-shadow: none;
+  background: radial-gradient(circle, #fffbe9 0%, #ffd98a 45%, rgba(255, 217, 138, 0) 72%);
+  animation: none;
+}
+[data-theme="stars"] .wheel.dim .letter { animation: star-flicker 0.45s linear; }
+
+@keyframes twinkle {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.45); }
+}
+@keyframes star-flicker {
+  0%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.25; }
+  50% { opacity: 0.8; }
+}
+
+/* ---------- شهاب‌هایی که حرف‌ها را به جدول می‌برند ---------- */
+.meteor {
+  position: fixed;
+  width: 46px;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 3px;
+  background: linear-gradient(to right, rgba(255, 233, 176, 0), #fff8e6);
+  box-shadow: 0 0 10px #ffd98a;
+  transform-origin: right center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ---------- پایان مرحله: ظاهر شدن صورت فلکی ---------- */
+[data-theme="stars"] .overlay { background: rgba(5, 7, 26, 0.72); }
+[data-theme="stars"] .card {
+  background: rgba(14, 17, 48, 0.94);
+  border: 1px solid rgba(255, 217, 138, 0.3);
+  box-shadow: 0 0 60px rgba(255, 217, 138, 0.15);
+}
+
+.constellation {
+  display: block;
+  width: 100%;
+  max-height: 40vh;
+  object-fit: contain;
+  margin: -6px 0 10px;
+  filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.7));
+  animation: draw-in 2.2s ease-out both;
+}
+@keyframes draw-in {
+  0% { clip-path: inset(0 0 100% 0); opacity: 0.2; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}

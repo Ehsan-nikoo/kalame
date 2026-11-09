@@ -1,0 +1,180 @@
+/* ظاهر «حوض و باغ»: باغ ایرانی، حوض ماهی‌ها و گل‌هایی که با هر کلمه باز می‌شوند */
+
+:root[data-theme="garden"] {
+  --bg: #e7f1e2;
+  --surface: rgba(255, 255, 255, 0.8);
+  --ink: #2d4a34;
+  --muted: #5f7d63;
+  --accent: #3f8a5a;
+  --accent-ink: #ffffff;
+  --accent-soft: #d6ead2;
+  --edge: rgba(63, 138, 90, 0.3);
+  --wrong: #c0566b;
+  --line: rgba(255, 255, 255, 0.92);
+  --coin: #e8b84a;
+  --petal: #f4a6b8;
+  --complete-delay: 1400;
+}
+
+.garden-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.garden-bg svg { width: 100%; height: 100%; display: block; }
+.petal {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 8px;
+  border-radius: 80% 0 80% 0;
+  background: #f7b9c7;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  0% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(30px, 55vh) rotate(200deg); }
+  100% { transform: translate(-10px, 110vh) rotate(400deg); }
+}
+
+[data-theme="garden"] .logo {
+  font-size: 70px;
+  color: #3f8a5a;
+  text-shadow: 0 3px 0 #fff, 0 6px 18px rgba(63, 138, 90, 0.3);
+}
+[data-theme="garden"] .menu-btn,
+[data-theme="garden"] .coins,
+[data-theme="garden"] .icon-btn,
+[data-theme="garden"] .level-label { backdrop-filter: blur(4px); }
+
+/* سکه: قطره‌ی طلایی */
+[data-theme="garden"] .coin-icon {
+  border-radius: 0 50% 50% 50%;
+  transform: rotate(45deg);
+  background: radial-gradient(circle at 60% 60%, #fff3c4 0 14%, #e8b84a 50%, #b0821f 100%);
+}
+
+/* فهرست مرحله‌ها: غنچه برای مرحله‌های بسته، گل برای تمام‌شده‌ها */
+[data-theme="garden"] .lv { background: rgba(214, 234, 210, 0.9); }
+[data-theme="garden"] .lv.done {
+  background: radial-gradient(circle, #fffaf0 0 38%, var(--petal) 40% 100%);
+  color: #6a2a3d;
+  box-shadow: 0 0 0 3px rgba(244, 166, 184, 0.45);
+}
+[data-theme="garden"] .lv.current { background: #fff; box-shadow: 0 0 0 3px var(--accent), 0 0 18px rgba(63, 138, 90, 0.35); }
+
+/* ---------- جدول: باغچه‌ها، با هر کلمه گل می‌دهند ---------- */
+[data-theme="garden"] .cell { border-radius: 12px; }
+[data-theme="garden"] .cell.slot {
+  background: rgba(205, 228, 196, 0.85);
+  box-shadow: inset 0 0 0 2px rgba(63, 138, 90, 0.22);
+}
+[data-theme="garden"] .cell.filled {
+  border-radius: 46%;
+  background: radial-gradient(circle, #fffaf0 0 44%, var(--petal) 46% 100%);
+  color: #5a2034;
+  box-shadow: 0 0 0 2px #f394ab, 0 3px 8px rgba(160, 60, 90, 0.2);
+  animation: bloom 0.6s cubic-bezier(.3, 1.5, .6, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 150ms);
+}
+[data-theme="garden"] .cell.hinted {
+  background: radial-gradient(circle, #fffaf0 0 44%, #ffd76e 46% 100%);
+  box-shadow: 0 0 0 2px #f0b93a, 0 3px 8px rgba(160, 120, 30, 0.2);
+}
+[data-theme="garden"] .cell.again { animation: sway 0.5s ease; }
+@keyframes bloom {
+  0% { transform: scale(0) rotate(-90deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes sway {
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+/* ---------- پیش‌نمایش کلمه ---------- */
+[data-theme="garden"] .preview.right { background: var(--petal); color: #5a2034; }
+
+/* ---------- دایره‌ی حروف: حوض با ماهی‌های قرمز و حروف روی برگ نیلوفر ---------- */
+[data-theme="garden"] .wheel {
+  background: none;
+  box-shadow: 0 0 0 7px #2fa4a9, 0 0 0 10px #f4efe1, 0 12px 26px rgba(45, 74, 52, 0.3);
+}
+.pool {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 42%, #a6e0ea 0%, #55b4c9 55%, #2f8fa8 100%);
+}
+.pool .caustics {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 18% 10% at 30% 35%, rgba(255, 255, 255, 0.28), transparent 70%),
+    radial-gradient(ellipse 14% 8% at 70% 60%, rgba(255, 255, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 12% 7% at 45% 75%, rgba(255, 255, 255, 0.2), transparent 70%),
+    radial-gradient(ellipse 16% 9% at 65% 25%, rgba(255, 255, 255, 0.2), transparent 70%);
+  animation: caustics 9s ease-in-out infinite alternate;
+}
+@keyframes caustics {
+  to { transform: translate(6%, -4%) rotate(12deg) scale(1.08); }
+}
+.koi { position: absolute; inset: 0; animation: swim linear infinite; }
+.koi svg { position: absolute; left: 50%; top: 22%; width: 22%; margin-left: -11%; }
+.koi.k2 { animation-direction: reverse; }
+.koi.k2 svg { top: 66%; }
+.koi.k3 svg { top: 34%; width: 16%; margin-left: -8%; }
+@keyframes swim { to { transform: rotate(360deg); } }
+.koi.dart { animation-duration: 3s !important; }
+.ripple {
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  margin: -15% 0 0 -15%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+  animation: ripple 1s ease-out forwards;
+}
+@keyframes ripple {
+  from { transform: scale(0.2); opacity: 1; }
+  to { transform: scale(2.4); opacity: 0; }
+}
+
+[data-theme="garden"] .wheel-lines { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9)); }
+[data-theme="garden"] .wheel-lines polyline { stroke-width: 3; }
+
+[data-theme="garden"] .letter {
+  color: #fffbea;
+  text-shadow: 0 1px 3px rgba(20, 60, 30, 0.7);
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.25), transparent 50%),
+    conic-gradient(from -18deg, transparent 0 36deg, #5e9e5a 36deg 360deg);
+  filter: drop-shadow(0 2px 3px rgba(20, 60, 50, 0.35));
+}
+[data-theme="garden"] .letter.active {
+  color: #6a2a3d;
+  text-shadow: none;
+  background: radial-gradient(circle, #fffaf0 0 32%, var(--petal) 34% 66%, rgba(244, 166, 184, 0) 68%);
+  transform: translate(-50%, -50%) scale(1.12);
+}
+[data-theme="garden"] .wheel.shiver .letter { animation: shiver 0.4s ease; }
+@keyframes shiver {
+  25% { translate: -4px 0; }
+  75% { translate: 4px 0; }
+}
+
+/* ---------- پایان مرحله: باغی که کامل می‌شود ---------- */
+[data-theme="garden"] .overlay { background: rgba(231, 241, 226, 0.7); }
+[data-theme="garden"] .card { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--petal), 0 14px 40px rgba(45, 74, 52, 0.25); }
+
+.garden-scene { display: block; width: 100%; margin: -8px 0 8px; border-radius: 12px; }
+.garden-scene .new { animation: grow 0.8s cubic-bezier(.3, 1.4, .6, 1) 0.3s both; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes grow {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
