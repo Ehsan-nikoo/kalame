@@ -149,7 +149,11 @@
 
   // ---------- نقشه‌ی سفر در پایان مرحله ----------
 
-  const CAMEL = "M4 26 L5.5 17 Q3 14 5 10 L7 5 Q8 2 10.5 4 L10 9 Q12 12 15 10 Q18 3 22 7 Q25 3 29 8 Q32 11 32 16 L33 26 H31 L30 19 L28.5 26 H26.5 L26 19 H15 L14 26 H12 L12 19 L8 26 Z";
+  // شتر از مجموعه‌ی Noto Emoji (themes/caravan/CREDITS.txt)، رو به چپ یعنی جهت حرکت کاروان.
+  // در قابی ۵۶ واحدی که پاهایش روی خط ۴۶ (زمین) می‌نشیند.
+  function camel() {
+    return `<g class="camel"><image href="themes/caravan/camel.svg" x="0" y="-8" width="56" height="56"/></g>`;
+  }
 
   function routeMap(from) {
     const visited = STOPS.slice(0, from + 2);
@@ -157,7 +161,7 @@
       `<circle cx="${s.x}" cy="${s.y}" r="${i <= from + 1 ? 4 : 3}" fill="${i <= from ? "#1d4e89" : "#fbf0d6"}" stroke="#1d4e89" stroke-width="1.5"/>`).join("");
     const label = (s, bold) => `<text x="${s.x}" y="${s.y + 15}" text-anchor="middle" font-size="${bold ? 11 : 9}" font-weight="${bold ? 700 : 400}" fill="#5a3d22">${s.name}</text>`;
     const camels = [0, 1, 2].map((i) =>
-      `<path class="camel" d="${CAMEL}" fill="#7d5130" transform="translate(${i * 17 - 6} ${i * 2 - 6}) scale(.6)"/>`).join("");
+      `<g transform="translate(${i * 15 - 8} ${i * 1.5 - 12}) scale(.34)">${camel()}</g>`).join("");
     const start = STOPS[from];
     return `<svg class="extra route-map" viewBox="0 0 300 220" aria-hidden="true">
         <path d="M0 0 H300 V8 Q220 20 150 6 T0 12 Z" fill="#8cc3c9" opacity=".7"/>
@@ -188,7 +192,7 @@
   function homeArch() {
     const arch = "M18 214 V96 Q18 30 100 12 Q182 30 182 96 V214 Z";
     const camels = [0, 1, 2].map((i) =>
-      `<g transform="translate(${i * 36} ${i % 2 ? 1.5 : 0})"><path class="camel" d="${CAMEL}" fill="#6b4425"/></g>`).join("");
+      `<g transform="translate(${i * 40} ${i % 2 ? 1 : -1}) scale(.64)">${camel()}</g>`).join("");
     return `<svg class="home-arch" viewBox="0 0 200 222" aria-hidden="true">
         <defs>
           <clipPath id="arch-in"><path d="${arch}"/></clipPath>
@@ -198,7 +202,7 @@
           <rect width="200" height="222" fill="url(#arch-sky)"/>
           <circle class="arch-sun" cx="134" cy="92" r="20" fill="#fff3d6"/>
           <path d="M0 152 Q60 128 120 146 T200 140 V222 H0Z" fill="#e8bf86"/>
-          <g transform="translate(0 124)"><g class="walkers">${camels}</g></g>
+          <g transform="translate(0 130)"><g class="walkers">${camels}</g></g>
           <path d="M0 184 Q80 164 200 182 V222 H0Z" fill="#d6a46a"/>
         </g>
         <path d="${arch}" fill="none" stroke="#1d4e89" stroke-width="13"/>

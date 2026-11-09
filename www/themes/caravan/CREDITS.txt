@@ -1,0 +1,4 @@
+camel.svg — نقاشی شتر از مجموعه‌ی Noto Emoji (گوگل)
+https://github.com/googlefonts/noto-emoji
+مجوز: Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+(فقط اندازه‌ی ثابت ۱em از فایل حذف شده است؛ خود نقاشی دست‌نخورده است.)
