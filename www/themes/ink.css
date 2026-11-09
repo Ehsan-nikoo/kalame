@@ -23,6 +23,9 @@
   --accent-soft: #1f3b73;
   --edge: rgba(176, 138, 74, 0.8);
   --rubric: #8b2b1a;      /* شنگرف */
+  --lip: rgba(176, 138, 74, 0.75);
+  --lip-primary: #0f2147;
+  --lip-glow: rgba(60, 40, 15, 0.25);
   --coin: #c9a14a;
   --lapis: #1f3b73;
   --gold: #c9a14a;
@@ -30,6 +33,11 @@
   --line: #1b130a;
   --complete-delay: 1700;
   --nastaliq: "Nastaliq", "Vazirmatn", serif;
+  --display: var(--nastaliq);
+  --conf-0: #1f3b73;
+  --conf-1: #c9a14a;
+  --conf-2: #8b2b1a;
+  --conf-3: #1b130a;
 }
 
 [data-theme="ink"] body {
@@ -69,12 +77,39 @@
   padding: calc(env(safe-area-inset-top) + 32px) 30px calc(env(safe-area-inset-bottom) + 32px);
 }
 
+/* لوگو: نستعلیق مرکبی با یک نقش تذهیب طلایی زیرش */
 [data-theme="ink"] .logo {
   font-family: var(--nastaliq);
   font-weight: 700;
-  font-size: 72px;
+  font-size: 76px;
   line-height: 2;
   color: var(--ink);
+  text-shadow: 0 1px 1px rgba(27, 19, 10, 0.35);
+}
+[data-theme="ink"] .logo::after {
+  content: "";
+  display: block;
+  width: 170px;
+  height: 18px;
+  margin: -16px auto 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 18'%3E%3Cpath d='M2 9 H62 M108 9 H168' stroke='%23c9a14a' stroke-width='1.5'/%3E%3Cpath d='M85 1 L97 9 L85 17 L73 9Z' fill='%231f3b73' stroke='%23c9a14a' stroke-width='1.5'/%3E%3Ccircle cx='85' cy='9' r='2.6' fill='%23c9a14a'/%3E%3Ccircle cx='66' cy='9' r='2.4' fill='%23c9a14a'/%3E%3Ccircle cx='104' cy='9' r='2.4' fill='%23c9a14a'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[data-theme="ink"] .logo.write { animation: write-logo 1.8s ease-in-out 0.2s both; }
+@keyframes write-logo {
+  from { clip-path: inset(-30% 0 -30% 100%); }
+  to { clip-path: inset(-30% 0 -30% 0); }
+}
+/* منو: شمسه‌ی تذهیب که آرام می‌چرخد */
+.home-shamseh { filter: drop-shadow(0 6px 12px rgba(80, 50, 15, 0.3)); }
+.home-shamseh .spin { animation: spin 90s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+[data-theme="ink"] .scene-caption { font-family: var(--nastaliq); font-weight: 400; font-size: 17px; line-height: 2.2; color: var(--rubric); }
+[data-theme="ink"] .praise {
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 2.2;
+  color: var(--rubric);
+  text-shadow: 0 0 12px var(--paper), 0 0 22px var(--paper), 0 1px 1px rgba(27, 19, 10, 0.3);
 }
 [data-theme="ink"] .home-sub,
 [data-theme="ink"] .screen-title,
@@ -84,7 +119,7 @@
   line-height: 2.2;
   color: var(--rubric);
 }
-[data-theme="ink"] .home-sub { font-size: 20px; margin-top: -18px; }
+[data-theme="ink"] .home-sub { font-size: 20px; margin-top: 2px; }
 [data-theme="ink"] .menu-btn,
 [data-theme="ink"] .lv,
 [data-theme="ink"] .card-btn,
@@ -94,9 +129,11 @@
   line-height: 2.1;
 }
 [data-theme="ink"] .menu-btn { padding: 6px 14px 10px; border-radius: 6px; font-size: 22px; }
-[data-theme="ink"] .menu-btn.primary { box-shadow: inset 0 0 0 1.5px var(--gold), inset 0 0 0 4px var(--lapis), inset 0 0 0 5px var(--gold); }
+[data-theme="ink"] .menu-btn.primary,
+[data-theme="ink"] .card-btn { --ring: inset 0 0 0 1.5px var(--gold), inset 0 0 0 4px var(--lapis), inset 0 0 0 5px var(--gold); }
+[data-theme="ink"] .menu-btn { --ring: inset 0 0 0 3px rgba(255, 250, 235, 0.6), inset 0 0 0 4px rgba(176, 138, 74, 0.6); }
 [data-theme="ink"] .menu-btn small { font-family: "Vazirmatn", sans-serif; line-height: 1.4; }
-[data-theme="ink"] .tool { box-shadow: inset 0 0 0 1.5px var(--gold); color: #f6e7c4; padding: 4px 16px; }
+[data-theme="ink"] .tool { --ring: inset 0 0 0 1.5px var(--gold); --lip: #0f2147; color: #f6e7c4; padding: 4px 16px; }
 [data-theme="ink"] .icon-btn,
 [data-theme="ink"] .coins { border-width: 1px; }
 
@@ -108,7 +145,12 @@
 
 /* فهرست مرحله‌ها: عددهای نستعلیق در دایره‌ی تذهیب */
 [data-theme="ink"] .lv { font-size: 24px; padding-bottom: 8px; box-shadow: inset 0 0 0 3px rgba(255, 250, 235, 0.7), inset 0 0 0 4px var(--gold); }
-[data-theme="ink"] .lv small { font-family: "Vazirmatn", sans-serif; line-height: 1; }
+/* نقشه‌ی مرحله‌ها: خط کم‌رنگ با نقطه‌های طلایی؛ راه رفته با مرکب سیاه */
+[data-theme="ink"] .map-road { stroke: rgba(27, 19, 10, 0.22); stroke-width: 1.5; }
+[data-theme="ink"] .map-stitch { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 0.1 14; }
+[data-theme="ink"] .map-done { stroke: var(--ink); stroke-width: 3; filter: url(#ink-rough); }
+[data-theme="ink"] .map-label { font-size: 15px; line-height: 2.2; padding: 0 12px; color: var(--rubric); }
+[data-theme="ink"] .map-marker { background: var(--rubric); }
 [data-theme="ink"] .lv.done { box-shadow: inset 0 0 0 3px var(--lapis), inset 0 0 0 4px var(--gold); }
 [data-theme="ink"] .lv.current { box-shadow: 0 0 0 3px var(--rubric); }
 
@@ -213,10 +255,10 @@
   padding: 40px 28px 30px;
 }
 [data-theme="ink"] .card-title { font-size: 34px; }
-[data-theme="ink"] .card-btn {
-  padding: 4px 32px;
-  box-shadow: inset 0 0 0 1.5px var(--gold);
-}
+[data-theme="ink"] .card-btn { padding: 4px 32px; }
+
+/* جشن پایان مرحله: قطره‌های مرکب و ورقه‌های طلا */
+[data-theme="ink"] .confetti { width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50% 50% 50% 0; }
 [data-theme="ink"] .card.thump { animation: thump 0.25s ease; }
 @keyframes thump { 40% { transform: translate(2px, 3px) rotate(0.6deg); } }
 

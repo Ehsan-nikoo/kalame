@@ -96,17 +96,28 @@
     ripple(((e.clientX - rect.left) / rect.width) * 100, ((e.clientY - rect.top) / rect.height) * 100);
   }
 
-  function gardenScene(level) {
-    const step = level % PARTS;
-    const parts = ITEMS.slice(0, step + 1)
-      .map((it, i) => (i === step ? it.svg.replace("<g>", '<g class="new">') : it.svg)).join("");
-    return `<svg class="extra garden-scene" viewBox="0 0 200 100" aria-hidden="true">
-        <rect width="200" height="100" fill="#eef6ea"/>
-        <path d="M0 46 H200 V100 H0Z" fill="#cfe5c5"/>
+  // باغ با count چیز اول؛ چیز شماره‌ی fresh با انیمیشن رشد ظاهر می‌شود
+  function gardenSVG(count, fresh, cls, extra = "") {
+    const parts = ITEMS.slice(0, count)
+      .map((it, i) => (i === fresh ? it.svg.replace("<g>", '<g class="new">') : it.svg)).join("");
+    return `<svg class="${cls}" viewBox="0 0 200 100" aria-hidden="true">
+        <rect width="200" height="100" rx="10" fill="#eef6ea"/>
+        <path d="M0 46 H200 V90 Q200 100 190 100 H10 Q0 100 0 90Z" fill="#cfe5c5"/>
         <path d="M94 46 H106 L124 100 H76Z" fill="#a9dbe5" stroke="#2fa4a9" stroke-width="1"/>
-        ${parts}
+        ${parts}${extra}
       </svg>`;
   }
+
+  function gardenScene(level) {
+    const step = level % PARTS;
+    return gardenSVG(step + 1, step, "extra garden-scene");
+  }
+
+  // منو: باغی که تا الان ساخته شده، با پروانه‌ای که دورش می‌چرخد
+  const BUTTERFLY = `<g class="butterfly-path"><g class="butterfly">
+      <ellipse cx="-3" cy="0" rx="3.6" ry="2.6" fill="#f39ab0"/><ellipse cx="3" cy="0" rx="3.6" ry="2.6" fill="#f39ab0"/>
+      <ellipse cx="-2.4" cy="2.4" rx="2.2" ry="1.6" fill="#ffd76e"/><ellipse cx="2.4" cy="2.4" rx="2.2" ry="1.6" fill="#ffd76e"/>
+      <rect x="-.5" y="-2" width="1" height="5" rx=".5" fill="#5a2034"/></g></g>`;
 
   defineTheme("garden", {
     name: (level) => gardenOf(level),
@@ -122,6 +133,14 @@
     },
 
     on: {
+      home(d) {
+        const count = d.done % PARTS;
+        const box = document.getElementById("homeScene");
+        box.innerHTML = gardenSVG(count, -1, "home-garden", BUTTERFLY) + `<p class="scene-caption"></p>`;
+        box.querySelector(".scene-caption").textContent = count
+          ? `${gardenOf(d.done)} · ${faDigits(count)} از ${faDigits(PARTS)} ساخته شده`
+          : `باغ تازه: ${gardenOf(d.done)}`;
+      },
       found() {
         ripple(50, 50);
       },

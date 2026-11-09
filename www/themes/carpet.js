@@ -67,26 +67,49 @@
       <polygon points="${cx},${cy - 8} ${cx + 8},${cy} ${cx},${cy + 8} ${cx - 8},${cy}" fill="${c.field}"/>`;
   }
 
-  // قالی روی دار: ردیف‌های بافته‌شده از پایین بالا می‌آیند
-  function loomCarpet(level) {
-    const rows = (level % ROWS) + 1;
-    const c = carpetOf(level);
+  const heightFor = (rows) => (120 * rows) / ROWS;
+
+  // قالی روی دار: تا ارتفاع woven بافته شده و بقیه هنوز تارهای خالی است.
+  // id باید یکتا باشد، چون نسخه‌ی منو و نسخه‌ی پنجره‌ی پایان مرحله با هم در صفحه‌اند.
+  function loomSVG(c, woven, { id, cls, done, extra = "" }) {
     const warp = [];
     for (let x = 24; x <= 176; x += 3) warp.push(`<line x1="${x}" y1="8" x2="${x}" y2="132"/>`);
     const fringe = [];
     for (let x = 24; x <= 176; x += 3) fringe.push(`<line x1="${x}" y1="130" x2="${x}" y2="138"/>`);
-    const heightFor = (r) => (120 * r) / ROWS;
-    const h0 = heightFor(rows - 1);
-    const svg = `<svg class="extra loom-carpet" viewBox="0 0 200 142" aria-hidden="true">
-        <defs><clipPath id="woven"><rect class="woven-rect" x="0" y="${130 - h0}" width="200" height="${h0}"/></clipPath></defs>
+    return `<svg class="${cls}" viewBox="0 0 200 142" aria-hidden="true">
+        <defs><clipPath id="${id}"><rect class="woven-rect" x="0" y="${130 - woven}" width="200" height="${woven}"/></clipPath></defs>
         <rect x="22" y="8" width="156" height="124" fill="#efe2cc"/>
         <g stroke="rgba(120, 70, 40, .35)" stroke-width=".7">${warp.join("")}</g>
-        <g clip-path="url(#woven)">${carpetDesign(c)}</g>
-        <g stroke="${IVORY}" stroke-width="1">${rows === ROWS ? fringe.join("") : ""}</g>
+        <g clip-path="url(#${id})">${carpetDesign(c)}</g>
+        <g stroke="${IVORY}" stroke-width="1">${done ? fringe.join("") : ""}</g>
         <rect x="10" y="2" width="180" height="8" rx="3" fill="#7a4a24"/>
-        <rect x="10" y="${rows === ROWS ? 138 : 130}" width="180" height="4" rx="2" fill="#7a4a24" opacity="${rows === ROWS ? 0 : 1}"/>
+        <rect x="10" y="130" width="180" height="4" rx="2" fill="#7a4a24" opacity="${done ? 0 : 1}"/>
+        ${extra}
       </svg>`;
-    return { svg, from: h0, to: heightFor(rows), rows, city: c.city };
+  }
+
+  // پنجره‌ی پایان مرحله: ردیف تازه از پایین بالا می‌آید
+  function loomCarpet(level) {
+    const rows = (level % ROWS) + 1;
+    const c = carpetOf(level);
+    const svg = loomSVG(c, heightFor(rows - 1), { id: "woven-card", cls: "extra loom-carpet", done: rows === ROWS });
+    return { svg, from: heightFor(rows - 1), to: heightFor(rows), rows, city: c.city };
+  }
+
+  // منو: قالیِ در حال بافت، با ماکویی که روی خط بافت می‌رود و برمی‌گردد
+  function homeLoom(done) {
+    const rows = done % ROWS;
+    const c = carpetOf(done);
+    const edge = 130 - heightFor(rows);
+    const shuttle = `<g transform="translate(0 ${edge - 3})">
+        <line x1="24" y1="3" x2="176" y2="3" stroke="#b8322a" stroke-width=".8" opacity=".55"/>
+        <g class="shuttle"><path d="M0 3 Q8 -2 22 -1 L30 3 L22 7 Q8 8 0 3Z" fill="#8a5a2c" stroke="#5b3818" stroke-width=".8"/>
+        <ellipse cx="15" cy="3" rx="5" ry="2.4" fill="#b8322a"/>
+      </g></g>`;
+    return {
+      svg: loomSVG(c, heightFor(rows), { id: "woven-home", cls: "home-loom", done: false, extra: shuttle }),
+      caption: `قالی ${c.city} · ${faDigits(rows)} از ${faDigits(ROWS)} ردیف بافته شده`,
+    };
   }
 
   function growCarpet(svgEl, from, to) {
@@ -111,6 +134,12 @@
     },
 
     on: {
+      home(d) {
+        const box = document.getElementById("homeScene");
+        const loom = homeLoom(d.done);
+        box.innerHTML = loom.svg + `<p class="scene-caption"></p>`;
+        box.querySelector(".scene-caption").textContent = loom.caption;
+      },
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("snap");

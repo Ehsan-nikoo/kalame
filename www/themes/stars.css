@@ -39,11 +39,71 @@
   z-index: 0;
 }
 
+:root[data-theme="stars"] {
+  --conf-0: #ffd98a;
+  --conf-1: #fffbe9;
+  --conf-2: #f0b44e;
+  --conf-3: #cbbcff;
+}
+
+/* لوگو و پیام‌های تشویقی: طلای درخشان با برقی که آرام از رویش رد می‌شود */
 [data-theme="stars"] .logo,
+[data-theme="stars"] .praise {
+  background: linear-gradient(100deg, #c98b2e 0%, #ffd98a 30%, #fffbe9 45%, #ffd98a 60%, #c98b2e 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 14px rgba(255, 217, 138, 0.55));
+}
+[data-theme="stars"] .logo { font-size: 84px; animation: shimmer 6s ease-in-out infinite; }
+[data-theme="stars"] .praise { background-position: 30% 0; filter: drop-shadow(0 0 10px rgba(255, 217, 138, 0.9)); }
+@keyframes shimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0 0; }
+}
 [data-theme="stars"] .card-title { text-shadow: 0 0 18px rgba(255, 217, 138, 0.7); }
-[data-theme="stars"] .logo { font-size: 72px; }
-[data-theme="stars"] .menu-btn.primary,
 [data-theme="stars"] .lv.done { box-shadow: 0 0 22px rgba(255, 217, 138, 0.45); }
+
+/* دکمه‌های برجسته که زیر انگشت پایین می‌روند */
+[data-theme="stars"] .menu-btn,
+[data-theme="stars"] .tool,
+[data-theme="stars"] .icon-btn,
+[data-theme="stars"] .card-btn { transition: transform 0.08s ease-out, box-shadow 0.08s ease-out; }
+[data-theme="stars"] .menu-btn,
+[data-theme="stars"] .tool,
+[data-theme="stars"] .icon-btn {
+  background: linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 4px 0 rgba(255, 217, 138, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+[data-theme="stars"] .menu-btn.primary,
+[data-theme="stars"] .card-btn {
+  background: linear-gradient(#fff1c6, #ffd98a 45%, #f0b44e);
+  color: #3a2606;
+  border-color: #fff1c6;
+  box-shadow: 0 5px 0 #a8701f, 0 10px 28px rgba(255, 217, 138, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+[data-theme="stars"] .menu-btn:active,
+[data-theme="stars"] .tool:active,
+[data-theme="stars"] .icon-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(255, 217, 138, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+[data-theme="stars"] .menu-btn.primary:active,
+[data-theme="stars"] .card-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #a8701f, 0 4px 14px rgba(255, 217, 138, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* جشن پایان مرحله: ستاره‌های کوچک طلایی */
+[data-theme="stars"] .confetti {
+  width: 13px;
+  height: 13px;
+  margin: -6px 0 0 -6px;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
 [data-theme="stars"] .menu-btn,
 [data-theme="stars"] .coins,
 [data-theme="stars"] .icon-btn,
@@ -62,6 +122,19 @@
 [data-theme="stars"] .lv { background: radial-gradient(circle, rgba(255, 233, 176, 0.14), rgba(255, 255, 255, 0.03) 70%); }
 [data-theme="stars"] .lv.done { background: radial-gradient(circle at 50% 40%, #fffbe9 0%, #ffd98a 55%, #c98b2e 100%); }
 [data-theme="stars"] .lv.current { box-shadow: 0 0 0 2px #ffd98a, 0 0 24px rgba(255, 217, 138, 0.7); }
+
+/* نقشه‌ی مرحله‌ها: خط‌های نقطه‌چین صورت فلکی؛ راه رفته طلایی و روشن */
+[data-theme="stars"] .map-road { stroke: rgba(255, 217, 138, 0.35); stroke-width: 3; stroke-dasharray: 1 9; }
+[data-theme="stars"] .map-done { stroke: #ffd98a; stroke-width: 2.5; }
+[data-theme="stars"] .map-svg { filter: drop-shadow(0 0 4px rgba(255, 217, 138, 0.8)); }
+[data-theme="stars"] .map-label { backdrop-filter: blur(3px); color: #ffe9b0; }
+[data-theme="stars"] .map-marker {
+  border-radius: 0;
+  rotate: 0deg;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: radial-gradient(circle, #fffbe9, #ffd98a 60%, #e0a03a);
+  box-shadow: none;
+}
 
 /* ---------- جدول ---------- */
 [data-theme="stars"] .cell.slot {
@@ -158,6 +231,19 @@
   border: 1px solid rgba(255, 217, 138, 0.3);
   box-shadow: 0 0 60px rgba(255, 217, 138, 0.15);
 }
+
+/* منو: صورت فلکی که آرام کشیده می‌شود و بعد نفس می‌کشد */
+.home-constellation {
+  object-fit: contain;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.6));
+  animation: draw-in 3.2s ease-out both, breathe 5s ease-in-out 3.2s infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.6)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 217, 138, 0.9)); }
+}
+[data-theme="stars"] .scene-caption { color: #e9dcb8; }
 
 .constellation {
   display: block;

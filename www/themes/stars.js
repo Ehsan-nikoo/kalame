@@ -152,6 +152,15 @@
     },
 
     on: {
+      // منو: صورت فلکی مرحله‌ی بعد آرام روی آسمان کشیده می‌شود
+      home(d) {
+        const c = constellationOf(d.level);
+        const box = document.getElementById("homeScene");
+        box.innerHTML = `<img class="home-constellation" alt=""><p class="scene-caption"></p>`;
+        box.querySelector("img").src = "themes/stars/" + c.file + ".png";
+        box.querySelector(".scene-caption").textContent =
+          d.done >= d.total ? "همه‌ی آسمان کامل شد ✦" : `صورت فلکی بعدی: «${c.name}»`;
+      },
       submit(d) {
         lastLetters = d.letters;
       },

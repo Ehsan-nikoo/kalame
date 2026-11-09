@@ -184,6 +184,31 @@
     })(t0);
   }
 
+  // منو: پنجره‌ای طاق‌دار با قاب کاشی، و کاروانی که از پشتش رد می‌شود
+  function homeArch() {
+    const arch = "M18 214 V96 Q18 30 100 12 Q182 30 182 96 V214 Z";
+    const camels = [0, 1, 2].map((i) =>
+      `<g transform="translate(${i * 36} ${i % 2 ? 1.5 : 0})"><path class="camel" d="${CAMEL}" fill="#6b4425"/></g>`).join("");
+    return `<svg class="home-arch" viewBox="0 0 200 222" aria-hidden="true">
+        <defs>
+          <clipPath id="arch-in"><path d="${arch}"/></clipPath>
+          <linearGradient id="arch-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a96b"/><stop offset=".7" stop-color="#fde7c2"/></linearGradient>
+        </defs>
+        <g clip-path="url(#arch-in)">
+          <rect width="200" height="222" fill="url(#arch-sky)"/>
+          <circle class="arch-sun" cx="134" cy="92" r="20" fill="#fff3d6"/>
+          <path d="M0 152 Q60 128 120 146 T200 140 V222 H0Z" fill="#e8bf86"/>
+          <g transform="translate(0 124)"><g class="walkers">${camels}</g></g>
+          <path d="M0 184 Q80 164 200 182 V222 H0Z" fill="#d6a46a"/>
+        </g>
+        <path d="${arch}" fill="none" stroke="#1d4e89" stroke-width="13"/>
+        <path d="${arch}" fill="none" stroke="#2fa4a9" stroke-width="8"/>
+        <path d="${arch}" fill="none" stroke="#d9a441" stroke-width="1.6"/>
+        <rect x="6" y="208" width="188" height="12" rx="2" fill="#c98f5c"/>
+        <rect x="6" y="208" width="188" height="3" fill="#e0b07a"/>
+      </svg>`;
+  }
+
   // ---------- واکنش به بازی ----------
 
   defineTheme("caravan", {
@@ -199,6 +224,14 @@
     },
 
     on: {
+      home(d) {
+        const leg = legOf(d.level);
+        const box = document.getElementById("homeScene");
+        box.innerHTML = homeArch() + `<p class="scene-caption"></p>`;
+        box.querySelector(".scene-caption").textContent =
+          d.done >= d.total ? "سفر تموم شد!" : `کاروان در ${STOPS[leg].name} · مقصد بعدی: ${STOPS[leg + 1].name}`;
+        showScene(sceneOf(d.level));
+      },
       level(d) {
         showScene(sceneOf(d.level));
       },

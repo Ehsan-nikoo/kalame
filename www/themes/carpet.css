@@ -16,6 +16,13 @@
   --indigo: #1e2a4a;
   --ivory: #f4e9d4;
   --saffron: #d9a441;
+  --lip: #c9a35a;
+  --lip-primary: #4f1010;
+  --lip-glow: rgba(58, 28, 20, 0.28);
+  --conf-0: #8e2424;
+  --conf-1: #1e2a4a;
+  --conf-2: #d9a441;
+  --conf-3: #4c7a4a;
   --complete-delay: 1500;
 }
 
@@ -48,18 +55,42 @@
   padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
 }
 
-[data-theme="carpet"] .logo {
-  font-size: 70px;
+/* لوگو: حروف قرمز روناس با لبه‌ی عاج و سایه‌ی نیلی، مثل نقش برجسته‌ی قالی؛ زیرش یک نوار گلیم */
+[data-theme="carpet"] .logo,
+[data-theme="carpet"] .praise {
   color: var(--madder);
-  text-shadow: 0 2px 0 var(--ivory), 0 4px 0 var(--indigo);
+  text-shadow: 0 2px 0 var(--ivory), 0 -2px 0 var(--ivory), 2px 0 0 var(--ivory), -2px 0 0 var(--ivory),
+    0 5px 0 var(--indigo), 0 12px 18px rgba(58, 28, 20, 0.3);
 }
-[data-theme="carpet"] .menu-btn { border-width: 2px; border-radius: 8px; }
+[data-theme="carpet"] .logo { font-size: 84px; }
+[data-theme="carpet"] .logo::after {
+  content: "";
+  display: block;
+  width: 150px;
+  height: 12px;
+  margin: 6px auto 0;
+  background:
+    linear-gradient(135deg, #8e2424 25%, transparent 25%) -6px 0 / 12px 12px,
+    linear-gradient(225deg, #8e2424 25%, transparent 25%) -6px 0 / 12px 12px,
+    linear-gradient(315deg, #d9a441 25%, transparent 25%) 0 0 / 12px 12px,
+    linear-gradient(45deg, #d9a441 25%, transparent 25%) 0 0 / 12px 12px,
+    #1e2a4a;
+  border-radius: 2px;
+}
+[data-theme="carpet"] .home-sub { color: var(--madder); font-weight: 700; }
+
+/* دکمه‌ها: تکه‌قالی‌های کوچک با حاشیه‌ی بافته */
+[data-theme="carpet"] .menu-btn { border-width: 2px; border-radius: 10px; }
 [data-theme="carpet"] .menu-btn.primary,
 [data-theme="carpet"] .card-btn {
-  box-shadow: inset 0 0 0 3px var(--madder), inset 0 0 0 5px var(--ivory), inset 0 0 0 7px var(--indigo);
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.08) 0 3px, transparent 3px 10px),
+    var(--madder);
   border-color: var(--saffron);
+  --ring: inset 0 0 0 4px var(--madder), inset 0 0 0 6px var(--ivory), inset 0 0 0 8px var(--indigo);
 }
-[data-theme="carpet"] .tool { color: var(--ivory); }
+[data-theme="carpet"] .tool { color: var(--ivory); --lip: #0c1226; }
+[data-theme="carpet"] .icon-btn { border-color: var(--saffron); }
 
 /* سکه: گلوله‌ی نخ طلایی */
 [data-theme="carpet"] .coin-icon {
@@ -76,7 +107,15 @@
   background: #e2cfae;
 }
 [data-theme="carpet"] .lv.done { background: var(--madder); }
+[data-theme="carpet"] .lv.locked { opacity: 1; background: #d9c39c; color: #8a6a4e; }
 [data-theme="carpet"] .lv.current { background: var(--indigo); color: var(--ivory); box-shadow: none; }
+
+/* نقشه‌ی مرحله‌ها: نوار گلیم نیلی با کوک‌های عاج؛ راه رفته قرمز روناس */
+[data-theme="carpet"] .map-road { stroke: var(--indigo); stroke-width: 14; }
+[data-theme="carpet"] .map-stitch { stroke: var(--ivory); stroke-width: 2; stroke-dasharray: 3 6; }
+[data-theme="carpet"] .map-done { stroke: var(--madder); stroke-width: 14; }
+[data-theme="carpet"] .map-label { border-width: 2px; border-color: var(--saffron); color: var(--madder); }
+[data-theme="carpet"] .map-marker { background: #c58a1e; }
 
 /* ---------- جدول: یک قالی که گره به گره بافته می‌شود ---------- */
 [data-theme="carpet"] .board {
@@ -181,3 +220,16 @@
 [data-theme="carpet"] .card-title { color: var(--madder); }
 
 .loom-carpet { display: block; width: 100%; margin: -8px 0 8px; }
+
+/* منو: دار قالی با ماکوی در حال رفت‌وبرگشت */
+.home-loom { filter: drop-shadow(0 8px 14px rgba(58, 28, 20, 0.25)); }
+.home-loom .shuttle { animation: shuttle 2.6s ease-in-out infinite alternate; }
+@keyframes shuttle {
+  from { transform: translateX(24px); }
+  to { transform: translateX(146px); }
+}
+[data-theme="carpet"] .scene-caption { color: var(--madder); }
+
+/* جشن پایان مرحله: تکه‌نخ‌های رنگی */
+[data-theme="carpet"] .confetti { width: 4px; height: 16px; margin: -8px 0 0 -2px; border-radius: 2px; }
+[data-theme="carpet"] .praise { font-size: 46px; }

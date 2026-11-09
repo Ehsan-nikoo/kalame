@@ -327,6 +327,7 @@ let pointer = null;
 let previewTimer = null;
 let locked = false;     // بین تمام شدن مرحله و شروع مرحله‌ی بعد
 let screenNow = null;
+let streak = 0;         // کلمه‌های درستِ پشت سر هم، برای پیام‌های تشویقی
 
 function startLevel(i) {
   current = i;
@@ -342,6 +343,7 @@ function startLevel(i) {
   hidePreview();
   $("overlay").classList.add("hidden");
   locked = false;
+  streak = 0;
 
   for (const k of Array.isArray(part.revealed) ? part.revealed : []) {
     if (cellEls[k]) revealCell(cellEls[k], false);
@@ -523,6 +525,13 @@ function updateSelection() {
   drawLines();
 }
 
+// حرفی که تازه انتخاب شده یک لحظه می‌پرد
+function pickLetter(i) {
+  const el = letterEls[i];
+  el.classList.add("picked");
+  setTimeout(() => el.classList.remove("picked"), 140);
+}
+
 function onPointerDown(e) {
   if (locked || dragging) return;
   const p = toWheel(e);
@@ -533,6 +542,7 @@ function onPointerDown(e) {
   dragPointer = e.pointerId;
   path = [i];
   pointer = p;
+  pickLetter(i);
   updateSelection();
 }
 
@@ -542,7 +552,10 @@ function onPointerMove(e) {
   const i = letterAt(pointer);
   if (i >= 0) {
     if (i === path[path.length - 2]) path.pop();   // برگشتن انگشت = پاک کردن آخرین حرف
-    else if (!path.includes(i)) path.push(i);
+    else if (!path.includes(i)) {
+      path.push(i);
+      pickLetter(i);
+    }
   }
   updateSelection();
 }
@@ -586,14 +599,32 @@ function submitWord(raw) {
     emit("repeat", { word, cells: wordCells(word) });
   } else if (level.words.includes(word)) {
     found.push(word);
+    streak++;
     fillWord(word, true);
     showPreview(word, "right", 600);
+    praise(word);
     emit("found", { word, cells: wordCells(word) });
     checkDone();
   } else {
+    streak = 0;
     showPreview(word, "wrong", 600);
     emit("wrong", { word });
   }
+}
+
+// پیام تشویقی وسط جدول: برای کلمه‌ای که همه‌ی حروف را دارد، یا چند کلمه‌ی درست پشت سر هم
+const PRAISES = ["خوبه!", "عالی!", "فوق‌العاده!", "بی‌نظیر!", "محشر!"];
+
+function praise(word) {
+  let text = null;
+  if (word.length >= 4 && word.length === levels[current].letters.length) text = "شاهکار!";
+  else if (streak >= 2) text = PRAISES[Math.min(streak - 2, PRAISES.length - 1)];
+  if (!text) return;
+  const el = $("praise");
+  el.textContent = text;
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
 }
 
 // کلمه‌ای که همه‌ی خانه‌هایش (با راهنما یا کلمه‌های دیگر) باز شده، پیدا شده حساب می‌شود
@@ -713,8 +744,82 @@ function showComplete(first) {
   $("overlay").classList.remove("hidden");
 
   updateCoins();
-  if (first) bumpCoins();
   emit("complete", { level: current, finished: !hasNext, first });
+  celebrate();
+  if (first) setTimeout(() => flyCoins(COINS_PER_LEVEL), 350);
+}
+
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// سکه‌های جایزه از پنجره‌ی پایان مرحله به شمارنده‌ی سکه پرواز می‌کنند
+function flyCoins(amount) {
+  const target = document.querySelector("#app .coins");
+  const from = $("overlayReward").querySelector(".coin-icon").getBoundingClientRect();
+  const to = target.getBoundingClientRect();
+  if (calm() || !from.width || !to.width) return bumpCoins();
+
+  // شمارنده‌ی اصلی زیر پنجره است؛ یک کپی از آن روی پنجره می‌گذاریم تا سکه‌ها جلوی چشم داخلش بنشینند
+  const ghost = target.cloneNode(true);
+  ghost.classList.add("coins-ghost");
+  Object.assign(ghost.style, { left: to.left + "px", top: to.top + "px", width: to.width + "px" });
+  document.body.appendChild(ghost);
+  const count = ghost.querySelector(".coin-count");
+  let shown = save.coins - amount;
+  count.textContent = faDigits(shown);
+
+  const N = 5;
+  const dx = to.left + 12 - from.left;
+  const dy = to.top + to.height / 2 - from.top - from.height / 2;
+  for (let k = 0; k < N; k++) {
+    const coin = document.createElement("span");
+    coin.className = "coin-icon flying-coin";
+    coin.style.left = from.left + "px";
+    coin.style.top = from.top + "px";
+    document.body.appendChild(coin);
+    coin.animate(
+      [
+        { translate: "0 0", scale: "1" },
+        { translate: `${dx * 0.35 + (k - 2) * 16}px ${dy * 0.35 - 70}px`, scale: "1.35", offset: 0.45 },
+        { translate: `${dx}px ${dy}px`, scale: "0.8" },
+      ],
+      { duration: 720, delay: k * 90, easing: "cubic-bezier(.45,0,.55,1)", fill: "backwards" }
+    ).finished.then(() => {
+      coin.remove();
+      shown += amount / N;
+      count.textContent = faDigits(Math.round(shown));
+      ghost.classList.remove("bump");
+      void ghost.offsetWidth;
+      ghost.classList.add("bump");
+      if (k === N - 1) setTimeout(() => ghost.remove(), 600);
+    });
+  }
+}
+
+// جشن پایان مرحله: تکه‌های رنگی از بالای پنجره بیرون می‌پرند (شکل و رنگشان را هر ظاهر تعیین می‌کند)
+function celebrate() {
+  if (calm()) return;
+  const r = document.querySelector("#overlay .card").getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + 30;
+  for (let k = 0; k < 30; k++) {
+    const bit = document.createElement("span");
+    bit.className = "confetti c" + (k % 4);
+    bit.style.left = cx + "px";
+    bit.style.top = cy + "px";
+    document.body.appendChild(bit);
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6;
+    const v = 130 + Math.random() * 170;
+    const x = Math.cos(a) * v;
+    const y = Math.sin(a) * v;
+    bit.animate(
+      [
+        { translate: "0 0", rotate: "0deg", opacity: 1 },
+        { translate: `${x}px ${y}px`, rotate: `${Math.random() * 360}deg`, opacity: 1, offset: 0.35 },
+        { translate: `${x * 1.35}px ${y + 420}px`, rotate: `${Math.random() * 720}deg`, opacity: 0 },
+      ],
+      { duration: 1500 + Math.random() * 700, easing: "cubic-bezier(.2,.65,.4,1)" }
+    ).finished.then(() => bit.remove());
+  }
 }
 
 function showErrors(errors) {
@@ -790,6 +895,9 @@ function chooseTheme(id) {
 
 function renderHome() {
   $("homeSub").textContent = (THEMES.find((t) => t.id === activeTheme) || THEMES[0]).name;
+  // صحنه‌ی زنده‌ی بالای منو را ظاهر فعلی می‌سازد (level: مرحله‌ی بعدی، done: تعداد مرحله‌های تمام‌شده)
+  $("homeScene").innerHTML = "";
+  if (levels.length) emit("home", { level: Math.min(save.unlocked, levels.length - 1), done: save.unlocked, total: levels.length });
   const btn = $("continueBtn");
   btn.disabled = levels.length === 0;
   const next = Math.min(save.unlocked, levels.length - 1);
@@ -805,27 +913,84 @@ function continueGame() {
   else play(save.unlocked);
 }
 
+// ---------- نقشه‌ی مرحله‌ها: جاده‌ای پیچ‌وتاب‌دار که از پایین صفحه بالا می‌رود ----------
+
+const MAP_STEP = 96;   // فاصله‌ی عمودی دو مرحله
+const MAP_PAD = 80;    // فاصله‌ی اولین و آخرین مرحله از لبه‌ها
+const mapX = (i) => 50 + 26 * Math.sin(i * 1.15); // جای افقی هر مرحله، به درصد
+
 function renderLevels() {
-  const grid = $("levelGrid");
-  grid.innerHTML = "";
+  const map = $("levelMap");
+  const n = levels.length;
+  const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP;
+  const y = (i) => H - MAP_PAD - i * MAP_STEP;
+  // منحنی نرم از مرحله‌ی اول تا مرحله‌ی count
+  const road = (count) => {
+    let d = `M${mapX(0)} ${y(0)}`;
+    for (let i = 1; i < count; i++) {
+      d += ` C${mapX(i - 1)} ${y(i - 1) - MAP_STEP / 2} ${mapX(i)} ${y(i) + MAP_STEP / 2} ${mapX(i)} ${y(i)}`;
+    }
+    return d;
+  };
+  // جاده‌ی کامل، تزئین روی آن، و تکه‌ای که بازیکن تا الان رفته (هر ظاهر رنگ و شکلشان را تعیین می‌کند)
+  map.innerHTML = `<div class="map-track" style="height:${H}px">
+      <svg class="map-svg" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">
+        <path class="map-road" d="${road(n)}"/>
+        <path class="map-stitch" d="${road(n)}"/>
+        <path class="map-done" d="${road(Math.min(save.unlocked + 1, n))}"/>
+      </svg>
+    </div>`;
+  const track = map.firstElementChild;
+
+  let prevName = null;
   levels.forEach((_, i) => {
+    const x = mapX(i);
+    const status = i < save.unlocked ? "done" : i === save.unlocked ? "current" : "locked";
     const btn = document.createElement("button");
     btn.type = "button";
-    const status = i < save.unlocked ? "done" : i === save.unlocked ? "current" : "locked";
     btn.className = "lv " + status;
-    btn.innerHTML = `<span class="lv-num"></span><small></small>`;
-    btn.querySelector(".lv-num").textContent = faDigits(i + 1);
-    btn.querySelector("small").textContent = levelName(i);
+    btn.style.left = x + "%";
+    btn.style.top = y(i) + "px";
+    btn.textContent = faDigits(i + 1);
+    btn.setAttribute("aria-label", `مرحله‌ی ${faDigits(i + 1)}` + (status === "locked" ? "، قفل" : ""));
     btn.onclick = () => {
       if (status !== "locked") return play(i);
       btn.classList.remove("nope");
       void btn.offsetWidth;
       btn.classList.add("nope");
     };
-    grid.appendChild(btn);
+    track.appendChild(btn);
+
+    // اسم هر فصل (صورت فلکی، شهر، قالی، باغ) کنار اولین مرحله‌اش، طرف دیگر جاده
+    const name = levelName(i);
+    if (name && name !== prevName) {
+      const label = document.createElement("span");
+      label.className = "map-label" + (status === "locked" ? " locked" : "");
+      label.textContent = name;
+      label.style.top = y(i) + "px";
+      if (x >= 50) {
+        label.style.left = x - 11 + "%";
+        label.style.translate = "-100% -50%";
+      } else {
+        label.style.left = x + 11 + "%";
+        label.style.translate = "0 -50%";
+      }
+      track.appendChild(label);
+    }
+    prevName = name;
+
+    if (status === "current") {
+      const marker = document.createElement("span");
+      marker.className = "map-marker";
+      marker.style.left = x + "%";
+      marker.style.top = y(i) - 50 + "px";
+      track.appendChild(marker);
+    }
   });
-  const here = grid.querySelector(".current");
-  if (here) here.scrollIntoView({ block: "center" });
+
+  // مرحله‌ی فعلی (یا آخرین مرحله) وسط صفحه
+  const here = track.querySelector(".lv.current") || track.querySelector(".lv:last-of-type");
+  if (here) map.scrollTop = parseFloat(here.style.top) - map.clientHeight / 2;
 }
 
 // ---------------------------------------------------------------------------

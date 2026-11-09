@@ -50,6 +50,25 @@
       .then(() => word.remove());
   }
 
+  // منو: شمسه‌ی تذهیب‌شده که خیلی آرام می‌چرخد
+  function shamseh() {
+    const petals = Array.from({ length: 12 }, (_, i) =>
+      `<path d="M0 -22 C6 -30 5 -38 0 -44 C-5 -38 -6 -30 0 -22Z" fill="#c9a14a" stroke="#8f6a22" stroke-width=".6" transform="rotate(${i * 30})"/>`).join("");
+    const dots = Array.from({ length: 24 }, (_, i) => {
+      const a = (i * Math.PI) / 12;
+      return `<circle cx="${(Math.cos(a) * 47).toFixed(2)}" cy="${(Math.sin(a) * 47).toFixed(2)}" r="1.3" fill="#c9a14a"/>`;
+    }).join("");
+    const star = Array.from({ length: 16 }, (_, i) => {
+      const a = (i * Math.PI) / 8 - Math.PI / 2, r = i % 2 ? 9 : 17;
+      return (Math.cos(a) * r).toFixed(2) + "," + (Math.sin(a) * r).toFixed(2);
+    }).join(" ");
+    return `<svg class="home-shamseh" viewBox="-52 -52 104 104" aria-hidden="true"><g class="spin">
+        ${dots}<circle r="44" fill="#1f3b73" stroke="#c9a14a" stroke-width="1.2"/>${petals}
+        <circle r="22" fill="#f6ead0" stroke="#c9a14a" stroke-width="1.2"/>
+        <polygon points="${star}" fill="#8b2b1a"/><circle r="4" fill="#c9a14a"/>
+      </g></svg>`;
+  }
+
   defineTheme("ink", {
     setup() {
       document.body.insertAdjacentHTML(
@@ -65,6 +84,17 @@
     },
 
     on: {
+      home(d) {
+        const box = document.getElementById("homeScene");
+        box.innerHTML = shamseh() + `<p class="scene-caption"></p>`;
+        box.querySelector(".scene-caption").textContent =
+          d.done ? `${faDigits(d.done)} صفحه از دیوان نوشته شده` : "دیوان تازه";
+        // لوگو هر بار با قلم از راست به چپ نوشته می‌شود
+        const logo = document.querySelector("#screenHome .logo");
+        logo.classList.remove("write");
+        void logo.offsetWidth;
+        logo.classList.add("write");
+      },
       found(d) {
         writeWord(d.word);
       },

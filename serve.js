@@ -25,7 +25,30 @@ const RELOAD_SCRIPT = `<script>new EventSource("/__reload").onmessage = () => lo
 const listeners = new Set();
 let reloadTimer = null;
 
-fs.watch(ROOT, { recursive: true }, () => {
+// ویندوز گاهی خواندن یک فایل را هم «تغییر» گزارش می‌کند؛ پس زمان آخرین ذخیره‌ی هر فایل را نگه می‌داریم
+// و فقط وقتی صفحه را تازه می‌کنیم که آن زمان واقعاً عوض شده باشد.
+const mtimes = new Map();
+const mtimeOf = (file) => {
+  try {
+    return fs.statSync(file).mtimeMs;
+  } catch (e) {
+    return 0; // فایل پاک شده
+  }
+};
+(function scan(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) scan(file);
+    else mtimes.set(file, mtimeOf(file));
+  }
+})(ROOT);
+
+fs.watch(ROOT, { recursive: true }, (event, name) => {
+  if (!name) return;
+  const file = path.join(ROOT, name);
+  const mtime = mtimeOf(file);
+  if (mtimes.get(file) === mtime) return;
+  mtimes.set(file, mtime);
   // ذخیره‌ی یک فایل گاهی چند خبر پشت سر هم می‌دهد؛ فقط یک بار تازه می‌کنیم
   clearTimeout(reloadTimer);
   reloadTimer = setTimeout(() => {
@@ -68,13 +91,33 @@ http
       res.end(data);
     });
   })
+  .on("error", (err) => {
+    // پیام‌های ترمینال انگلیسی‌اند، چون ترمینال ویندوز حروف فارسی را به‌هم‌ریخته نشان می‌دهد
+    if (err.code === "EADDRINUSE") {
+      console.log(`The game server is already running in another window.`);
+      console.log(`Open http://localhost:${PORT} in your browser, or close the other window and try again.`);
+    } else {
+      console.log("Could not start the game server: " + err.message);
+    }
+    process.exit(1); // بدون این، نگهبان فایل‌ها برنامه را باز نگه می‌دارد
+  })
   .listen(PORT, () => {
-    console.log(`بازی «کلمه» آماده است:`);
-    console.log(`  روی همین کامپیوتر:  http://localhost:${PORT}`);
-    for (const nets of Object.values(os.networkInterfaces())) {
+    const url = `http://localhost:${PORT}`;
+    console.log(`Kalame is running!`);
+    console.log(`  On this computer:          ${url}`);
+    // فقط آدرس وای‌فای/کابل را نشان می‌دهیم، نه آدرس VPN
+    const lan = [];
+    for (const [name, nets] of Object.entries(os.networkInterfaces())) {
       for (const net of nets) {
-        if (net.family === "IPv4" && !net.internal) console.log(`  روی گوشی (همان وای‌فای):  http://${net.address}:${PORT}`);
+        if (net.family === "IPv4" && !net.internal && /wi-?fi|wlan|wireless|ethernet/i.test(name)) lan.push(net.address);
       }
     }
-    console.log(`هر تغییری در پوشه‌ی www ذخیره شود، صفحه خودش تازه می‌شود.`);
+    for (const ip of lan) console.log(`  On your phone (same Wi-Fi): http://${ip}:${PORT}`);
+    console.log(`The page refreshes by itself when a file in the www folder is saved.`);
+    console.log(`To stop the server, close this window (or press Ctrl+C).`);
+
+    // npm start / start-game.cmd مرورگر را خودشان باز می‌کنند
+    if (process.argv.includes("--open") && process.platform === "win32") {
+      require("child_process").exec(`start "" "${url}"`);
+    }
   });
