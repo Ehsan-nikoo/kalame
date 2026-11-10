@@ -252,6 +252,7 @@
         wheel.classList.add("wobble");
       },
       complete(d) {
+        if (d.daily) return; // چالش روزانه جزو پیشرفت این ظاهر نیست
         const leg = legOf(d.level);
         const card = document.querySelector("#overlay .card");
         card.insertAdjacentHTML("afterbegin", routeMap(leg));

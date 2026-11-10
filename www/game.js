@@ -8,6 +8,10 @@ const COINS_START = 50;        // هدیه‌ی شروع بازی
 const COINS_PER_LEVEL = 10;    // فقط بار اولی که یک مرحله تمام می‌شود
 const COST_HINT_LETTER = 10;   // باز کردن یک خانه
 const COST_HINT_WORD = 25;     // باز کردن یک کلمه‌ی کامل
+const COINS_BONUS_WORD = 1;    // هر کلمه‌ی جایزه (کلمه‌ی درستی که در جدول نیست)
+const COINS_DAILY = 25;        // تمام کردن چالش روزانه
+const COINS_DAILY_STREAK = 5;  // به‌ازای هر روز پشت سر هم، اضافه بر جایزه‌ی روزانه...
+const DAILY_STREAK_MAX = 5;    // ...تا حداکثر ۵ روز (یعنی بیشترین جایزه‌ی روزانه ۵۰ سکه)
 
 // ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد
 const THEMES = [
@@ -20,234 +24,32 @@ const THEMES = [
 ];
 
 // ---------------------------------------------------------------------------
-// ابزارهای فارسی
-// ---------------------------------------------------------------------------
-
-// «ي» و «ى» عربی ← «ی» فارسی، «ك» عربی ← «ک» فارسی،
-// و حذف اعراب، کشیده (ـ)، نیم‌فاصله و فاصله.
-function normalize(text) {
-  return text
-    .replace(/[يى]/g, "ی")
-    .replace(/ك/g, "ک")
-    .replace(/[\p{Mn}\p{Cf}ـ\s]/gu, "");
-}
-
-function faDigits(n) {
-  return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
-}
-
-function countLetters(chars) {
-  const counts = {};
-  for (const ch of chars) counts[ch] = (counts[ch] || 0) + 1;
-  return counts;
-}
-
-// ---------------------------------------------------------------------------
-// خواندن فایل مرحله‌ها
-// ---------------------------------------------------------------------------
-
-function parseLevels(text) {
-  const levels = [];
-  const errors = [];
-
-  text.split(/\r?\n/).forEach((rawLine, i) => {
-    const line = rawLine.trim();
-    if (!line || line.startsWith("#")) return;
-    const lineNo = faDigits(i + 1);
-
-    const parts = line.split("|");
-    if (parts.length !== 2) {
-      errors.push(`خط ${lineNo}: باید یک «|» بین حروف و کلمه‌ها باشد.`);
-      return;
-    }
-
-    const letters = [...normalize(parts[0])];
-    const available = countLetters(letters);
-    const words = [];
-
-    for (const raw of parts[1].split(/[،,]+/)) {
-      const word = normalize(raw);
-      if (!word) continue;
-      if (word.length < 2) {
-        errors.push(`خط ${lineNo}: کلمه‌ی «${word}» خیلی کوتاه است.`);
-        continue;
-      }
-      const need = countLetters(word);
-      const ok = Object.keys(need).every((ch) => (available[ch] || 0) >= need[ch]);
-      if (!ok) {
-        errors.push(`خط ${lineNo}: کلمه‌ی «${word}» با حروف «${letters.join(" ")}» ساخته نمی‌شود.`);
-        continue;
-      }
-      if (!words.includes(word)) words.push(word);
-    }
-
-    if (letters.length < 2 || words.length === 0) {
-      errors.push(`خط ${lineNo}: این مرحله حروف یا کلمه‌ی درست ندارد.`);
-      return;
-    }
-    levels.push({ letters, words });
-  });
-
-  return { levels, errors };
-}
-
-// ---------------------------------------------------------------------------
-// چیدن خودکار جدول (مثل جدول کلمات متقاطع)
-// ---------------------------------------------------------------------------
-// ستون صفر سمت راست جدول است، پس کلمه‌های افقی از راست به چپ خوانده می‌شوند.
-
-function buildLayout(words) {
-  const order = [...words].sort((a, b) => b.length - a.length);
-  const cells = new Map(); // "r,c" -> { ch, h, v }
-  const placed = [];
-  let best = null;
-  let nodes = 0;
-
-  const key = (r, c) => r + "," + c;
-  const step = (dir) => (dir === "h" ? [0, 1] : [1, 0]);
-
-  function check(word, r, c, dir) {
-    const [dr, dc] = step(dir);
-    if (cells.has(key(r - dr, c - dc))) return -1;
-    if (cells.has(key(r + dr * word.length, c + dc * word.length))) return -1;
-    let crossings = 0;
-    for (let i = 0; i < word.length; i++) {
-      const rr = r + dr * i;
-      const cc = c + dc * i;
-      const cell = cells.get(key(rr, cc));
-      if (cell) {
-        if (cell.ch !== word[i] || cell[dir]) return -1;
-        crossings++;
-      } else if (cells.has(key(rr + dc, cc + dr)) || cells.has(key(rr - dc, cc - dr))) {
-        return -1;
-      }
-    }
-    return crossings;
-  }
-
-  function place(word, r, c, dir) {
-    const [dr, dc] = step(dir);
-    const added = [];
-    for (let i = 0; i < word.length; i++) {
-      const k = key(r + dr * i, c + dc * i);
-      let cell = cells.get(k);
-      if (!cell) {
-        cell = { ch: word[i], h: false, v: false };
-        cells.set(k, cell);
-        added.push(k);
-      }
-      cell[dir] = true;
-    }
-    placed.push({ word, r, c, dir, added });
-  }
-
-  function unplace() {
-    const p = placed.pop();
-    const [dr, dc] = step(p.dir);
-    for (let i = 0; i < p.word.length; i++) {
-      const cell = cells.get(key(p.r + dr * i, p.c + dc * i));
-      if (cell) cell[p.dir] = false;
-    }
-    for (const k of p.added) cells.delete(k);
-  }
-
-  function score() {
-    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-    for (const k of cells.keys()) {
-      const [r, c] = k.split(",").map(Number);
-      minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-      minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-    }
-    const h = maxR - minR + 1;
-    const w = maxC - minC + 1;
-    return w * h + Math.abs(w - h) * 3;
-  }
-
-  function search(index) {
-    if (++nodes > 60000) return;
-    if (index === order.length) {
-      const s = score();
-      if (!best || s < best.score) {
-        best = { score: s, items: placed.map(({ word, r, c, dir }) => ({ word, r, c, dir })) };
-      }
-      return;
-    }
-    const word = order[index];
-    if (index === 0) {
-      place(word, 0, 0, "h");
-      search(1);
-      unplace();
-      return;
-    }
-    const tried = new Set();
-    for (const [k, cell] of [...cells.entries()]) {
-      const [cr, cc] = k.split(",").map(Number);
-      for (let i = 0; i < word.length; i++) {
-        if (word[i] !== cell.ch) continue;
-        for (const dir of ["v", "h"]) {
-          if (cell[dir]) continue;
-          const r = dir === "v" ? cr - i : cr;
-          const c = dir === "h" ? cc - i : cc;
-          const id = `${r},${c},${dir}`;
-          if (tried.has(id)) continue;
-          tried.add(id);
-          if (check(word, r, c, dir) < 1) continue;
-          place(word, r, c, dir);
-          search(index + 1);
-          unplace();
-        }
-      }
-    }
-  }
-
-  search(0);
-
-  let items;
-  if (best) {
-    items = best.items;
-  } else {
-    // اگر کلمه‌ها با هم حرف مشترک نداشتند، هر کلمه را در یک ردیف جدا می‌گذاریم.
-    console.warn("جدول متقاطع برای این کلمه‌ها پیدا نشد:", words);
-    items = order.map((word, i) => ({ word, r: i * 2, c: 0, dir: "h" }));
-  }
-
-  const minR = Math.min(...items.map((p) => p.r));
-  const minC = Math.min(...items.map((p) => p.c));
-  let rows = 0, cols = 0;
-  const placements = {};
-  for (const p of items) {
-    const [dr, dc] = step(p.dir);
-    const keys = [];
-    for (let i = 0; i < p.word.length; i++) {
-      const r = p.r - minR + dr * i;
-      const c = p.c - minC + dc * i;
-      rows = Math.max(rows, r + 1);
-      cols = Math.max(cols, c + 1);
-      keys.push({ r, c, ch: p.word[i] });
-    }
-    placements[p.word] = keys;
-  }
-  return { rows, cols, placements };
-}
-
-// ---------------------------------------------------------------------------
 // ذخیره‌ی پیشرفت، سکه و ظاهر
 // ---------------------------------------------------------------------------
 // unlocked: تعداد مرحله‌هایی که تمام شده‌اند (مرحله‌ی بعدی همین شماره است)
-// partial: کلمه‌های پیدا شده و خانه‌های باز شده‌ی مرحله‌هایی که نیمه‌کاره مانده‌اند
+// partial: کلمه‌های پیدا شده، خانه‌های باز شده و کلمه‌های جایزه‌ی مرحله‌هایی که نیمه‌کاره مانده‌اند
+//          (کلید: شماره‌ی مرحله، یا «d» و تاریخ برای چالش روزانه)
+// daily: آخرین روزی که چالش روزانه تمام شده و تعداد روزهای پشت سر هم
+// tips: راهنمایی‌هایی که یک بار نشان داده شده‌اند
 
 const SAVE_KEY = "kalame-save";
 
 function loadSave() {
-  const fresh = { theme: null, unlocked: 0, coins: COINS_START, partial: {} };
+  const fresh = { theme: null, unlocked: 0, coins: COINS_START, partial: {}, daily: { last: null, streak: 0 }, tips: {} };
   try {
     const data = JSON.parse(localStorage.getItem(SAVE_KEY));
     if (data && Number.isInteger(data.unlocked) && data.unlocked >= 0) {
+      const daily = data.daily && typeof data.daily === "object" ? data.daily : {};
       return {
         theme: typeof data.theme === "string" ? data.theme : null,
         unlocked: data.unlocked,
         coins: Number.isInteger(data.coins) && data.coins >= 0 ? data.coins : COINS_START,
         partial: data.partial && typeof data.partial === "object" ? data.partial : {},
+        daily: {
+          last: typeof daily.last === "string" ? daily.last : null,
+          streak: Number.isInteger(daily.streak) && daily.streak >= 0 ? daily.streak : 0,
+        },
+        tips: data.tips && typeof data.tips === "object" ? data.tips : {},
       };
     }
     // پیشرفت نسخه‌ی اول بازی که فقط شماره‌ی مرحله را نگه می‌داشت
@@ -312,9 +114,18 @@ const wheelEl = $("wheel");
 const linesEl = $("wheelLines");
 const previewEl = $("preview");
 
-let levels = [];
+let handmade = [];      // مرحله‌های ۱ تا ۱۰ از levels.txt
+let dict = new Map();   // کلمه -> معنی، از words.txt
+let generator = null;   // سازنده‌ی مرحله‌های ۱۱ به بعد و چالش روزانه
+const levelCache = new Map();
 let save = loadSave();
-let current = null;     // شماره‌ی مرحله‌ای که الان بازی می‌شود
+let current = null;     // شماره‌ی مرحله‌ای که الان بازی می‌شود (در چالش روزانه: شماره‌ی روز)
+let puzzle = null;      // خود مرحله: { letters, words }
+let playKey = null;     // کلید ذخیره‌ی نیمه‌کاره‌ی همین مرحله
+let isDaily = false;
+let dailyDate = null;   // تاریخ چالش روزانه‌ای که بازی می‌شود
+let bonusWords = [];    // کلمه‌های جایزه‌ی این مرحله
+let bonusFound = [];
 let found = [];         // کلمه‌های پیدا شده‌ی همین مرحله
 let layout = null;
 let cellEls = {};       // "r,c" -> عنصر خانه
@@ -329,15 +140,75 @@ let locked = false;     // بین تمام شدن مرحله و شروع مرح�
 let screenNow = null;
 let streak = 0;         // کلمه‌های درستِ پشت سر هم، برای پیام‌های تشویقی
 
+// مرحله‌ها بی‌پایان‌اند: ۱۰ مرحله‌ی اول دست‌ساز، بقیه را سازنده می‌سازد
+function levelAt(i) {
+  if (i < handmade.length) return handmade[i];
+  if (!generator) return null;
+  if (!levelCache.has(i)) levelCache.set(i, generator.level(i));
+  return levelCache.get(i);
+}
+
+function hasLevel(i) {
+  return i < handmade.length || !!generator;
+}
+
+// ---------- چالش روزانه ----------
+
+function dateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function todayKey() {
+  return dateKey(new Date());
+}
+
+function yesterdayKey() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return dateKey(d);
+}
+
+// تعداد روزهای پشت سر همی که هنوز از دست نرفته (اگر دیروز هم بازی نشده باشد، صفر)
+function liveStreak() {
+  const last = save.daily.last;
+  return last === todayKey() || last === yesterdayKey() ? save.daily.streak : 0;
+}
+
+function persianDate(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  try {
+    return new Intl.DateTimeFormat("fa-IR", { day: "numeric", month: "long" }).format(new Date(y, m - 1, d));
+  } catch (e) {
+    return faDigits(key);
+  }
+}
+
 function startLevel(i) {
-  current = i;
-  const level = levels[i];
-  const part = save.partial[i] || {};
+  startPuzzle(levelAt(i), i, String(i), false);
+}
+
+function startDaily() {
+  const key = todayKey();
+  const [y, m, d] = key.split("-").map(Number);
+  dailyDate = key;
+  startPuzzle(generator.daily(y, m, d), Math.floor(Date.UTC(y, m - 1, d) / 86400000), "d" + key, true);
+}
+
+function startPuzzle(level, index, key, daily) {
+  current = index;
+  puzzle = level;
+  playKey = key;
+  isDaily = daily;
+  const part = save.partial[key] || {};
   found = (Array.isArray(part.found) ? part.found : []).filter((w) => level.words.includes(w));
+  bonusWords = generator ? generator.bonusWords(level) : [];
+  bonusFound = (Array.isArray(part.bonus) ? part.bonus : []).filter((w) => bonusWords.includes(w));
   layout = buildLayout(level.words);
 
-  const name = levelName(i);
-  $("levelLabel").textContent = `مرحله‌ی ${faDigits(i + 1)}` + (name ? " · " + name : "");
+  const name = levelName(index);
+  $("levelLabel").textContent = daily
+    ? `چالش روزانه · ${persianDate(dailyDate)}`
+    : `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
   renderBoard();
   renderWheel();
   hidePreview();
@@ -350,12 +221,12 @@ function startLevel(i) {
   }
   for (const w of found) fillWord(w, false);
   updateCoins();
-  emit("level", { level: i });
+  emit("level", { level: index, daily });
 }
 
 function saveLevelState() {
   const revealed = Object.keys(cellEls).filter((k) => cellEls[k].classList.contains("hinted"));
-  save.partial[current] = { found: [...found], revealed };
+  save.partial[playKey] = { found: [...found], revealed, bonus: [...bonusFound] };
   persist();
 }
 
@@ -436,7 +307,7 @@ function flashWord(word) {
 
 function renderWheel() {
   for (const el of letterEls) el.remove();
-  const letters = levels[current].letters;
+  const letters = puzzle.letters;
   slots = letters.map((_, i) => i);
   letterEls = letters.map((ch) => {
     const el = document.createElement("div");
@@ -513,7 +384,7 @@ function drawLines() {
 }
 
 function currentWord() {
-  return path.map((i) => levels[current].letters[i]).join("");
+  return path.map((i) => puzzle.letters[i]).join("");
 }
 
 function updateSelection() {
@@ -588,7 +459,7 @@ function onPointerCancel(e) {
 
 function submitWord(raw) {
   const word = normalize(raw);
-  const level = levels[current];
+  const level = puzzle;
   if (word.length < 2) {
     hidePreview();
     return;
@@ -605,6 +476,18 @@ function submitWord(raw) {
     praise(word);
     emit("found", { word, cells: wordCells(word) });
     checkDone();
+    showMeaningTip();
+  } else if (bonusFound.includes(word)) {
+    showPreview("این کلمه‌ی جایزه رو قبلاً پیدا کردی", "show note", 1400);
+  } else if (bonusWords.includes(word)) {
+    // کلمه‌ی درستی که در جدول نیست: یک سکه جایزه
+    bonusFound.push(word);
+    save.coins += COINS_BONUS_WORD;
+    saveLevelState();
+    updateCoins();
+    bumpCoins();
+    showPreview(`${word} · کلمه‌ی جایزه +${faDigits(COINS_BONUS_WORD)}`, "bonus", 1300);
+    emit("bonus", { word });
   } else {
     streak = 0;
     showPreview(word, "wrong", 600);
@@ -612,12 +495,49 @@ function submitWord(raw) {
   }
 }
 
+// ---------- معنی کلمه‌ها ----------
+
+// زدن روی خانه‌ای از کلمه‌ی پیدا شده؛ اگر خانه محل تقاطع دو کلمه باشد، معنی هر دو نشان داده می‌شود
+function onBoardTap(e) {
+  const cell = e.target.closest(".cell.filled");
+  if (!cell || !puzzle) return;
+  const key = Object.keys(cellEls).find((k) => cellEls[k] === cell);
+  const words = puzzle.words.filter((w) => found.includes(w) && layout.placements[w].some(({ r, c }) => r + "," + c === key));
+  if (words.length) showMeanings(words);
+}
+
+function showMeanings(words) {
+  const list = $("meaningList");
+  list.innerHTML = "";
+  for (const w of words) {
+    const item = document.createElement("div");
+    item.className = "meaning";
+    item.innerHTML = `<div class="meaning-word"></div><div class="meaning-text"></div>`;
+    item.querySelector(".meaning-word").textContent = w;
+    item.querySelector(".meaning-text").textContent = dict.get(w) || "معنی این کلمه هنوز نوشته نشده.";
+    list.appendChild(item);
+  }
+  $("meaningSheet").classList.remove("hidden");
+}
+
+function hideMeanings() {
+  $("meaningSheet").classList.add("hidden");
+}
+
+// بار اولی که بازیکن کلمه‌ای پیدا می‌کند، یاد می‌گیرد که با زدن روی کلمه معنی‌اش را ببیند
+function showMeaningTip() {
+  if (save.tips.meaning || !dict.size) return;
+  save.tips.meaning = true;
+  persist();
+  setTimeout(() => showPreview("روی کلمه‌ها بزن تا معنی‌شون رو ببینی", "show note", 2800), 900);
+}
+
 // پیام تشویقی وسط جدول: برای کلمه‌ای که همه‌ی حروف را دارد، یا چند کلمه‌ی درست پشت سر هم
 const PRAISES = ["خوبه!", "عالی!", "فوق‌العاده!", "بی‌نظیر!", "محشر!"];
 
 function praise(word) {
   let text = null;
-  if (word.length >= 4 && word.length === levels[current].letters.length) text = "شاهکار!";
+  if (word.length >= 4 && word.length === puzzle.letters.length) text = "شاهکار!";
   else if (streak >= 2) text = PRAISES[Math.min(streak - 2, PRAISES.length - 1)];
   if (!text) return;
   const el = $("praise");
@@ -629,14 +549,14 @@ function praise(word) {
 
 // کلمه‌ای که همه‌ی خانه‌هایش (با راهنما یا کلمه‌های دیگر) باز شده، پیدا شده حساب می‌شود
 function collectCompletedWords() {
-  for (const w of levels[current].words) {
+  for (const w of puzzle.words) {
     if (!found.includes(w) && wordCells(w).every(isFilled)) found.push(w);
   }
 }
 
 function checkDone() {
   collectCompletedWords();
-  if (found.length === levels[current].words.length) finishLevel();
+  if (found.length === puzzle.words.length) finishLevel();
   else saveLevelState();
 }
 
@@ -679,7 +599,7 @@ function hintLetter() {
 
 function hintWord() {
   if (locked || dragging) return;
-  const left = levels[current].words.filter((w) => !found.includes(w));
+  const left = puzzle.words.filter((w) => !found.includes(w));
   if (!left.length || !spend(COST_HINT_WORD)) return;
   const word = left[Math.floor(Math.random() * left.length)];
   const cells = wordCells(word).filter((el) => !isFilled(el));
@@ -709,33 +629,55 @@ function hidePreview() {
 
 function finishLevel() {
   locked = true;
-  const first = current === save.unlocked;
-  if (first) {
-    save.unlocked++;
-    save.coins += COINS_PER_LEVEL;
+  let reward = 0;
+  let first;
+  if (isDaily) {
+    // چالش روزانه: جایزه فقط بار اول همان روز؛ اگر دیروز هم تمام شده بود، روزهای پشت سر هم یکی بیشتر می‌شود
+    first = save.daily.last !== dailyDate;
+    if (first) {
+      const before = new Date(dailyDate.replace(/-/g, "/"));
+      before.setDate(before.getDate() - 1);
+      const streakDays = save.daily.last === dateKey(before) ? save.daily.streak + 1 : 1;
+      save.daily = { last: dailyDate, streak: streakDays };
+      reward = COINS_DAILY + COINS_DAILY_STREAK * Math.min(streakDays - 1, DAILY_STREAK_MAX);
+    }
+  } else {
+    first = current === save.unlocked;
+    if (first) {
+      save.unlocked++;
+      reward = COINS_PER_LEVEL;
+    }
   }
-  delete save.partial[current];
+  save.coins += reward;
+  delete save.partial[playKey];
   persist();
   // هر ظاهر می‌تواند با --complete-delay برای انیمیشن خودش وقت بیشتری بگیرد
   const delay = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--complete-delay"), 10);
-  const level = current;
+  const key = playKey;
   setTimeout(() => {
-    if (screenNow === "play" && current === level) showComplete(first);
+    if (screenNow === "play" && playKey === key) showComplete(first, reward);
   }, delay || 700);
 }
 
-function showComplete(first) {
-  const hasNext = current + 1 < levels.length;
+function showComplete(first, reward) {
+  const hasNext = !isDaily && hasLevel(current + 1);
   const n = faDigits(current + 1);
   const card = document.querySelector("#overlay .card");
   for (const el of card.querySelectorAll(".extra")) el.remove(); // تزئین‌های ظاهر قبلی
 
-  $("overlayTitle").textContent = hasNext ? "آفرین!" : "تبریک!";
-  $("overlayText").textContent = !hasNext
-    ? "همه‌ی مرحله‌ها رو تموم کردی."
-    : first ? `مرحله‌ی ${n} تموم شد.` : `مرحله‌ی ${n} دوباره تموم شد.`;
-  $("overlayReward").classList.toggle("hidden", !first);
-  $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(COINS_PER_LEVEL);
+  if (isDaily) {
+    $("overlayTitle").textContent = "چالش امروز تموم شد!";
+    $("overlayText").textContent = first
+      ? `${faDigits(save.daily.streak)} روز پشت سر هم 🔥`
+      : "چالش امروز رو قبلاً تموم کرده بودی.";
+  } else {
+    $("overlayTitle").textContent = hasNext ? "آفرین!" : "تبریک!";
+    $("overlayText").textContent = !hasNext
+      ? "همه‌ی مرحله‌ها رو تموم کردی."
+      : first ? `مرحله‌ی ${n} تموم شد.` : `مرحله‌ی ${n} دوباره تموم شد.`;
+  }
+  $("overlayReward").classList.toggle("hidden", !reward);
+  $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(reward);
 
   const btn = $("overlayBtn");
   btn.textContent = hasNext ? "مرحله‌ی بعد" : "منو";
@@ -744,9 +686,9 @@ function showComplete(first) {
   $("overlay").classList.remove("hidden");
 
   updateCoins();
-  emit("complete", { level: current, finished: !hasNext, first });
+  emit("complete", { level: current, finished: !hasNext && !isDaily, first, daily: isDaily });
   celebrate();
-  if (first) setTimeout(() => flyCoins(COINS_PER_LEVEL), 350);
+  if (reward) setTimeout(() => flyCoins(reward), 350);
 }
 
 const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -822,9 +764,9 @@ function celebrate() {
   }
 }
 
-function showErrors(errors) {
+function showErrors(title, errors) {
   const box = $("errorBox");
-  box.textContent = "اشکال در فایل levels.txt:\n" + errors.join("\n");
+  box.textContent = (box.classList.contains("hidden") ? "" : box.textContent + "\n") + title + "\n" + errors.join("\n");
   box.classList.remove("hidden");
 }
 
@@ -839,12 +781,13 @@ function route() {
   let name = location.hash.slice(1);
   if (!(name in screens)) name = "home";
   if (!save.theme) name = "themes";                       // بار اول: انتخاب ظاهر
-  if (name === "play" && current === null) name = "home"; // مثلاً بعد از باز شدن دوباره‌ی برنامه
+  if (name === "play" && !puzzle) name = "home";         // مثلاً بعد از باز شدن دوباره‌ی برنامه
 
   if (dragging) endDrag();
   screenNow = name;
   for (const [key, el] of Object.entries(screens)) el.classList.toggle("hidden", key !== name);
   if (name !== "play") $("overlay").classList.add("hidden");
+  hideMeanings();
 
   if (name === "themes") renderThemes();
   if (name === "home") renderHome();
@@ -865,6 +808,11 @@ function goHome() {
 
 function play(i) {
   startLevel(i);
+  open("play");
+}
+
+function playDaily() {
+  startDaily();
   open("play");
 }
 
@@ -897,19 +845,30 @@ function renderHome() {
   $("homeSub").textContent = (THEMES.find((t) => t.id === activeTheme) || THEMES[0]).name;
   // صحنه‌ی زنده‌ی بالای منو را ظاهر فعلی می‌سازد (level: مرحله‌ی بعدی، done: تعداد مرحله‌های تمام‌شده)
   $("homeScene").innerHTML = "";
-  if (levels.length) emit("home", { level: Math.min(save.unlocked, levels.length - 1), done: save.unlocked, total: levels.length });
-  const btn = $("continueBtn");
-  btn.disabled = levels.length === 0;
-  const next = Math.min(save.unlocked, levels.length - 1);
-  const name = levels.length ? levelName(next) : "";
-  $("continueSub").textContent =
-    levels.length && save.unlocked >= levels.length
-      ? "همه‌ی مرحله‌ها تموم شده"
-      : `مرحله‌ی ${faDigits(next + 1)}` + (name ? " · " + name : "");
+  const ready = hasLevel(0);
+  const allDone = !hasLevel(save.unlocked);
+  const next = allDone ? save.unlocked - 1 : save.unlocked;
+  if (ready) emit("home", { level: next, done: save.unlocked, total: generator ? Infinity : handmade.length });
+  $("continueBtn").disabled = !ready;
+  const name = ready ? levelName(next) : "";
+  $("continueSub").textContent = allDone && ready
+    ? "همه‌ی مرحله‌ها تموم شده"
+    : `مرحله‌ی ${faDigits(next + 1)}` + (name ? " · " + name : "");
+
+  // چالش روزانه: اگر امروز تمام شده، تیک می‌خورد؛ وگرنه جایزه‌اش را نشان می‌دهد
+  const dailyBtn = $("dailyBtn");
+  dailyBtn.classList.toggle("hidden", !generator);
+  const doneToday = save.daily.last === todayKey();
+  const days = liveStreak();
+  const reward = COINS_DAILY + COINS_DAILY_STREAK * Math.min(days, DAILY_STREAK_MAX);
+  dailyBtn.classList.toggle("done", doneToday);
+  $("dailySub").textContent = doneToday
+    ? `امروز انجام شد ✓ · ${faDigits(days)} روز پشت سر هم 🔥`
+    : `جایزه: ${faDigits(reward)} سکه` + (days ? ` · ${faDigits(days)} روز پشت سر هم 🔥` : "");
 }
 
 function continueGame() {
-  if (save.unlocked >= levels.length) open("levels");
+  if (!hasLevel(save.unlocked)) open("levels");
   else play(save.unlocked);
 }
 
@@ -919,9 +878,12 @@ const MAP_STEP = 96;   // فاصله‌ی عمودی دو مرحله
 const MAP_PAD = 80;    // فاصله‌ی اولین و آخرین مرحله از لبه‌ها
 const mapX = (i) => 50 + 26 * Math.sin(i * 1.15); // جای افقی هر مرحله، به درصد
 
+const MAP_AHEAD = 10;   // چند مرحله‌ی قفل جلوتر از مرحله‌ی فعلی روی نقشه دیده شود
+
 function renderLevels() {
   const map = $("levelMap");
-  const n = levels.length;
+  // مرحله‌ها بی‌پایان‌اند؛ نقشه تا چند مرحله جلوتر از مرحله‌ی فعلی کشیده می‌شود
+  const n = generator ? Math.max(save.unlocked + 1 + MAP_AHEAD, handmade.length) : handmade.length;
   const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP;
   const y = (i) => H - MAP_PAD - i * MAP_STEP;
   // منحنی نرم از مرحله‌ی اول تا مرحله‌ی count
@@ -943,7 +905,7 @@ function renderLevels() {
   const track = map.firstElementChild;
 
   let prevName = null;
-  levels.forEach((_, i) => {
+  for (let i = 0; i < n; i++) {
     const x = mapX(i);
     const status = i < save.unlocked ? "done" : i === save.unlocked ? "current" : "locked";
     const btn = document.createElement("button");
@@ -986,7 +948,7 @@ function renderLevels() {
       marker.style.top = y(i) - 50 + "px";
       track.appendChild(marker);
     }
-  });
+  }
 
   // مرحله‌ی فعلی (یا آخرین مرحله) وسط صفحه
   const here = track.querySelector(".lv.current") || track.querySelector(".lv:last-of-type");
@@ -1009,6 +971,12 @@ $("hintWordBtn").addEventListener("click", hintWord);
 $("menuBtn").addEventListener("click", goHome);
 $("overlayMenu").addEventListener("click", goHome);
 $("continueBtn").addEventListener("click", continueGame);
+$("dailyBtn").addEventListener("click", playDaily);
+boardEl.addEventListener("click", onBoardTap);
+$("meaningClose").addEventListener("click", hideMeanings);
+$("meaningSheet").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) hideMeanings(); // زدن بیرون کارت
+});
 $("levelsBtn").addEventListener("click", () => open("levels"));
 $("themesBtn").addEventListener("click", () => open("themes"));
 for (const btn of document.querySelectorAll("[data-back]")) btn.addEventListener("click", goHome);
@@ -1021,18 +989,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 
-  fetch("levels.txt", { cache: "no-store" })
-    .then((res) => {
+  const load = (file) =>
+    fetch(file, { cache: "no-store" }).then((res) => {
       if (!res.ok) throw new Error(res.status);
       return res.text();
-    })
-    .then((text) => {
-      const result = parseLevels(text);
-      levels = result.levels;
-      if (result.errors.length) showErrors(result.errors);
-    })
-    .catch(() => {
-      showErrors(["فایل مرحله‌ها خوانده نشد. بازی را با دستور npm start اجرا کنید."]);
-    })
-    .finally(route);
+    });
+  const notRead = (file) => () =>
+    showErrors(`فایل ${file} خوانده نشد.`, ["بازی را با start-game.cmd یا دستور npm start اجرا کنید."]);
+
+  Promise.all([
+    load("levels.txt")
+      .then((text) => {
+        const result = parseLevels(text);
+        handmade = result.levels;
+        if (result.errors.length) showErrors("اشکال در فایل levels.txt:", result.errors);
+      })
+      .catch(notRead("levels.txt")),
+    // بدون فهرست کلمه‌ها بازی فقط ۱۰ مرحله‌ی دست‌ساز را دارد
+    load("words.txt")
+      .then((text) => {
+        const result = parseWords(text);
+        dict = result.dict;
+        if (result.errors.length) showErrors("اشکال در فایل words.txt:", result.errors);
+        generator = createGenerator(dict);
+      })
+      .catch(notRead("words.txt")),
+  ]).finally(route);
 });

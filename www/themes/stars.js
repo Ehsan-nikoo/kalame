@@ -165,7 +165,10 @@
         lastLetters = d.letters;
       },
       found(d) {
-        d.cells.forEach((cell, i) => meteor(centerOf(lastLetters[i] || lastLetters[0]), cell, i * 110));
+        // شهاب‌ها از حرف‌های دایره به خانه‌ها می‌روند؛ اگر حرف‌ها معلوم نباشند، از وسط دایره
+        const wheel = document.getElementById("wheel");
+        d.cells.forEach((cell, i) => meteor(centerOf(lastLetters[i] || lastLetters[0] || wheel), cell, i * 110));
+        lastLetters = [];
       },
       hint(d) {
         // شهاب از بالای آسمان
@@ -182,6 +185,7 @@
         burst(c.x, c.y, 30, 0.18);
       },
       complete(d) {
+        if (d.daily) return; // چالش روزانه جزو پیشرفت این ظاهر نیست
         const c = constellationOf(d.level);
         const img = document.createElement("img");
         img.className = "extra constellation";

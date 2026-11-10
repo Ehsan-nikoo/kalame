@@ -256,6 +256,7 @@
 }
 [data-theme="ink"] .card-title { font-size: 34px; }
 [data-theme="ink"] .card-btn { padding: 4px 32px; }
+[data-theme="ink"] .meaning-word { line-height: 2.3; }
 
 /* جشن پایان مرحله: قطره‌های مرکب و ورقه‌های طلا */
 [data-theme="ink"] .confetti { width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50% 50% 50% 0; }

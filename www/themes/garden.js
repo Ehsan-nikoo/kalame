@@ -158,6 +158,7 @@
         setTimeout(() => ripple(50, 50), 200);
       },
       complete(d) {
+        if (d.daily) return; // چالش روزانه جزو پیشرفت این ظاهر نیست
         const step = d.level % PARTS;
         document.querySelector("#overlay .card").insertAdjacentHTML("afterbegin", gardenScene(d.level));
         document.getElementById("overlayTitle").textContent =

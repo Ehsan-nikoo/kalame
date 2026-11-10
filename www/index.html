@@ -34,6 +34,7 @@
     <p class="home-sub" id="homeSub"></p>
     <nav class="home-menu">
       <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
+      <button class="menu-btn daily hidden" id="dailyBtn" type="button">چالش روزانه<small id="dailySub"></small></button>
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
     </nav>
@@ -97,8 +98,17 @@
     </div>
   </div>
 
+  <!-- کارت معنی کلمه (با زدن روی کلمه‌ی پیدا شده در جدول) -->
+  <div class="sheet hidden" id="meaningSheet" role="dialog" aria-modal="true" aria-label="معنی کلمه">
+    <div class="card sheet-card">
+      <div id="meaningList"></div>
+      <button class="card-btn" id="meaningClose" type="button">باشه</button>
+    </div>
+  </div>
+
   <div class="error hidden" id="errorBox"></div>
 
+  <script src="engine.js"></script>
   <script src="game.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
