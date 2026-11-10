@@ -470,8 +470,202 @@ button { font-family: inherit; cursor: pointer; }
 .sheet .card-btn { margin-top: 18px; }
 .cell.filled { cursor: pointer; }
 
-/* دکمه‌ی چالش روزانه در منو */
-.menu-btn.daily.done small { opacity: 0.7; }
+/* کارت مرحله‌ی رد شده: کلمه‌ها و معنی‌شان در فهرستی که اگر بلند بود، داخل کارت اسکرول می‌خورد */
+.level-card { text-align: center; display: flex; flex-direction: column; max-height: calc(100dvh - 48px); }
+.level-words {
+  margin-top: 14px;
+  padding: 2px 4px;
+  text-align: right;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  border-top: 1px solid var(--edge, rgba(0, 0, 0, 0.1));
+  border-bottom: 1px solid var(--edge, rgba(0, 0, 0, 0.1));
+}
+.level-words .meaning { padding: 10px 0; }
+.level-words .meaning + .meaning { margin-top: 0; }
+.level-words .meaning-word { font-size: 25px; line-height: 1.4; }
+.level-words .meaning-text { font-size: 15.5px; line-height: 1.7; }
+.level-card .card-btn { flex-shrink: 0; margin-top: 16px; }
+.level-card .card-link { flex-shrink: 0; }
+
+/* ---------- صندوق کلمه‌ها ---------- */
+/* دکمه‌ی صندوق بالای صفحه: حلقه‌ی دورش نشان می‌دهد صندوق چقدر پر شده */
+.chest-btn::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(var(--coin) calc(var(--fill, 0) * 360deg), rgba(0, 0, 0, 0.12) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  pointer-events: none;
+}
+.chest-btn.ready { background: var(--coin); color: #3a2606; animation: chest-glow 1.1s ease-in-out infinite alternate; }
+.chest-btn.bump { animation: bump 0.5s ease; }
+.chest-btn.ready.bump { animation: bump 0.5s ease, chest-glow 1.1s 0.5s ease-in-out infinite alternate; }
+@keyframes chest-glow { to { box-shadow: 0 4px 0 var(--lip), 0 0 0 6px rgba(226, 176, 74, 0.35), 0 0 18px 6px rgba(226, 176, 74, 0.55); } }
+
+.flying-word {
+  position: fixed;
+  z-index: 32;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--coin);
+  color: #3a2606;
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.chest-card .card-title { margin-top: -4px; }
+.chest-art { display: block; width: 130px; margin: -6px auto 0; overflow: visible; }
+.chest-glow { fill: var(--coin); opacity: 0; }
+.chest-art.ready .chest-glow { animation: chest-halo 1.2s ease-in-out infinite alternate; }
+@keyframes chest-halo { from { opacity: 0.15; } to { opacity: 0.5; } }
+.chest-lid { transform-box: fill-box; transform-origin: 0% 100%; transition: transform 0.45s cubic-bezier(.3, 1.6, .5, 1); }
+.chest-art.ready .chest-lid { animation: lid-rattle 1.6s ease-in-out infinite; }
+.chest-art.opened .chest-lid { animation: none; transform: rotate(-24deg) translate(-4px, -6px); }
+@keyframes lid-rattle { 0%, 70%, 100% { transform: none; } 78% { transform: rotate(-4deg); } 86% { transform: rotate(2deg); } }
+.chest-bar {
+  position: relative;
+  height: 22px;
+  margin: 14px 4px 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.chest-bar span { position: absolute; inset: 0 0 0 auto; width: 0; background: var(--coin); border-radius: 999px; transition: width 0.4s ease; }
+.chest-bar b { position: relative; display: block; font-size: 13px; line-height: 22px; color: var(--ink); }
+
+/* ---------- دستاوردها ---------- */
+.menu-btn .badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #d9483b;
+  color: #fff;
+  font-family: "Vazirmatn", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 26px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  animation: bump 0.5s ease;
+}
+.ach-note {
+  display: table;
+  margin: 10px auto 0;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--coin);
+  color: #3a2606;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ach-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 2px 2px 16px;
+}
+.ach {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--lip);
+}
+.ach.ready { border-color: var(--coin); box-shadow: 0 3px 0 var(--lip), 0 0 0 3px rgba(226, 176, 74, 0.35); }
+.ach-icon {
+  flex: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.ach-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ach.done .ach-icon { background: var(--coin); color: #3a2606; }
+.ach-body { flex: 1; min-width: 0; }
+.ach-name { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--display); font-size: 20px; line-height: 1.5; color: var(--ink); }
+.ach-tiers { display: flex; gap: 3px; flex: none; }
+.ach-tiers i { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 0, 0, 0.14); }
+.ach-tiers i.on { background: var(--coin); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); }
+.ach-text { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--muted); }
+.ach-count { flex: none; font-size: 13px; color: var(--ink); }
+.ach-bar { position: relative; height: 9px; margin-top: 6px; border-radius: 999px; background: rgba(0, 0, 0, 0.1); overflow: hidden; }
+.ach-bar span { position: absolute; inset: 0 0 0 auto; background: var(--accent); border-radius: 999px; opacity: 0.75; }
+.ach.ready .ach-bar span, .ach.done .ach-bar span { background: var(--coin); opacity: 1; }
+.ach-btn {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 58px;
+  padding: 8px 6px;
+  border-radius: 14px;
+  border: 1.5px solid var(--edge);
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 14px;
+}
+.ach-btn .coin-icon { width: 20px; height: 20px; }
+.ach-btn:disabled { opacity: 0.55; }
+.ach-btn:not(:disabled) {
+  background: var(--coin);
+  border-color: var(--coin);
+  color: #3a2606;
+  box-shadow: 0 3px 0 #a8781f;
+  animation: bump 1.4s ease-in-out infinite;
+}
+.ach-btn:not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 #a8781f; }
+
+/* جایزه‌ی روزانه: هفت روز پشت سر هم */
+.sheet.center { align-items: center; }
+.reward-days {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.reward-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px;
+  border-radius: 12px;
+  border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.1));
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+}
+.reward-day:last-child { grid-column: span 2; } /* روز هفتم جایزه‌ی بزرگ‌تر */
+.reward-day .coin-icon { width: 20px; height: 20px; }
+.reward-day-coins { font-family: var(--display); font-size: 17px; line-height: 1.2; }
+.reward-day.past { opacity: 0.45; }
+.reward-day.today {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  animation: lv-pulse 1.6s ease-in-out infinite;
+}
 .preview.right {
   visibility: visible;
   background: var(--accent);

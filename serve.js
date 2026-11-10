@@ -94,8 +94,15 @@ http
   .on("error", (err) => {
     // پیام‌های ترمینال انگلیسی‌اند، چون ترمینال ویندوز حروف فارسی را به‌هم‌ریخته نشان می‌دهد
     if (err.code === "EADDRINUSE") {
-      console.log(`The game server is already running in another window.`);
-      console.log(`Open http://localhost:${PORT} in your browser, or close the other window and try again.`);
+      // سرور از قبل باز است (شاید پنجره‌اش پشت بقیه پنهان شده): همان را در مرورگر باز می‌کنیم
+      const url = `http://localhost:${PORT}`;
+      console.log(`The game server is already running in another window (maybe minimized).`);
+      if (process.argv.includes("--open") && process.platform === "win32") {
+        console.log(`Opening ${url} in your browser...`);
+        require("child_process").execSync(`start "" "${url}"`);
+        process.exit(0);
+      }
+      console.log(`Open ${url} in your browser, or close the other window and try again.`);
     } else {
       console.log("Could not start the game server: " + err.message);
     }

@@ -8,6 +8,35 @@
     { file: "dobe-asghar", name: "دب اصغر" },
     { file: "andromeda", name: "زن زنجیری" },
     { file: "tanin", name: "اژدها" },
+    // بقیه به ترتیب کتاب صوفی
+    { file: "avva", name: "عوّا" },
+    { file: "zanu-zade", name: "زانوزده" },
+    { file: "makian", name: "ماکیان" },
+    { file: "zat-ol-korsi", name: "ذات‌الکرسی" },
+    { file: "barsavosh", name: "برساوش" },
+    { file: "arabe-ran", name: "ارابه‌ران" },
+    { file: "marafsa", name: "مارافسا" },
+    { file: "oghab", name: "عقاب" },
+    { file: "dolfin", name: "دلفین" },
+    { file: "faras-azam", name: "فرس اعظم" },
+    { file: "mosallas", name: "مثلث" },
+    { file: "hamal", name: "حمل" },
+    { file: "sour", name: "ثور" },
+    { file: "jowza", name: "جوزا" },
+    { file: "asad", name: "اسد" },
+    { file: "sonbole", name: "سنبله" },
+    { file: "mizan", name: "میزان" },
+    { file: "aghrab", name: "عقرب" },
+    { file: "ghows", name: "قوس" },
+    { file: "jadi", name: "جدی" },
+    { file: "dalv", name: "دلو" },
+    { file: "hut", name: "حوت" },
+    { file: "gheytas", name: "قیطس" },
+    { file: "jabbar", name: "جبّار" },
+    { file: "nahr", name: "نهر" },
+    { file: "jam", name: "جام" },
+    { file: "ghorab", name: "غراب" },
+    { file: "ghantures", name: "قنطورس" },
   ];
   const constellationOf = (level) => CONSTELLATIONS[level % CONSTELLATIONS.length];
 
@@ -185,7 +214,6 @@
         burst(c.x, c.y, 30, 0.18);
       },
       complete(d) {
-        if (d.daily) return; // چالش روزانه جزو پیشرفت این ظاهر نیست
         const c = constellationOf(d.level);
         const img = document.createElement("img");
         img.className = "extra constellation";

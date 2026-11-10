@@ -1,7 +1,7 @@
 // آزمون مرحله‌ها و فهرست کلمه‌ها
 // اجرا (از پوشه‌ی D:\kalame):  node tools/check-levels.js
 // - همه‌ی کلمه‌های levels.txt باید در words.txt باشند
-// - ۱۰۰۰ مرحله‌ی ساخته‌شده و ۶۰ چالش روزانه بررسی می‌شوند: جدول به‌هم‌وصل، کلمه‌ها از حروف ساخته شوند، تعداد درست
+// - ۱۰۰۰ مرحله‌ی ساخته‌شده بررسی می‌شوند: جدول به‌هم‌وصل، کلمه‌ها از حروف ساخته شوند، تعداد درست
 // - با --samples چند مرحله‌ی نمونه برای دیدن چاپ می‌شود
 
 const fs = require("fs");
@@ -24,6 +24,11 @@ assert.deepStrictEqual(levelErrors, [], "اشکال در levels.txt");
 
 const missing = handmade.flatMap((l) => l.words).filter((w) => !dict.has(w));
 assert.deepStrictEqual(missing, [], "کلمه‌های levels.txt که در words.txt نیستند");
+const { dict: extra, errors: extraErrors } = E.parseWords(fs.readFileSync(path.join(www, "extra-words.txt"), "utf8"));
+assert.deepStrictEqual(extraErrors, [], "اشکال در extra-words.txt");
+const extraNoMeaning = [...extra].filter(([, m]) => !m).map(([w]) => w);
+assert.deepStrictEqual(extraNoMeaning, [], "کلمه‌های بی‌معنی در extra-words.txt");
+const extraNew = [...extra.keys()].filter((w) => !dict.has(w) && w.length <= 7);
 const noMeaning = [...dict].filter(([, m]) => !m).map(([w]) => w);
 assert.deepStrictEqual(noMeaning, [], "کلمه‌های بدون معنی");
 
@@ -58,20 +63,11 @@ for (let i = E.HANDMADE_LEVELS; i < E.HANDMADE_LEVELS + 1000; i++) {
 }
 const tLevels = Date.now() - t1;
 
-const dailies = [];
-for (let d = 0; d < 60; d++) {
-  const date = new Date(Date.UTC(2026, 10, 10 + d));
-  const lvl = gen.daily(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
-  checkLevel(`چالش ${date.toISOString().slice(0, 10)}`, lvl, TIER_MIN[lvl.seed.length]);
-  dailies.push(lvl);
-}
-// همان روز همیشه همان مرحله
-assert.deepStrictEqual(gen.daily(2026, 11, 10), dailies[0], "چالش روزانه قابل‌تکرار نیست");
 assert.deepStrictEqual(gen.level(57), E.createGenerator(dict).level(57), "مرحله‌ها قابل‌تکرار نیستند");
 
-console.log(`words.txt: ${dict.size} کلمه`);
+console.log(`words.txt: ${dict.size} کلمه؛ extra-words.txt: ${extraNew.length} کلمه‌ی تازه برای صندوق`);
 console.log(`کلمه‌ی اصلی موجود: ۴حرفی ${gen.seeds[4].length}، ۵حرفی ${gen.seeds[5].length}، ۶حرفی ${gen.seeds[6].length}، ۷حرفی ${gen.seeds[7].length}`);
-console.log(`۱۰۰۰ مرحله و ۶۰ چالش روزانه سالم بودند. کلمه‌ی اصلی متفاوت در ۱۰۰۰ مرحله: ${seedsUsed.size}`);
+console.log(`۱۰۰۰ مرحله سالم بودند. کلمه‌ی اصلی متفاوت در ۱۰۰۰ مرحله: ${seedsUsed.size}`);
 console.log(`زمان: آماده‌سازی ${tSetup}ms، ساخت ۱۰۰۰ مرحله ${tLevels}ms`);
 
 if (process.argv.includes("--samples")) {
@@ -81,9 +77,5 @@ if (process.argv.includes("--samples")) {
     const lvl = generated[n - 1 - E.HANDMADE_LEVELS];
     const bonus = gen.bonusWords(lvl);
     console.log(`${n} | ${lvl.letters.join(" ")} | ${lvl.words.join("، ")}${bonus.length ? " | جایزه: " + bonus.join("، ") : ""}`);
-  }
-  for (const d of [0, 1]) {
-    const lvl = dailies[d];
-    console.log(`چالش ${d + 1} | ${lvl.letters.join(" ")} | ${lvl.words.join("، ")}`);
   }
 }

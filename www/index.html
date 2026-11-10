@@ -34,8 +34,8 @@
     <p class="home-sub" id="homeSub"></p>
     <nav class="home-menu">
       <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
-      <button class="menu-btn daily hidden" id="dailyBtn" type="button">چالش روزانه<small id="dailySub"></small></button>
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
+      <button class="menu-btn" id="achBtn" type="button">دستاوردها<span class="badge hidden" id="achBadge"></span></button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
     </nav>
   </section>
@@ -52,11 +52,26 @@
     <div class="level-map" id="levelMap"></div>
   </section>
 
+  <!-- دستاوردها -->
+  <section class="screen hidden" id="screenAchievements">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">دستاوردها</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <div class="ach-list" id="achList"></div>
+  </section>
+
   <!-- خود بازی -->
   <main class="screen hidden" id="app">
     <header class="top">
       <button class="icon-btn" id="menuBtn" type="button" aria-label="منو">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn chest-btn" id="chestBtn" type="button" aria-label="صندوق کلمه‌ها">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z M3 11V9a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2 M10.5 10h3v4h-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       </button>
       <div class="level-label" id="levelLabel"></div>
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
@@ -106,12 +121,59 @@
     </div>
   </div>
 
+  <!-- کارت مرحله‌ی رد شده (با زدن روی آن در نقشه‌ی مرحله‌ها): کلمه‌ها و معنی‌شان، و بازی دوباره -->
+  <div class="sheet center hidden" id="levelSheet" role="dialog" aria-modal="true" aria-labelledby="levelSheetTitle">
+    <div class="card sheet-card level-card">
+      <div class="card-title" id="levelSheetTitle"></div>
+      <div class="card-text" id="levelSheetSub"></div>
+      <div class="level-words" id="levelWords"></div>
+      <button class="card-btn" id="levelReplay" type="button">بازی دوباره</button>
+      <button class="card-link" id="levelClose" type="button">بستن</button>
+    </div>
+  </div>
+
+  <!-- صندوق کلمه‌ها: کلمه‌های درستی که در جدول نبودند -->
+  <div class="sheet center hidden" id="chestSheet" role="dialog" aria-modal="true" aria-labelledby="chestTitle">
+    <div class="card sheet-card level-card chest-card">
+      <svg class="chest-art" id="chestArt" viewBox="0 0 120 92" aria-hidden="true">
+        <circle class="chest-glow" cx="60" cy="50" r="40"/>
+        <rect x="18" y="44" width="84" height="40" rx="5" fill="#a8692f"/>
+        <rect x="18" y="54" width="84" height="6" fill="#e0b04a"/>
+        <rect x="30" y="44" width="7" height="40" fill="#e0b04a"/><rect x="83" y="44" width="7" height="40" fill="#e0b04a"/>
+        <g class="chest-lid">
+          <path d="M18 46V32Q18 16 36 16H84Q102 16 102 32V46Z" fill="#b97a3a"/>
+          <rect x="30" y="16" width="7" height="30" fill="#e0b04a"/><rect x="83" y="16" width="7" height="30" fill="#e0b04a"/>
+          <rect x="18" y="40" width="84" height="6" fill="#8a5426"/>
+        </g>
+        <rect x="52" y="38" width="16" height="18" rx="3" fill="#f2cf72" stroke="#8a5426" stroke-width="1.5"/>
+        <circle cx="60" cy="45" r="2.4" fill="#5e3b20"/><rect x="59" y="46" width="2" height="5" fill="#5e3b20"/>
+      </svg>
+      <div class="card-title" id="chestTitle">صندوق کلمه‌ها</div>
+      <div class="card-text" id="chestText"></div>
+      <div class="chest-bar"><span id="chestBarFill"></span><b id="chestBarText"></b></div>
+      <div class="level-words" id="chestWords"></div>
+      <button class="card-btn" id="chestOpen" type="button"></button>
+      <button class="card-link" id="chestClose" type="button">بستن</button>
+    </div>
+  </div>
+
+  <!-- جایزه‌ی روزانه (اولین بار هر روز که منو باز می‌شود) -->
+  <div class="sheet center hidden" id="rewardSheet" role="dialog" aria-modal="true" aria-label="جایزه‌ی روزانه">
+    <div class="card reward-card">
+      <div class="card-title">جایزه‌ی روزانه</div>
+      <div class="card-text" id="rewardText"></div>
+      <div class="reward-days" id="rewardDays"></div>
+      <button class="card-btn" id="rewardBtn" type="button"></button>
+    </div>
+  </div>
+
   <div class="error hidden" id="errorBox"></div>
 
   <script src="engine.js"></script>
   <script src="game.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
+  <script src="themes/caravan-scenes.js"></script>
   <script src="themes/caravan.js"></script>
   <script src="themes/garden.js"></script>
   <script src="themes/ink.js"></script>

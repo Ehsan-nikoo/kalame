@@ -153,7 +153,6 @@
         );
       },
       complete(d) {
-        if (d.daily) return; // چالش روزانه جزو پیشرفت این ظاهر نیست
         const card = document.querySelector("#overlay .card");
         const c = loomCarpet(d.level);
         card.insertAdjacentHTML("afterbegin", c.svg);

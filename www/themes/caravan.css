@@ -33,10 +33,12 @@
   transition: opacity 1.2s ease;
 }
 .scene svg { width: 100%; height: 100%; display: block; }
-.scene .cloud { animation: drift 80s linear infinite; }
-.scene .cloud.slow { animation-duration: 120s; animation-delay: -40s; }
+/* ابرها آرام از چپ به راست می‌روند؛ هر کدام از جای دیگری از راه شروع کرده */
+.scene .cloud { animation: drift 150s linear infinite; }
+.scene .cloud:nth-of-type(2) { animation-delay: -60s; }
+.scene .cloud:nth-of-type(3) { animation-delay: -110s; }
 .scene .sun { animation: glow 6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-@keyframes drift { from { transform: translateX(-160px); } to { transform: translateX(460px); } }
+@keyframes drift { from { transform: translateX(-400px); } to { transform: translateX(1300px); } }
 @keyframes glow { 50% { transform: scale(1.06); opacity: 0.85; } }
 
 /* لوگو و پیام‌های تشویقی: مثل تابلوی سردر کاروانسرا، کرم با لبه‌ی طلایی و سایه‌ی آجری */
@@ -83,13 +85,24 @@
 [data-theme="caravan"] .map-marker { background: #2fa4a9; }
 
 /* ---------- جدول: آجر خام که با کلمه‌ی درست به کاشی فیروزه‌ای تبدیل می‌شود ---------- */
-[data-theme="caravan"] .board { gap: 4px; }
+/* لوح کرم با لبه‌ی طلایی پشت جدول، تا آجرها روی رنگ‌های منظره‌ی شهر گم نشوند.
+   با سایه‌ی گسترده کشیده می‌شود، نه padding، تا اندازه‌ی جدول عوض نشود. */
+[data-theme="caravan"] .board {
+  gap: 4px;
+  border-radius: 6px;
+  background: rgba(253, 246, 227, 0.88);
+  box-shadow:
+    0 0 0 12px rgba(253, 246, 227, 0.88),
+    0 0 0 14.5px var(--gold),
+    0 0 0 16px #7d5130,
+    0 12px 30px 12px rgba(59, 42, 26, 0.35);
+}
 [data-theme="caravan"] .cell { position: relative; overflow: hidden; border-radius: 6px; }
 [data-theme="caravan"] .cell.slot {
   background:
     linear-gradient(rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.08)),
-    #c98f5c;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    #b97a45;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 1px 2px rgba(59, 42, 26, 0.3);
 }
 [data-theme="caravan"] .cell.filled {
   background: linear-gradient(145deg, #45c0c4 0%, #2fa4a9 45%, #1d7d86 100%);
@@ -177,7 +190,9 @@
 }
 [data-theme="caravan"] .scene-caption { color: #6b4425; text-shadow: 0 0 8px rgba(253, 246, 227, 0.9); }
 
-.route-map { display: block; width: 100%; margin: -8px 0 10px; }
+.route-map { display: block; width: 100%; max-height: 34vh; margin: -8px 0 10px; }
+.scene .lenj { animation: bob 4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes bob { to { transform: translateY(3px) rotate(0.6deg); } }
 
 /* شترها با هر قدم آرام جلو و عقب تاب می‌خورند و کمی بالا و پایین می‌روند، مثل راه رفتن شتر.
    جا و اندازه‌ی هر شتر روی گروه بیرونی است، تا انیمیشن جای آن را عوض نکند. */

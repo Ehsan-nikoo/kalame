@@ -381,16 +381,6 @@ function createGenerator(dict) {
       return makeLevel(seed, seededRandom(hashText(seed) + round * 7919 + g), 0);
     },
 
-    // چالش روزانه برای یک تاریخ (سال، ماه از ۱، روز)؛ کمی سخت‌تر از معمول
-    daily(year, month, day) {
-      const dayNumber = Math.floor(Date.UTC(year, month - 1, day) / 86400000);
-      const rnd = seededRandom(dayNumber * 2654435761);
-      const len = seeds[6].length && rnd() < 0.5 ? 6 : 5;
-      const list = seeds[len];
-      const seed = list[(dayNumber * 37) % list.length];
-      return makeLevel(seed, rnd, 1);
-    },
-
     // کلمه‌های جایزه: کلمه‌های فهرست که از حروف مرحله ساخته می‌شوند ولی در جدول نیستند
     bonusWords(level) {
       return wordsFrom(level.letters.join("")).filter((w) => !level.words.includes(w));
