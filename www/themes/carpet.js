@@ -19,24 +19,52 @@
     for (let x = -40; x <= 40; x += 3.2) warp.push(`<line x1="${x.toFixed(1)}" y1="-46" x2="${x.toFixed(1)}" y2="46"/>`);
     const pegs = Array.from({ length: 28 }, (_, i) => {
       const a = (i * Math.PI * 2) / 28;
-      return `<circle cx="${(Math.cos(a) * 47).toFixed(2)}" cy="${(Math.sin(a) * 47).toFixed(2)}" r="1.4" fill="#e8c99a"/>`;
+      const x = (Math.cos(a) * 46.8).toFixed(2), y = (Math.sin(a) * 46.8).toFixed(2);
+      return `<circle cx="${x}" cy="${(+y + 0.5).toFixed(2)}" r="1.6" fill="rgba(30, 14, 4, .45)"/><circle cx="${x}" cy="${y}" r="1.45" fill="url(#brass)"/>`;
     }).join("");
     const div = document.createElement("div");
     div.className = "loom";
     div.innerHTML = `<svg viewBox="-50 -50 100 100" aria-hidden="true">
         <defs>
-          <radialGradient id="wood" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#c48a52"/><stop offset="1" stop-color="#6e4020"/></radialGradient>
+          <radialGradient id="wood" cx=".4" cy=".32" r=".85"><stop offset="0" stop-color="#b98050"/><stop offset=".6" stop-color="#8a5530"/><stop offset="1" stop-color="#5a3318"/></radialGradient>
+          <radialGradient id="brass" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff2c4"/><stop offset=".45" stop-color="#d4a548"/><stop offset="1" stop-color="#6e4a12"/></radialGradient>
+          <radialGradient id="cloth-shade" r=".5"><stop offset=".72" stop-color="#3a1c14" stop-opacity="0"/><stop offset="1" stop-color="#3a1c14" stop-opacity=".38"/></radialGradient>
+          <filter id="grain" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency=".035 .6" numOctaves="3" seed="5"/>
+            <feColorMatrix values="0 0 0 0 .2  0 0 0 0 .1  0 0 0 0 .03  0 0 0 1.4 -.55"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
+          <filter id="loom-pile" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9"/>
+            <feColorMatrix values="0 0 0 0 .45  0 0 0 0 .28  0 0 0 0 .15  0 0 0 .9 -.35"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
           <clipPath id="loom-in"><circle r="43"/></clipPath>
         </defs>
-        <circle r="50" fill="url(#wood)"/>${pegs}
-        <circle r="43.5" fill="#f4e9d4"/>
+        <circle r="50" fill="url(#wood)"/>
+        <circle r="50" fill="#000" filter="url(#grain)"/>
+        <circle r="49.3" fill="none" stroke="rgba(255, 225, 180, .35)" stroke-width=".7"/>
+        ${pegs}
+        <circle r="44.2" fill="#3c2010" opacity=".55"/>
+        <circle r="43.5" fill="#f1e3c6"/>
         <g clip-path="url(#loom-in)">
-          <g stroke="rgba(140, 90, 50, .32)" stroke-width=".6">${warp.join("")}</g>
-          <polygon points="0,-17 15,0 0,17 -15,0" fill="#8e2424" opacity=".16"/>
-          <polygon points="0,-9 8,0 0,9 -8,0" fill="#1e2a4a" opacity=".16"/>
+          <circle r="43.5" fill="#000" filter="url(#loom-pile)"/>
+          <g stroke="rgba(120, 76, 44, .4)" stroke-width=".55">${warp.join("")}</g>
+          <polygon points="0,-17 15,0 0,17 -15,0" fill="#8e2424" opacity=".14"/>
+          <polygon points="0,-9 8,0 0,9 -8,0" fill="#1e2a4a" opacity=".14"/>
+          <circle r="43.5" fill="url(#cloth-shade)"/>
         </g>
       </svg>`;
     document.getElementById("wheel").prepend(div);
+  }
+
+  // نور کج پنجره‌ی کارگاه و پرزهای ریزی که آرام در آن بالا می‌روند
+  function workshopLight() {
+    const r = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
+    const lint = Array.from({ length: 16 }, () =>
+      `<i style="left:${r(0, 70)}%;top:${r(15, 95)}%;--s:${r(1.5, 3.5)}px;--o:${r(0.35, 0.8)};--x:${r(-20, 60)}px;--d:${r(10, 20)}s;--w:${r(-20, 0)}s"></i>`
+    ).join("");
+    return `<div class="workshop-light" aria-hidden="true">${lint}</div>`;
   }
 
   // نقشه‌ی یک قالی ایرانی ساده: حاشیه، متن، ترنج وسط و لچک‌های گوشه
@@ -77,13 +105,31 @@
     const fringe = [];
     for (let x = 24; x <= 176; x += 3) fringe.push(`<line x1="${x}" y1="130" x2="${x}" y2="138"/>`);
     return `<svg class="${cls}" viewBox="0 0 200 142" aria-hidden="true">
-        <defs><clipPath id="${id}"><rect class="woven-rect" x="0" y="${130 - woven}" width="200" height="${woven}"/></clipPath></defs>
+        <defs>
+          <clipPath id="${id}"><rect class="woven-rect" x="0" y="${130 - woven}" width="200" height="${woven}"/></clipPath>
+          <linearGradient id="${id}-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b07a48"/><stop offset=".5" stop-color="#7a4a24"/><stop offset="1" stop-color="#4e2c12"/></linearGradient>
+          <linearGradient id="${id}-light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4dc" stop-opacity=".22"/><stop offset=".55" stop-color="#fff4dc" stop-opacity="0"/><stop offset="1" stop-color="#3a1c14" stop-opacity=".22"/></linearGradient>
+          <filter id="${id}-grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency=".02 .9" numOctaves="3" seed="4"/>
+            <feColorMatrix values="0 0 0 0 .18  0 0 0 0 .09  0 0 0 0 .03  0 0 0 1.4 -.55"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
+          <filter id="${id}-pile" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="1.3 .8" numOctaves="2" seed="8"/>
+            <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 -.2"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
+        </defs>
         <rect x="22" y="8" width="156" height="124" fill="#efe2cc"/>
         <g stroke="rgba(120, 70, 40, .35)" stroke-width=".7">${warp.join("")}</g>
-        <g clip-path="url(#${id})">${carpetDesign(c)}</g>
+        <g clip-path="url(#${id})">${carpetDesign(c)}
+          <rect x="22" y="10" width="156" height="120" fill="#000" filter="url(#${id}-pile)"/>
+          <rect x="22" y="10" width="156" height="120" fill="url(#${id}-light)"/>
+        </g>
         <g stroke="${IVORY}" stroke-width="1">${done ? fringe.join("") : ""}</g>
-        <rect x="10" y="2" width="180" height="8" rx="3" fill="#7a4a24"/>
-        <rect x="10" y="130" width="180" height="4" rx="2" fill="#7a4a24" opacity="${done ? 0 : 1}"/>
+        <rect x="10" y="2" width="180" height="8" rx="3" fill="url(#${id}-beam)"/>
+        <rect x="10" y="2" width="180" height="8" rx="3" fill="#000" filter="url(#${id}-grain)"/>
+        <rect x="10" y="130" width="180" height="4" rx="2" fill="url(#${id}-beam)" opacity="${done ? 0 : 1}"/>
         ${extra}
       </svg>`;
   }
@@ -128,9 +174,9 @@
     name: (level) => "قالی " + carpetOf(level).city,
 
     setup() {
-      document.body.insertAdjacentHTML("afterbegin", `<div class="kilim top"></div><div class="kilim bottom"></div>`);
+      document.body.insertAdjacentHTML("afterbegin", `<div class="kilim top"></div><div class="kilim bottom"></div>${workshopLight()}`);
       addLoom();
-      return () => document.querySelectorAll(".kilim, .loom").forEach((el) => el.remove());
+      return () => document.querySelectorAll(".kilim, .loom, .workshop-light").forEach((el) => el.remove());
     },
 
     on: {
