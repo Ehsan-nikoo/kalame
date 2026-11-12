@@ -534,6 +534,7 @@ function submitWord(raw) {
     fillWord(word, true);
     showPreview(word, "right", 600);
     praise(word);
+    if (window.KalameSound) KalameSound.found(activeTheme, word.length, streak);
     emit("found", { word, cells: wordCells(word) });
     checkDone();
     showMeaningTip();
