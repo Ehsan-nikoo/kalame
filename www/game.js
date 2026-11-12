@@ -17,6 +17,13 @@ const ACH_REWARDS = [10, 20, 30, 40, 50, 75, 100];
 // اگر یک روز نیاید، از روز اول شروع می‌شود. میانگین هفته حدود ۱۷ سکه در روز است،
 // یعنی کمی بیشتر از یک راهنمای «یک حرف» (۱۰ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
 const DAILY_REWARDS = [10, 10, 15, 15, 20, 20, 30];
+// بسته‌های فروشگاه سکه. id باید دقیقاً همان «شناسه‌ی محصول» باشد که در پنل کافه‌بازار و مایکت
+// (از نوع «مصرف‌شدنی») ساخته‌اید. قیمت را خود فروشگاه می‌دهد و اینجا نوشته نمی‌شود.
+const COIN_PACKS = [
+  { id: "coins_150", coins: 150, name: "مشت سکه" },
+  { id: "coins_500", coins: 500, name: "کیسه‌ی سکه", tag: "محبوب" },
+  { id: "coins_1200", coins: 1200, name: "صندوق سکه", tag: "به‌صرفه" },
+];
 
 // ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد
 const THEMES = [
@@ -39,6 +46,7 @@ const THEMES = [
 // chest: همه‌ی کلمه‌های صندوق، و چند کلمه از پر شدن بعدی جمع شده (fill)
 // stats: آمار دستاوردها (کلمه‌های جدول، مرحله‌های بی‌راهنما، ظاهرهای بازی‌شده، روزهای پشت سر هم)
 // achievements: هر دستاورد تا چه سطحی جایزه‌اش گرفته شده
+// paid: شناسه‌ی خریدهایی (purchaseToken) که سکه‌شان داده شده، تا یک خرید دو بار سکه ندهد
 
 const SAVE_KEY = "kalame-save";
 
@@ -59,6 +67,7 @@ function readExtras(data) {
       bestRun: intOr(stats.bestRun, intOr(daily.streak, 0)),
     },
     achievements: objOr(data.achievements),
+    paid: strings(data.paid).slice(-100),
   };
 }
 
@@ -838,6 +847,7 @@ function bumpCoins() {
 function spend(cost) {
   if (save.coins < cost) {
     showPreview("سکه‌ی کافی نداری", "wrong note", 1400);
+    if (store && store.ready) setTimeout(() => { if (screenNow === "play") openShop(); }, 900);
     return false;
   }
   save.coins -= cost;
@@ -1020,6 +1030,123 @@ function celebrate() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// فروشگاه سکه (پرداخت کافه‌بازار یا مایکت؛ در مرورگر غیرفعال است)
+// ---------------------------------------------------------------------------
+// پلاگین اندروید CoinStore (android/.../CoinStorePlugin.java) امضای هر خرید را بررسی می‌کند.
+// ترتیب: خرید ← سکه اضافه و ذخیره می‌شود ← خرید «مصرف» می‌شود تا دوباره قابل خرید باشد.
+// اگر بازی وسط کار بسته شود، دفعه‌ی بعد خریدهای مصرف‌نشده تحویل داده می‌شوند.
+
+const nativeStore = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()
+  ? window.Capacitor.Plugins.CoinStore : null;
+let store = null;         // { ready, storeName, reason } وقتی پلاگین هست
+let shopPrices = {};      // id ← قیمت از فروشگاه
+let shopBusy = false;
+
+function initStore() {
+  if (!nativeStore) return;
+  nativeStore.init().then((info) => {
+    store = info;
+    $("shopBtn").classList.remove("hidden");
+    for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
+    if (!info.ready) return;
+    nativeStore.products({ ids: COIN_PACKS.map((p) => p.id) }).then((res) => {
+      for (const p of res.products || []) shopPrices[p.id] = p.price;
+      if (screenNow === "shop") renderShop();
+    }).catch(() => {});
+    deliverPending();
+  }).catch(() => {});
+}
+
+// خریدهایی که پولشان داده شده ولی هنوز سکه‌شان تحویل نشده
+function deliverPending() {
+  return nativeStore.pending().then((res) => {
+    for (const p of res.purchases || []) deliver(p, null);
+  }).catch(() => {});
+}
+
+function deliver(purchase, fromEl) {
+  const pack = COIN_PACKS.find((p) => p.id === purchase.id);
+  if (!pack || !purchase.token) return;
+  const isNew = !save.paid.includes(purchase.token);
+  if (isNew) {
+    save.coins += pack.coins;
+    save.paid.push(purchase.token);
+    if (save.paid.length > 100) save.paid.shift();
+    persist();
+  }
+  nativeStore.consume({ token: purchase.token }).catch(() => {}); // اگر نشد، دفعه‌ی بعد دوباره امتحان می‌شود
+  if (!isNew) return;
+  const target = document.querySelector(".screen:not(.hidden) .coins");
+  if (fromEl && target) flyCoins(pack.coins, fromEl.getBoundingClientRect(), target);
+  else {
+    updateCoins();
+    bumpCoins();
+  }
+  showShopNote(`${faDigits(pack.coins)} سکه به سکه‌هات اضافه شد. ممنون!`);
+}
+
+// از وسط بازی، فروشگاه روی بازی باز می‌شود تا «بازگشت» دوباره به همان مرحله برگردد
+function openShop() {
+  if (screenNow === "play") location.hash = "shop";
+  else open("shop");
+}
+
+function showShopNote(text) {
+  $("shopNote").textContent = text;
+  $("shopNote").classList.toggle("hidden", !text);
+}
+
+function renderShop() {
+  if (!store) return;
+  showShopNote(store.ready ? "" : store.reason || `خرید از ${store.storeName} الان ممکن نیست.`);
+  const list = $("shopList");
+  list.replaceChildren();
+  for (const pack of COIN_PACKS) {
+    const item = document.createElement("div");
+    item.className = "ach shop-pack";
+    item.innerHTML = `
+      <div class="ach-icon"><span class="coin-icon"></span><span class="coin-icon"></span><span class="coin-icon"></span></div>
+      <div class="ach-body">
+        <div class="ach-name"><span class="shop-name"></span></div>
+        <div class="ach-text"><span class="shop-coins"></span></div>
+      </div>
+      <button class="ach-btn" type="button"><span class="shop-price"></span></button>`;
+    item.querySelector(".shop-name").textContent = pack.name;
+    if (pack.tag) {
+      const tag = document.createElement("span");
+      tag.className = "shop-tag";
+      tag.textContent = pack.tag;
+      item.querySelector(".ach-name").appendChild(tag);
+    }
+    item.querySelector(".shop-coins").textContent = `${faDigits(pack.coins)} سکه`;
+    const btn = item.querySelector(".ach-btn");
+    const price = shopPrices[pack.id];
+    btn.querySelector(".shop-price").textContent = price ? faDigits(price) : "خرید";
+    btn.disabled = !store.ready;
+    btn.addEventListener("click", () => buyPack(pack, item));
+    list.appendChild(item);
+  }
+}
+
+function buyPack(pack, item) {
+  if (shopBusy || !store || !store.ready) return;
+  shopBusy = true;
+  item.classList.add("busy");
+  showShopNote("");
+  nativeStore.buy({ id: pack.id })
+    .then((purchase) => deliver(purchase, item.querySelector(".ach-icon")))
+    .catch((err) => {
+      if (err && err.code === "CANCELED") return;
+      if (err && err.code === "ALREADY_OWNED") return deliverPending();
+      showShopNote((err && err.message) || "خرید انجام نشد. دوباره امتحان کن.");
+    })
+    .finally(() => {
+      shopBusy = false;
+      item.classList.remove("busy");
+    });
+}
+
 function showErrors(title, errors) {
   const box = $("errorBox");
   box.textContent = (box.classList.contains("hidden") ? "" : box.textContent + "\n") + title + "\n" + errors.join("\n");
@@ -1031,13 +1158,14 @@ function showErrors(title, errors) {
 // ---------------------------------------------------------------------------
 // منو صفحه‌ی اصلی است؛ بقیه با # در آدرس باز می‌شوند تا دکمه‌ی «برگشت» اندروید هم کار کند.
 
-const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), play: $("app") };
+const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), shop: $("screenShop"), play: $("app") };
 
 function route() {
   let name = location.hash.slice(1);
   if (!(name in screens)) name = "home";
   if (!save.theme) name = "themes";                       // بار اول: انتخاب ظاهر
   if (name === "play" && !puzzle) name = "home";         // مثلاً بعد از باز شدن دوباره‌ی برنامه
+  if (name === "shop" && !store) name = "home";
 
   if (dragging) endDrag();
   screenNow = name;
@@ -1052,6 +1180,7 @@ function route() {
   if (name === "home") renderHome();
   if (name === "levels") renderLevels();
   if (name === "achievements") renderAchievements();
+  if (name === "shop") renderShop();
   if (name === "play") sizeBoard();
   updateCoins();
 }
@@ -1246,6 +1375,12 @@ $("chestSheet").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) hideChest();
 });
 $("themesBtn").addEventListener("click", () => open("themes"));
+$("shopBtn").addEventListener("click", openShop);
+for (const el of document.querySelectorAll(".coins")) {
+  el.addEventListener("click", () => {
+    if (store && screenNow !== "shop") openShop();
+  });
+}
 for (const btn of document.querySelectorAll("[data-back]")) btn.addEventListener("click", goHome);
 $("hintLetterBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_LETTER);
 $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_WORD);
@@ -1253,6 +1388,7 @@ $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_W
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
 document.addEventListener("DOMContentLoaded", () => {
   applyTheme(save.theme || "plain");
+  initStore();
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 

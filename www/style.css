@@ -886,3 +886,49 @@ button { font-family: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* ---------- فروشگاه سکه ---------- */
+.coins.can-buy { cursor: pointer; padding-inline-start: 6px; }
+.coins.can-buy::before {
+  content: "+";
+  order: 9;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+}
+.shop-note {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--edge);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: center;
+}
+.shop-pack .ach-icon { background: transparent; position: relative; }
+.shop-pack .ach-icon .coin-icon { position: absolute; width: 26px; height: 26px; }
+.shop-pack .ach-icon .coin-icon:nth-child(1) { transform: translate(-9px, 6px); }
+.shop-pack .ach-icon .coin-icon:nth-child(2) { transform: translate(9px, 6px); }
+.shop-pack .ach-icon .coin-icon:nth-child(3) { transform: translate(0, -7px); }
+.shop-tag {
+  flex: none;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--coin);
+  color: #3a2606;
+  font-family: "Vazirmatn", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+.shop-pack .ach-btn { min-width: 86px; font-size: 13px; }
+.shop-pack .ach-btn:not(:disabled) { animation: none; }
+.shop-pack.busy .ach-btn { opacity: 0.6; }
+.shop-pack .ach-name { justify-content: flex-start; }
+.shop-name { white-space: nowrap; }

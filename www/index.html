@@ -37,6 +37,7 @@
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
       <button class="menu-btn" id="achBtn" type="button">دستاوردها<span class="badge hidden" id="achBadge"></span></button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
+      <button class="menu-btn hidden" id="shopBtn" type="button">فروشگاه سکه</button>
     </nav>
   </section>
 
@@ -62,6 +63,19 @@
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </header>
     <div class="ach-list" id="achList"></div>
+  </section>
+
+  <!-- فروشگاه سکه (فقط در نسخه‌ی بازار و مایکت فعال است) -->
+  <section class="screen hidden" id="screenShop">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">فروشگاه سکه</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <p class="shop-note hidden" id="shopNote"></p>
+    <div class="ach-list" id="shopList"></div>
   </section>
 
   <!-- خود بازی -->
