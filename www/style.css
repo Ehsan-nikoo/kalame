@@ -410,6 +410,26 @@ button { font-family: inherit; cursor: pointer; }
   animation: flash 0.5s ease;
 }
 
+/* ---------- ظاهر «ساده»: همان آرامش، با کمی عمق نرم (بدون بافت و انیمیشن اضافه، برای گوشی‌های ضعیف) ---------- */
+[data-theme="plain"] body { background: linear-gradient(180deg, #f7f4ee 0%, #f1ede4 60%, #ebe5d9 100%) fixed; }
+[data-theme="plain"] .cell.slot { box-shadow: inset 0 2px 3px rgba(47, 58, 58, 0.1), inset 0 -1px 0 rgba(255, 255, 255, 0.7); }
+[data-theme="plain"] .cell.filled {
+  background: linear-gradient(180deg, #6f9c8b 0%, #5f8a7a 55%, #557d6e 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 0 #46695c, 0 4px 8px rgba(47, 58, 58, 0.18);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+[data-theme="plain"] .wheel {
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfaf7 60%, #f3f0e9 100%);
+  box-shadow: 0 0 0 1px rgba(47, 58, 58, 0.06), 0 10px 28px rgba(47, 58, 58, 0.12), inset 0 -4px 10px rgba(47, 58, 58, 0.04);
+}
+[data-theme="plain"] .menu-btn,
+[data-theme="plain"] .icon-btn,
+[data-theme="plain"] .coins,
+[data-theme="plain"] .level-label { background: linear-gradient(180deg, #ffffff, #faf8f4); }
+[data-theme="plain"] .menu-btn.primary,
+[data-theme="plain"] .card-btn { background: linear-gradient(180deg, #6f9c8b, #5f8a7a 60%, #557d6e); }
+[data-theme="plain"] .card { box-shadow: 0 1px 2px rgba(47, 58, 58, 0.08), 0 14px 40px rgba(47, 58, 58, 0.16); }
+
 /* ---------- محل بازی (پایین صفحه) ---------- */
 .play-area {
   flex: 0 0 auto;
