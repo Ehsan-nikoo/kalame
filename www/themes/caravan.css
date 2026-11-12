@@ -41,31 +41,124 @@
 @keyframes drift { from { transform: translateX(-400px); } to { transform: translateX(1300px); } }
 @keyframes glow { 50% { transform: scale(1.06); opacity: 0.85; } }
 
-/* لوگو و پیام‌های تشویقی: مثل تابلوی سردر کاروانسرا، کرم با لبه‌ی طلایی و سایه‌ی آجری */
+/* بافت نقاشی (دانه‌ی ریز) و تاریک شدن آرام گوشه‌ها روی منظره */
+:root[data-theme="caravan"] {
+  --grain: url("caravan/grain.svg");
+  --girih: url("caravan/girih.svg");
+  --crackle: url("caravan/crackle.svg");
+  --soft-shadow: 0 1px 1px rgba(59, 42, 26, 0.2), 0 5px 12px rgba(59, 42, 26, 0.22);
+}
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 110% 85% at 50% 42%, transparent 55%, rgba(40, 22, 10, 0.4) 100%),
+    var(--grain);
+  background-size: 100% 100%, 200px 200px;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+/* گرد و خاکی که باد آرام از روی جاده بلند می‌کند */
+.sand-wind {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sand-wind i {
+  position: absolute;
+  width: var(--s, 3px);
+  height: var(--s, 3px);
+  border-radius: 50%;
+  background: rgba(255, 236, 200, 0.9);
+  box-shadow: 0 0 3px rgba(255, 226, 170, 0.7);
+  opacity: 0;
+  animation: sand var(--d, 9s) linear var(--w, 0s) infinite;
+}
+@keyframes sand {
+  0% { opacity: 0; transform: translate(0, 0); }
+  12% { opacity: var(--o, 0.6); }
+  88% { opacity: var(--o, 0.6); }
+  100% { opacity: 0; transform: translate(-260px, var(--y, -30px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sand-wind i { display: none; }
+}
+
+/* لوگو و پیام‌های تشویقی: حروف گچ‌بری کرم با لبه‌ی طلایی و عمق آجری، در نور گرم */
 [data-theme="caravan"] .logo,
 [data-theme="caravan"] .praise {
-  color: var(--cream);
-  text-shadow: 0 2px 0 var(--gold), 0 5px 0 #7d5130, 0 7px 0 #5e3b20, 0 14px 22px rgba(59, 42, 26, 0.45);
+  color: #fdf3dc;
+  text-shadow:
+    0 -1px 0 #fffaf0,
+    0 1px 0 #e0b04a, 0 2px 0 #c99a3c, 0 3px 0 #8f6236, 0 4px 0 #7d5130, 0 5px 0 #6b4425, 0 6px 0 #5e3b20,
+    0 8px 6px rgba(40, 22, 10, 0.4), 0 16px 26px rgba(40, 22, 10, 0.35);
 }
 [data-theme="caravan"] .logo { font-size: 84px; }
 [data-theme="caravan"] .home-sub { color: #6b4425; font-weight: 700; text-shadow: 0 0 8px rgba(253, 246, 227, 0.9); }
 [data-theme="caravan"] .screen-title { color: var(--cream); text-shadow: 0 2px 0 #7d5130, 0 4px 10px rgba(59, 42, 26, 0.5); }
 
-/* دکمه‌ها: کاشی‌های لعاب‌دار */
-[data-theme="caravan"] .menu-btn { border-width: 2px; border-radius: 14px; }
+/* گچ کرم با دانه‌ی ریز: دکمه‌ها، برچسب‌ها و کارت‌ها */
+[data-theme="caravan"] .menu-btn,
+[data-theme="caravan"] .icon-btn,
+[data-theme="caravan"] .coins,
+[data-theme="caravan"] .level-label,
+[data-theme="caravan"] .preview.show,
+[data-theme="caravan"] .preview.wrong {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 45%, rgba(125, 81, 48, 0.1)),
+    var(--grain),
+    #f8edd4;
+  background-size: auto, 200px 200px, auto;
+  background-blend-mode: normal, overlay, normal;
+  border-color: rgba(185, 138, 74, 0.85);
+}
+[data-theme="caravan"] .coins,
+[data-theme="caravan"] .level-label { box-shadow: var(--soft-shadow); }
+
+/* دکمه‌ها: کاشی لعاب‌دار لاجوردی با قاب طلایی، و کاشی‌های گچی کرم */
+[data-theme="caravan"] { --lip: #a8784a; }
+[data-theme="caravan"] .menu-btn { border-width: 1.5px; border-radius: 14px; }
+[data-theme="caravan"] .menu-btn,
+[data-theme="caravan"] .icon-btn { box-shadow: 0 3px 0 var(--lip), 0 8px 16px rgba(40, 22, 10, 0.25); }
+[data-theme="caravan"] .menu-btn::after { inset: 4px; border-radius: 10px; border: 1px solid rgba(217, 164, 65, 0.45); }
 [data-theme="caravan"] .menu-btn.primary,
 [data-theme="caravan"] .card-btn {
-  background: linear-gradient(#2c66a8, #1d4e89 60%, #173f70);
-  --ring: inset 0 0 0 2px var(--gold), inset 0 2px 0 3px rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 60%),
+    var(--girih),
+    linear-gradient(#2c66a8, #1d4e89 60%, #133763);
+  background-size: auto, 48px 48px, auto;
+  border: 1.5px solid #c99a3c;
+  color: #fdf3dc;
+  text-shadow: 0 1px 2px rgba(8, 20, 40, 0.6);
+  --ring: inset 0 0 0 2px #1d4e89, inset 0 0 0 3.5px rgba(224, 176, 74, 0.85), inset 0 2px 0 4px rgba(255, 255, 255, 0.1);
 }
-[data-theme="caravan"] .tool { color: var(--cream); --lip: #0e2c52; --ring: inset 0 0 0 1.5px var(--gold); }
+[data-theme="caravan"] .menu-btn.primary::after,
+[data-theme="caravan"] .card-btn::after { inset: 0; border: none; }
+[data-theme="caravan"] .tool {
+  color: var(--cream);
+  --lip: #0e2c52;
+  --ring: inset 0 0 0 1.5px rgba(224, 176, 74, 0.8);
+  border-color: #0e2c52;
+  background:
+    radial-gradient(ellipse 80% 70% at 30% 0%, rgba(255, 255, 255, 0.3), transparent 60%),
+    var(--crackle),
+    linear-gradient(#2c66a8, #1d4e89 60%, #133763);
+  background-size: auto, 120px 120px, auto;
+  box-shadow: 0 3px 0 var(--lip), 0 8px 14px rgba(8, 20, 40, 0.3);
+}
 
 /* سکه: دینار طلایی با سوراخ چهارگوش */
 [data-theme="caravan"] .coin-icon {
   background:
-    linear-gradient(#7d5130, #7d5130) center / 30% 30% no-repeat,
-    radial-gradient(circle at 35% 30%, #fff1c2 0 15%, #e0b04a 50%, #a8781f 100%);
-  box-shadow: inset 0 0 0 1.5px #a8781f;
+    radial-gradient(circle at 50% 50%, #5e3b20 0 13%, #7d5130 14% 20%, transparent 21%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(120, 80, 20, 0.6) 60% 64%, transparent 66%),
+    radial-gradient(circle at 35% 28%, #fff4cc 0 12%, #e7bb55 45%, #a8781f 85%, #7a5412 100%);
+  box-shadow: inset 0 0 0 1px #8a6218, 0 1px 2px rgba(59, 42, 26, 0.45);
 }
 
 /* فهرست مرحله‌ها: کاشی خام برای مرحله‌های قفل، کاشی فیروزه‌ای برای تمام‌شده‌ها */
@@ -85,30 +178,54 @@
 [data-theme="caravan"] .map-marker { background: #2fa4a9; }
 
 /* ---------- جدول: آجر خام که با کلمه‌ی درست به کاشی فیروزه‌ای تبدیل می‌شود ---------- */
-/* لوح کرم با لبه‌ی طلایی پشت جدول، تا آجرها روی رنگ‌های منظره‌ی شهر گم نشوند.
-   با سایه‌ی گسترده کشیده می‌شود، نه padding، تا اندازه‌ی جدول عوض نشود. */
+/* لوح گچ‌بری کرم با نقش گره و قاب کاشی لاجوردی و طلایی پشت جدول، تا آجرها روی منظره گم نشوند.
+   قاب با سایه‌ی گسترده کشیده می‌شود، نه padding، تا اندازه‌ی جدول عوض نشود. */
 [data-theme="caravan"] .board {
   gap: 4px;
   border-radius: 6px;
-  background: rgba(253, 246, 227, 0.88);
+  background:
+    var(--girih) center / 48px 48px,
+    var(--grain) 0 0 / 200px 200px,
+    #f6e9cc;
+  background-blend-mode: normal, overlay, normal;
   box-shadow:
-    0 0 0 12px rgba(253, 246, 227, 0.88),
-    0 0 0 14.5px var(--gold),
-    0 0 0 16px #7d5130,
-    0 12px 30px 12px rgba(59, 42, 26, 0.35);
+    0 0 0 12px rgba(246, 233, 204, 0.94),
+    0 0 0 13.5px #c99a3c,
+    0 0 0 18px #1d4e89,
+    0 0 0 19.5px #e0b04a,
+    0 0 0 21px #6b4425,
+    0 4px 6px 21px rgba(40, 22, 10, 0.25),
+    0 18px 36px 16px rgba(40, 22, 10, 0.35);
 }
-[data-theme="caravan"] .cell { position: relative; overflow: hidden; border-radius: 6px; }
+[data-theme="caravan"] .cell { position: relative; overflow: hidden; border-radius: 5px; }
+/* آجر خام: خاک پخته با دانه و لبه‌های فرسوده */
 [data-theme="caravan"] .cell.slot {
   background:
-    linear-gradient(rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.08)),
-    #b97a45;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 1px 2px rgba(59, 42, 26, 0.3);
+    linear-gradient(160deg, rgba(255, 220, 180, 0.25), transparent 40%, rgba(60, 25, 10, 0.25)),
+    var(--grain) 0 0 / 200px 200px,
+    #b5764a;
+  background-blend-mode: normal, overlay, normal;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 230, 200, 0.35),
+    inset 0 -3px 0 rgba(60, 25, 10, 0.3),
+    inset 2px 0 2px rgba(255, 220, 180, 0.12),
+    0 1px 0 rgba(255, 250, 235, 0.6),
+    0 2px 3px rgba(59, 42, 26, 0.35);
 }
+/* کاشی فیروزه‌ای لعاب‌دار: براقی بالا، ترک‌های ریز لعاب، و خط طلایی دور */
 [data-theme="caravan"] .cell.filled {
-  background: linear-gradient(145deg, #45c0c4 0%, #2fa4a9 45%, #1d7d86 100%);
-  color: var(--cream);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  box-shadow: inset 0 0 0 2px var(--gold), 0 3px 6px rgba(59, 42, 26, 0.3);
+  background:
+    radial-gradient(ellipse 90% 55% at 30% 8%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%),
+    var(--crackle) 0 0 / 120px 120px,
+    radial-gradient(circle at 50% 60%, #3fb8bd 0%, #2fa4a9 45%, #19707a 100%);
+  color: #fdf6e3;
+  text-shadow: 0 1px 0 rgba(10, 60, 66, 0.55), 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    inset 0 0 0 1.5px #d9a441,
+    inset 0 0 0 2.5px rgba(29, 78, 137, 0.6),
+    inset 0 -3px 4px rgba(10, 50, 60, 0.35),
+    0 2px 0 #12555e,
+    0 4px 7px rgba(40, 22, 10, 0.35);
   animation: tile-flip 0.55s ease both;
   animation-delay: calc(var(--i, 0) * 120ms + 80ms);
 }
@@ -138,12 +255,19 @@
   color: var(--accent);
 }
 [data-theme="caravan"] .preview.wrong { color: var(--wrong); border-color: var(--wrong); }
-[data-theme="caravan"] .preview.right { background: var(--turquoise); color: var(--cream); box-shadow: inset 0 0 0 2px var(--gold); }
+[data-theme="caravan"] .preview.right {
+  background:
+    radial-gradient(ellipse 90% 60% at 30% 0%, rgba(255, 255, 255, 0.4), transparent 60%),
+    var(--crackle) 0 0 / 120px 120px,
+    #2fa4a9;
+  color: var(--cream);
+  box-shadow: inset 0 0 0 2px var(--gold), var(--soft-shadow);
+}
 
 /* ---------- دایره‌ی حروف: کاشی شمسه ---------- */
 [data-theme="caravan"] .wheel {
   background: none;
-  box-shadow: 0 10px 30px rgba(59, 42, 26, 0.35);
+  box-shadow: 0 4px 6px rgba(40, 22, 10, 0.3), 0 18px 36px rgba(40, 22, 10, 0.4);
 }
 .medallion { position: absolute; inset: 0; }
 .medallion svg { width: 100%; height: 100%; display: block; }
@@ -156,24 +280,41 @@
 [data-theme="caravan"] .wheel-lines { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35)); }
 [data-theme="caravan"] .wheel-lines polyline { stroke-width: 4; }
 
+/* حروف: مهره‌های سفالی لعاب کرم با لبه‌ی طلایی و براقی */
 [data-theme="caravan"] .letter {
   width: 24%;
   height: 24%;
-  background: radial-gradient(circle at 35% 30%, #fffdf5 0%, #f3e7c9 70%);
-  border: 2px solid var(--gold);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+  background:
+    radial-gradient(ellipse 70% 45% at 38% 22%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(circle at 50% 55%, #fbf3df 0%, #efe0bd 70%, #d9c193 100%);
+  border: 2px solid #c99a3c;
+  box-shadow:
+    inset 0 -3px 4px rgba(125, 81, 48, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 2px 0 #8f6236,
+    0 5px 9px rgba(0, 0, 0, 0.35);
   color: #1d3557;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 [data-theme="caravan"] .letter.active {
-  background: radial-gradient(circle at 35% 30%, #5fd0d3 0%, #1d7d86 80%);
+  background:
+    radial-gradient(ellipse 70% 45% at 38% 22%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(circle at 50% 55%, #4fc6ca 0%, #2fa4a9 55%, #19707a 100%);
   color: var(--cream);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px rgba(253, 246, 227, 0.9), 0 0 16px 3px rgba(255, 220, 140, 0.6), 0 5px 9px rgba(0, 0, 0, 0.35);
 }
 
 /* ---------- پایان مرحله: نقشه‌ی سفر ---------- */
-[data-theme="caravan"] .overlay { background: rgba(59, 42, 26, 0.45); }
+[data-theme="caravan"] .overlay { background: radial-gradient(ellipse at 50% 40%, rgba(59, 42, 26, 0.3), rgba(30, 16, 6, 0.6)); }
 [data-theme="caravan"] .card {
-  background: radial-gradient(circle at 50% 40%, #fbf0d6 0%, #efdcb2 100%);
-  border: 4px double #b98a4a;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4), transparent 60%),
+    var(--grain) 0 0 / 200px 200px,
+    #f3e3bf;
+  background-blend-mode: normal, overlay, normal;
+  border: 1.5px solid #c99a3c;
+  box-shadow: inset 0 0 0 5px #f3e3bf, inset 0 0 0 7px #1d4e89, inset 0 0 0 8px #e0b04a, 0 20px 50px rgba(30, 16, 6, 0.5);
 }
 
 /* جشن پایان مرحله: کاشی‌های کوچک */
