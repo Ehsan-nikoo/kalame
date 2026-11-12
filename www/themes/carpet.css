@@ -231,11 +231,12 @@
     radial-gradient(ellipse at 50% 30%, rgba(255, 220, 190, 0.1), transparent 70%) content-box,
     var(--herati) content-box,
     var(--pile),
-    linear-gradient(#80201e, #6e1918) content-box,
+    linear-gradient(rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.14)) content-box,
+    linear-gradient(var(--carpet-field, #80201e), var(--carpet-field, #80201e)) content-box,
     var(--band) padding-box;
-  background-size: auto, 44px 44px, 180px 180px, auto, 14px 14px;
-  background-position: 0 0, center, 0 0, 0 0, 0 0;
-  background-blend-mode: normal, normal, overlay, normal, normal;
+  background-size: auto, 44px 44px, 180px 180px, auto, auto, 14px 14px;
+  background-position: 0 0, center, 0 0, 0 0, 0 0, 0 0;
+  background-blend-mode: normal, normal, overlay, normal, normal, normal;
   box-shadow:
     0 0 0 2px #c9973c,
     0 2px 0 3px #6e4a22,
