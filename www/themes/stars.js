@@ -41,20 +41,77 @@
   const constellationOf = (level) => CONSTELLATIONS[level % CONSTELLATIONS.length];
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let canvas, ctx, frameId;
+  let canvas, ctx, frameId, backdrop = null;
   let stars = [], sparks = [], meteorSky = null, nextMeteor = 3000, lastTime = 0;
   let lastLetters = [];
 
   // ---------- آسمان ----------
 
+  // آسمان ثابت پشت ستاره‌های چشمک‌زن، یک بار کشیده می‌شود: کهکشان راه شیری با ابرهای رنگی کم‌رنگ،
+  // هزاران ستاره‌ی خیلی ریز در امتداد آن، رگه‌های تیره‌ی غبار، و روشنایی گرم افق
+  function paintBackdrop(w, h) {
+    const c = document.createElement("canvas");
+    c.width = w * dpr;
+    c.height = h * dpr;
+    const g = c.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // محور کهکشان: از پایین چپ به بالا راست
+    const ax = w * 0.05, ay = h * 0.95, bx = w * 1.05, by = h * 0.05;
+    const len = Math.hypot(bx - ax, by - ay), ux = (bx - ax) / len, uy = (by - ay) / len;
+    const band = Math.max(w, h) * 0.16;
+    const at = (t, off) => [ax + ux * t * len - uy * off, ay + uy * t * len + ux * off];
+    const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+    g.globalCompositeOperation = "lighter";
+    // ابرهای نور
+    const tints = ["120, 110, 200", "90, 120, 210", "200, 150, 210", "230, 190, 150", "140, 160, 230"];
+    for (let i = 0; i < 70; i++) {
+      const [x, y] = at(Math.random(), gauss() * band * 0.8);
+      const r = band * (0.3 + Math.random() * 0.7);
+      const grd = g.createRadialGradient(x, y, 0, x, y, r);
+      grd.addColorStop(0, `rgba(${tints[i % tints.length]}, ${0.035 + Math.random() * 0.035})`);
+      grd.addColorStop(1, "rgba(0, 0, 0, 0)");
+      g.fillStyle = grd;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    // ستاره‌های ریز کهکشان
+    const dust = Math.round((w * h) / 90);
+    for (let i = 0; i < dust; i++) {
+      const [x, y] = at(Math.random(), gauss() * band);
+      g.fillStyle = `rgba(255, 246, 228, ${0.08 + Math.random() * 0.35})`;
+      g.fillRect(x, y, Math.random() < 0.9 ? 0.6 : 1.1, Math.random() < 0.9 ? 0.6 : 1.1);
+    }
+    // رگه‌های تیره‌ی غبار در وسط کهکشان
+    g.globalCompositeOperation = "source-over";
+    for (let i = 0; i < 40; i++) {
+      const [x, y] = at(Math.random(), gauss() * band * 0.25);
+      const r = band * (0.12 + Math.random() * 0.25);
+      const grd = g.createRadialGradient(x, y, 0, x, y, r);
+      grd.addColorStop(0, "rgba(6, 8, 28, 0.28)");
+      grd.addColorStop(1, "rgba(6, 8, 28, 0)");
+      g.fillStyle = grd;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    // روشنایی گرم و کم‌رنگ افق
+    const hz = g.createLinearGradient(0, h * 0.6, 0, h);
+    hz.addColorStop(0, "rgba(255, 170, 110, 0)");
+    hz.addColorStop(1, "rgba(255, 150, 100, 0.16)");
+    g.fillStyle = hz;
+    g.fillRect(0, h * 0.6, w, h * 0.4);
+    return c;
+  }
+
   function resize() {
     canvas.width = innerWidth * dpr;
     canvas.height = innerHeight * dpr;
+    backdrop = paintBackdrop(innerWidth, innerHeight);
     const count = Math.round((innerWidth * innerHeight) / 2600);
     stars = Array.from({ length: count }, () => ({
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight * 0.85,
       r: Math.random() * 1.3 + 0.3,
+      // چند ستاره‌ی درخشان با هاله و پرتوهای ریز
+      bright: Math.random() < 0.035,
+      hue: ["255, 244, 220", "210, 225, 255", "255, 220, 190"][Math.floor(Math.random() * 3)],
       speed: Math.random() * 2 + 0.6,
       phase: Math.random() * Math.PI * 2,
     }));
@@ -65,10 +122,25 @@
     lastTime = time;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
+    if (backdrop) ctx.drawImage(backdrop, 0, 0, innerWidth, innerHeight);
 
     for (const s of stars) {
       const a = 0.45 + 0.55 * Math.sin((time / 1000) * s.speed + s.phase) ** 2;
-      ctx.fillStyle = `rgba(255, 244, 220, ${a})`;
+      if (s.bright) {
+        const r = s.r * 5;
+        const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
+        grd.addColorStop(0, `rgba(${s.hue}, ${0.5 * a})`);
+        grd.addColorStop(1, `rgba(${s.hue}, 0)`);
+        ctx.fillStyle = grd;
+        ctx.fillRect(s.x - r, s.y - r, r * 2, r * 2);
+        ctx.strokeStyle = `rgba(${s.hue}, ${0.45 * a})`;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.moveTo(s.x - r * 1.4, s.y); ctx.lineTo(s.x + r * 1.4, s.y);
+        ctx.moveTo(s.x, s.y - r * 1.4); ctx.lineTo(s.x, s.y + r * 1.4);
+        ctx.stroke();
+      }
+      ctx.fillStyle = `rgba(${s.hue}, ${a})`;
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fill();
@@ -151,6 +223,44 @@
     });
   }
 
+  // اسطرلاب برنجی پشت حروف: حلقه‌ی درجه‌دار، صفحه‌ی حکاکی‌شده و عنکبوت مشبک
+  function addAstrolabe() {
+    const ticks = [];
+    for (let i = 0; i < 72; i++) {
+      const a = (i * Math.PI) / 36, long = i % 6 === 0;
+      const r1 = 47.5, r2 = long ? 43.6 : 45.4;
+      ticks.push(`<line x1="${(Math.cos(a) * r1).toFixed(2)}" y1="${(Math.sin(a) * r1).toFixed(2)}" x2="${(Math.cos(a) * r2).toFixed(2)}" y2="${(Math.sin(a) * r2).toFixed(2)}" stroke-width="${long ? 0.7 : 0.4}"/>`);
+    }
+    const pointers = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
+      const a = (i * Math.PI * 2) / 9 + 0.3, r = 24 + (i % 3) * 5;
+      const x = (Math.cos(a) * r).toFixed(2), y = (Math.sin(a) * r).toFixed(2);
+      return `<path d="M${(Math.cos(a) * (r - 7)).toFixed(2)} ${(Math.sin(a) * (r - 7)).toFixed(2)}Q${(Math.cos(a + 0.12) * (r - 3)).toFixed(2)} ${(Math.sin(a + 0.12) * (r - 3)).toFixed(2)} ${x} ${y}"/><circle cx="${x}" cy="${y}" r=".9" fill="#ffe3a0" stroke="none"/>`;
+    }).join("");
+    const div = document.createElement("div");
+    div.className = "astrolabe";
+    div.innerHTML = `<svg viewBox="-50 -50 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="brass-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset=".35" stop-color="#c9953e"/><stop offset=".6" stop-color="#8a5c1c"/><stop offset="1" stop-color="#e8bf6a"/></linearGradient>
+          <radialGradient id="plate" r=".5"><stop offset="0" stop-color="#1a1d4a" stop-opacity=".55"/><stop offset=".85" stop-color="#0b0d2a" stop-opacity=".75"/><stop offset="1" stop-color="#05061a" stop-opacity=".9"/></radialGradient>
+        </defs>
+        <circle r="49.6" fill="url(#brass-ring)"/>
+        <circle r="47.8" fill="#0a0c28"/>
+        <circle r="47.8" fill="url(#plate)"/>
+        <g stroke="#e8bf6a" opacity=".85">${ticks.join("")}</g>
+        <circle r="42.6" fill="none" stroke="#c9953e" stroke-width=".5" opacity=".7"/>
+        <g fill="none" stroke="#c9953e" stroke-width=".35" opacity=".35">
+          <circle r="34"/><circle r="22"/><circle cy="-6" r="30"/><circle cy="-12" r="24"/><circle cy="-18" r="17"/>
+          <line x1="-42" y1="0" x2="42" y2="0"/><line x1="0" y1="-42" x2="0" y2="42"/>
+        </g>
+        <g fill="none" stroke="#e8bf6a" stroke-width=".6" opacity=".6">
+          <circle cx="0" cy="7" r="27"/>${pointers}
+        </g>
+        <circle r="2.2" fill="url(#brass-ring)"/>
+        <circle r="49.6" fill="none" stroke="#fff2c4" stroke-width=".5" opacity=".6"/>
+      </svg>`;
+    document.getElementById("wheel").prepend(div);
+  }
+
   defineTheme("stars", {
     name: (level) => constellationOf(level).name,
 
@@ -161,11 +271,24 @@
       document.body.prepend(canvas);
       document.body.insertAdjacentHTML(
         "afterbegin",
-        `<svg class="dunes" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
-           <path d="M0 55 Q70 25 150 50 T300 40 T400 48 V100 H0Z" fill="#141739"/>
-           <path d="M0 75 Q90 50 190 72 T400 66 V100 H0Z" fill="#0b0d27"/>
+        `<svg class="dunes" viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+           <defs>
+             <linearGradient id="dune-far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2552"/><stop offset="1" stop-color="#14163a"/></linearGradient>
+             <linearGradient id="dune-near" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15173c"/><stop offset="1" stop-color="#05061a"/></linearGradient>
+           </defs>
+           <path d="M0 55 Q70 25 150 50 T300 40 T400 48 V100 H0Z" fill="url(#dune-far)"/>
+           <path d="M0 55 Q70 25 150 50 T300 40 T400 48" fill="none" stroke="#8f86c9" stroke-width=".5" opacity=".45"/>
+           <g fill="#0d0f2c">
+             <path d="M262 52h34v-9h-34Z"/><path d="M269 43c0-9 7-14 10-15 3 1 10 6 10 15Z"/><rect x="278.4" y="24" width="1.2" height="5"/>
+             <rect x="257" y="35" width="4" height="17"/><path d="M256 35h6l-3-5Z"/>
+             <path d="M318 49c1-8 0-14-1-19" stroke="#0d0f2c" stroke-width="1.6" fill="none"/>
+             <path d="M317 30c-6 0-10 3-12 6 4-3 8-4 12-4Zm0 0c6 0 10 3 12 6-4-3-8-4-12-4Zm0 0c-4-3-9-3-12-1 4-1 8 0 12 1Zm0 0c4-3 9-3 12-1-4-1-8 0-12 1Z"/>
+           </g>
+           <path d="M0 75 Q90 50 190 72 T400 66 V100 H0Z" fill="url(#dune-near)"/>
+           <path d="M0 75 Q90 50 190 72 T400 66" fill="none" stroke="#a79bd8" stroke-width=".6" opacity=".35"/>
          </svg>`
       );
+      addAstrolabe();
       resize();
       window.addEventListener("resize", resize);
       window.addEventListener("pointermove", trail);
@@ -175,7 +298,7 @@
         cancelAnimationFrame(frameId);
         window.removeEventListener("resize", resize);
         window.removeEventListener("pointermove", trail);
-        document.querySelectorAll(".sky, .dunes, .meteor").forEach((el) => el.remove());
+        document.querySelectorAll(".sky, .dunes, .meteor, .astrolabe").forEach((el) => el.remove());
         sparks = [];
       };
     },
@@ -212,6 +335,10 @@
       shuffle() {
         const c = centerOf(document.getElementById("wheel"));
         burst(c.x, c.y, 30, 0.18);
+        document.querySelector(".astrolabe").animate(
+          [{ transform: "rotate(0)" }, { transform: "rotate(-90deg)" }, { transform: "rotate(0)" }],
+          { duration: 900, easing: "ease-in-out" }
+        );
       },
       complete(d) {
         const c = constellationOf(d.level);

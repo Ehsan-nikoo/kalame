@@ -18,6 +18,7 @@
 [data-theme="stars"] body {
   background: radial-gradient(120% 70% at 50% 100%, #3b2a63 0%, #171a45 45%, #070a22 100%);
 }
+:root[data-theme="stars"] { --star-grain: url("caravan/grain.svg"); }
 
 /* لایه‌های آسمان و تپه‌ها پشت همه‌ی صفحه‌ها */
 .sky {
@@ -73,13 +74,27 @@
 [data-theme="stars"] .card-btn { transition: transform 0.08s ease-out, box-shadow 0.08s ease-out; }
 [data-theme="stars"] .menu-btn,
 [data-theme="stars"] .tool,
-[data-theme="stars"] .icon-btn {
-  background: linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
-  box-shadow: 0 4px 0 rgba(255, 217, 138, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+[data-theme="stars"] .icon-btn,
+[data-theme="stars"] .coins,
+[data-theme="stars"] .level-label {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 55%, rgba(0, 0, 0, 0.12)),
+    rgba(14, 16, 48, 0.55);
+  border-color: rgba(255, 217, 138, 0.35);
 }
+[data-theme="stars"] .menu-btn,
+[data-theme="stars"] .tool,
+[data-theme="stars"] .icon-btn {
+  box-shadow: 0 4px 0 rgba(120, 90, 40, 0.45), 0 8px 18px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+[data-theme="stars"] .menu-btn::after { inset: 4px; border-radius: 14px; border: 1px solid rgba(255, 217, 138, 0.14); }
 [data-theme="stars"] .menu-btn.primary,
 [data-theme="stars"] .card-btn {
-  background: linear-gradient(#fff1c6, #ffd98a 45%, #f0b44e);
+  background:
+    radial-gradient(ellipse 80% 55% at 30% 0%, rgba(255, 255, 245, 0.75), transparent 60%),
+    var(--star-grain) 0 0 / 160px 160px,
+    linear-gradient(#fff1c6, #f3c86e 40%, #d49a3c 75%, #b97f2a);
+  background-blend-mode: normal, overlay, normal;
   color: #3a2606;
   border-color: #fff1c6;
   box-shadow: 0 5px 0 #a8701f, 0 10px 28px rgba(255, 217, 138, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.7);
@@ -136,16 +151,29 @@
   box-shadow: none;
 }
 
-/* ---------- جدول ---------- */
+/* ---------- جدول: لوح‌های طلای کوبیده با لبه‌ی حکاکی ---------- */
 [data-theme="stars"] .cell.slot {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 217, 138, 0.22);
-  box-shadow: inset 0 0 10px rgba(255, 217, 138, 0.08);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 217, 138, 0.16) 0 1.5px, transparent 2px),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0.15));
+  border: 1px solid rgba(255, 217, 138, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 12px rgba(5, 6, 26, 0.6), 0 0 0 1px rgba(5, 6, 26, 0.4);
+  backdrop-filter: blur(2px);
 }
 [data-theme="stars"] .cell.filled {
-  background: radial-gradient(circle at 50% 40%, #fffbe9 0%, #ffd98a 50%, #c98b2e 100%);
-  color: #2a1c05;
-  box-shadow: 0 0 16px rgba(255, 217, 138, 0.75);
+  background:
+    radial-gradient(ellipse 80% 50% at 35% 12%, rgba(255, 255, 240, 0.85), rgba(255, 255, 240, 0) 60%),
+    var(--star-grain) 0 0 / 160px 160px,
+    linear-gradient(155deg, #fff0c2 0%, #f3c86e 30%, #d49a3c 62%, #a8701f 85%, #e8bd66 100%);
+  background-blend-mode: normal, overlay, normal;
+  color: #2a1a04;
+  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7), 0 -1px 0 rgba(120, 70, 10, 0.35);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 220, 0.75),
+    inset 0 0 0 3px rgba(168, 112, 31, 0.35),
+    inset 0 -3px 5px rgba(110, 60, 8, 0.35),
+    0 0 14px rgba(255, 210, 120, 0.55),
+    0 3px 6px rgba(0, 0, 0, 0.45);
   animation: star-ignite 0.6s ease both;
   animation-delay: calc(var(--i, 0) * 110ms + 420ms);
 }
@@ -173,12 +201,13 @@
   box-shadow: 0 0 22px rgba(255, 217, 138, 0.8);
 }
 
-/* ---------- دایره‌ی حروف ---------- */
+/* ---------- دایره‌ی حروف: اسطرلاب برنجی ---------- */
 [data-theme="stars"] .wheel {
-  background: radial-gradient(circle, rgba(255, 217, 138, 0.08) 0%, rgba(12, 14, 44, 0.55) 70%);
-  border: 1px solid rgba(255, 217, 138, 0.18);
-  box-shadow: 0 0 40px rgba(255, 217, 138, 0.08), inset 0 0 30px rgba(255, 217, 138, 0.06);
+  background: none;
+  box-shadow: 0 0 0 1px rgba(255, 217, 138, 0.15), 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 60px rgba(255, 217, 138, 0.1);
 }
+.astrolabe { position: absolute; inset: 0; }
+.astrolabe svg { width: 100%; height: 100%; display: block; }
 [data-theme="stars"] .wheel-lines { filter: drop-shadow(0 0 4px #ffd98a) drop-shadow(0 0 10px rgba(255, 217, 138, 0.6)); }
 [data-theme="stars"] .wheel-lines polyline { stroke-width: 2.2; }
 
