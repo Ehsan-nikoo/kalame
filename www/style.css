@@ -607,6 +607,7 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 26px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   animation: bump 0.5s ease;
+  z-index: 3; /* بالای حاشیه‌ی تزئینی دکمه (::after) که بعضی ظاهرها دارند */
 }
 .ach-note {
   display: table;
