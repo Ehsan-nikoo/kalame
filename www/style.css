@@ -999,7 +999,7 @@ button { font-family: inherit; cursor: pointer; }
   gap: 6px;
   padding: 4px;
   border-radius: 14px;
-  background: var(--cell-empty);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
 }
 .segmented button {
   flex: 1;
@@ -1013,7 +1013,7 @@ button { font-family: inherit; cursor: pointer; }
   white-space: nowrap;
   cursor: pointer;
 }
-.segmented button.selected { background: var(--surface); font-weight: 700; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.segmented button.selected { background: var(--accent); color: var(--accent-ink); font-weight: 700; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
 
 /* اندازه‌ی متن: نوشته‌های منو، کارت‌ها، معنی‌ها و پیام‌ها بزرگ‌تر می‌شوند (جدول و دایره نه) */
 [data-text="large"] :is(.home-menu, .home-sub, .sheet-card, .card, .preview, .ach-list, .theme-list, .settings-list) { zoom: 1.12; }

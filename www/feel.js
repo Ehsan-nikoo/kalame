@@ -242,7 +242,7 @@ function startTutorial() {
     '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M19 6a3.5 3.5 0 0 1 7 0v14l9.6 2.4a4 4 0 0 1 3 4.4l-1.6 11a5 5 0 0 1-5 4.2H20.4a5 5 0 0 1-4.2-2.3L8.6 28a3.4 3.4 0 0 1 5.4-4l5 5Z"/></svg>';
   wheelEl.appendChild(hand);
   tutorialHand = hand;
-  showPreview("انگشتت رو روی حرف‌ها بکش", "show note", 4000);
+  showPreview("حرف‌ها رو به هم وصل کن", "show note", 4000);
 
   let k = 0;
   const move = () => {
