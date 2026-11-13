@@ -41,7 +41,10 @@
   const constellationOf = (level) => CONSTELLATIONS[level % CONSTELLATIONS.length];
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let canvas, ctx, frameId, backdrop = null;
+  // لایه‌ی متحرک (ستاره‌های چشمک‌زن، جرقه‌ها، صورت فلکی) با وضوح کمتر کشیده می‌شود تا گوشی سبک بماند
+  const fdpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const IDLE_MS = 50;  // وقتی فقط ستاره‌ها چشمک می‌زنند، ۲۰ بار در ثانیه کافی است
+  let canvas, ctx, frameId, backdrop = null, lastDraw = 0, busyUntil = 0;
   let stars = [], sparks = [], meteorSky = null, nextMeteor = 3000, lastTime = 0;
   let lastLetters = [];
 
@@ -149,6 +152,12 @@
       const last = Math.max(...cons.lines.map((l) => l.start || 0), ...cons.pts.map((p) => p.start));
       cons.fullFrom = now ? -1e9 : last + LINE_MS;
     }
+    // تا پایان این انیمیشن‌ها، آسمان با سرعت کامل کشیده می‌شود
+    if (!now) {
+      const ends = [...cons.pts.map((p) => (p.start || 0) + STAR_MS), ...cons.lines.map((l) => (l.start || 0) + LINE_MS)];
+      if (cons.fullFrom !== null) ends.push(cons.fullFrom + FULL_MS);
+      busyUntil = Math.max(busyUntil, ...ends);
+    }
   }
 
   // جای تصویر: وسط ناحیه‌ی جدول، با حفظ نسبت تصویر
@@ -186,13 +195,8 @@
       }
     }
 
-    // خط‌ها
-    ctx.save();
+    // خط‌ها: یک خط پهن کم‌رنگ برای هاله و یک خط نازک روی آن (shadowBlur روی گوشی گران است)
     ctx.lineCap = "round";
-    ctx.shadowColor = "rgba(255, 214, 140, 0.9)";
-    ctx.shadowBlur = 8;
-    ctx.strokeStyle = "rgba(255, 238, 200, 0.7)";
-    ctx.lineWidth = 1.3;
     ctx.beginPath();
     for (const l of cons.lines) {
       if (l.start === null) continue;
@@ -203,8 +207,12 @@
       ctx.moveTo(X(A), Y(A));
       ctx.lineTo(X(A) + (X(B) - X(A)) * e, Y(A) + (Y(B) - Y(A)) * e);
     }
+    ctx.strokeStyle = "rgba(255, 214, 140, 0.22)";
+    ctx.lineWidth = 5;
     ctx.stroke();
-    ctx.restore();
+    ctx.strokeStyle = "rgba(255, 238, 200, 0.75)";
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
 
     // ستاره‌ها: خاموش‌ها مثل ستاره‌های دیگر آسمان، روشن‌ها درخشان با هاله
     for (const p of cons.pts) {
@@ -292,9 +300,14 @@
   }
 
   function resize() {
-    canvas.width = innerWidth * dpr;
-    canvas.height = innerHeight * dpr;
+    canvas.width = innerWidth * fdpr;
+    canvas.height = innerHeight * fdpr;
+    // آسمان ثابت یک بار در یک بوم جدا کشیده می‌شود، نه در هر فریم
+    const old = backdrop;
     backdrop = paintBackdrop(innerWidth, innerHeight);
+    backdrop.className = "sky sky-back";
+    if (old && old.isConnected) old.replaceWith(backdrop);
+    else canvas.before(backdrop);
     const count = Math.round((innerWidth * innerHeight) / 2600);
     stars = Array.from({ length: count }, () => ({
       x: Math.random() * innerWidth,
@@ -309,14 +322,21 @@
   }
 
   function frame(time) {
+    frameId = requestAnimationFrame(frame);
+    // وقتی شهاب، جرقه یا صورت فلکی در حال حرکت نیست، کمتر کشیده می‌شود
+    const busy = sparks.length || meteorSky || time < busyUntil;
+    // با «جلوه‌های کمتر» ستاره‌ها چشمک نمی‌زنند و آسمان فقط گاهی کشیده می‌شود
+    const lite = !!document.documentElement.dataset.lite;
+    const idle = lite ? 400 : IDLE_MS;
+    if (!busy && time - lastDraw < idle) return;
+    lastDraw = time;
     const dt = Math.min(time - lastTime, 50);
     lastTime = time;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.setTransform(fdpr, 0, 0, fdpr, 0, 0);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-    if (backdrop) ctx.drawImage(backdrop, 0, 0, innerWidth, innerHeight);
 
     for (const s of stars) {
-      const a = 0.45 + 0.55 * Math.sin((time / 1000) * s.speed + s.phase) ** 2;
+      const a = lite ? 0.45 + 0.55 * Math.sin(s.phase) ** 2 : 0.45 + 0.55 * Math.sin((time / 1000) * s.speed + s.phase) ** 2;
       if (s.bright) {
         const r = s.r * 5;
         const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
@@ -372,8 +392,6 @@
       ctx.arc(p.x, p.y, p.r * a + 0.4, 0, Math.PI * 2);
       ctx.fill();
     }
-
-    frameId = requestAnimationFrame(frame);
   }
 
   function burst(x, y, count, spread) {

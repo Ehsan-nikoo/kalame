@@ -90,7 +90,7 @@
   // ذره‌های ریز گرد و خاک که باد از راست به چپ می‌برد (هم‌جهت با کاروان)
   function sandWind() {
     const r = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
-    const grains = Array.from({ length: 18 }, () =>
+    const grains = Array.from({ length: 10 }, () =>
       `<i style="left:${r(30, 110)}%;top:${r(35, 98)}%;--s:${r(1.2, 3)}px;--o:${r(0.3, 0.75)};--y:${r(-60, 10)}px;--d:${r(7, 14)}s;--w:${r(-14, 0)}s"></i>`
     ).join("");
     return `<div class="sand-wind" aria-hidden="true">${grains}</div>`;

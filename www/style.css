@@ -1243,3 +1243,11 @@ button { font-family: inherit; cursor: pointer; }
 .theme-sheet-art { border: none; background: none; box-shadow: none; padding: 0; margin: 0 auto 6px; pointer-events: none; }
 .theme-sheet-art .tcard-art { width: 110px; height: 110px; font-size: 52px; }
 .theme-note { font-size: 13px; margin-top: 10px; }
+
+/* «جلوه‌های کمتر» (تنظیمات): انیمیشن‌های همیشگی تزئینی یک بار اجرا می‌شوند و ذره‌ها پنهان‌اند */
+:root[data-lite="1"] *,
+:root[data-lite="1"] *::before,
+:root[data-lite="1"] *::after { animation-iteration-count: 1 !important; }
+:root[data-lite="1"] .sand-wind,
+:root[data-lite="1"] .petal,
+:root[data-lite="1"] .workshop-light i { display: none !important; }

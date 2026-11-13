@@ -52,7 +52,7 @@
   // نور کج پنجره‌ی کارگاه و پرزهای ریزی که آرام در آن بالا می‌روند
   function workshopLight() {
     const r = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
-    const lint = Array.from({ length: 16 }, () =>
+    const lint = Array.from({ length: 9 }, () =>
       `<i style="left:${r(0, 70)}%;top:${r(15, 95)}%;--s:${r(1.5, 3.5)}px;--o:${r(0.35, 0.8)};--x:${r(-20, 60)}px;--d:${r(10, 20)}s;--w:${r(-20, 0)}s"></i>`
     ).join("");
     return `<div class="workshop-light" aria-hidden="true">${lint}</div>`;

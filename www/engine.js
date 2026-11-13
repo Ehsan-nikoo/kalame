@@ -32,6 +32,15 @@ function canMake(need, have) {
   return true;
 }
 
+// نشانه‌ی ۳۲بیتی حروف یک کلمه، برای رد کردن سریع: اگر کلمه حرفی دارد که در حروف دایره نیست،
+// بیت آن حرف در mask دایره خاموش است. (چند حرف ممکن است یک بیت داشته باشند؛ برای همین بعد از آن
+// canMake هم بررسی می‌شود.)
+function letterMask(text) {
+  let m = 0;
+  for (const ch of fold(text)) m |= 1 << (ch.codePointAt(0) % 32);
+  return m;
+}
+
 function faDigits(n) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
 }
@@ -323,7 +332,7 @@ const MAX_GRID = 9; // بیشترین سطر یا ستون جدول، تا رو�
 
 function createGenerator(dict, levels = new Map()) {
   const levelOf = (w) => levels.get(w) || 1;
-  const entries = [...dict.keys()].map((w) => ({ w, need: letterCounts(w) }));
+  const entries = [...dict.keys()].map((w) => ({ w, need: letterCounts(w), mask: letterMask(w), len: w.length }));
   const subCache = new Map();
 
   // همه‌ی کلمه‌های فهرست که از این حروف ساخته می‌شوند
@@ -331,7 +340,8 @@ function createGenerator(dict, levels = new Map()) {
     const key = [...fold(letters)].sort().join("");
     if (!subCache.has(key)) {
       const have = letterCounts(letters);
-      subCache.set(key, entries.filter((e) => e.w.length <= letters.length && canMake(e.need, have)).map((e) => e.w));
+      const mask = letterMask(letters), len = letters.length;
+      subCache.set(key, entries.filter((e) => e.len <= len && (e.mask & ~mask) === 0 && canMake(e.need, have)).map((e) => e.w));
     }
     return subCache.get(key);
   }

@@ -124,7 +124,7 @@
       </svg>`;
     document.body.prepend(div);
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 5; i++) {
       const p = document.createElement("div");
       p.className = "petal";
       p.style.left = Math.round(Math.random() * 100) + "vw";

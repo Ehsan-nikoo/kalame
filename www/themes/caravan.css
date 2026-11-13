@@ -56,8 +56,8 @@
     radial-gradient(ellipse 110% 85% at 50% 42%, transparent 55%, rgba(40, 22, 10, 0.4) 100%),
     var(--grain);
   background-size: 100% 100%, 200px 200px;
-  mix-blend-mode: multiply;
-  opacity: 0.55;
+  /* بدون mix-blend-mode: ترکیب تمام‌صفحه در هر فریم (با ابرهای متحرک زیرش) گوشی را کند می‌کرد */
+  opacity: 0.45;
 }
 
 /* گرد و خاکی که باد آرام از روی جاده بلند می‌کند */
