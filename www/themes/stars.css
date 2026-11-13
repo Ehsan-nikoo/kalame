@@ -264,13 +264,13 @@
 /* منو: صورت فلکی که آرام کشیده می‌شود و بعد نفس می‌کشد */
 .home-constellation {
   object-fit: contain;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.6));
+  opacity: 0.92;
+  filter: drop-shadow(0 0 8px rgba(120, 160, 200, 0.35));
   animation: draw-in 3.2s ease-out both, breathe 5s ease-in-out 3.2s infinite;
 }
 @keyframes breathe {
-  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.6)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 217, 138, 0.9)); }
+  0%, 100% { opacity: 0.92; filter: drop-shadow(0 0 8px rgba(120, 160, 200, 0.35)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(140, 180, 220, 0.55)); }
 }
 [data-theme="stars"] .scene-caption { color: #e9dcb8; }
 
@@ -280,7 +280,7 @@
   max-height: 40vh;
   object-fit: contain;
   margin: -6px 0 10px;
-  filter: drop-shadow(0 0 6px rgba(255, 217, 138, 0.7));
+  filter: drop-shadow(0 0 8px rgba(120, 160, 200, 0.4));
   animation: draw-in 2.2s ease-out both;
 }
 @keyframes draw-in {
