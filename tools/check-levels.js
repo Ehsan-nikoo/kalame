@@ -17,7 +17,7 @@ const topNames = (file) => new Set([...fs.readFileSync(path.join(www, file), "ut
 const engineNames = topNames("engine.js");
 const clash = [...topNames("game.js")].filter((n) => engineNames.has(n));
 assert.deepStrictEqual(clash, [], "اسم‌های یکسان در engine.js و game.js");
-const { dict, errors: wordErrors } = E.parseWords(fs.readFileSync(path.join(www, "words.txt"), "utf8"));
+const { dict, levels, errors: wordErrors } = E.parseWords(fs.readFileSync(path.join(www, "words.txt"), "utf8"));
 const { levels: handmade, errors: levelErrors } = E.parseLevels(fs.readFileSync(path.join(www, "levels.txt"), "utf8"));
 assert.deepStrictEqual(wordErrors, [], "اشکال در words.txt");
 assert.deepStrictEqual(levelErrors, [], "اشکال در levels.txt");
@@ -33,38 +33,52 @@ const noMeaning = [...dict].filter(([, m]) => !m).map(([w]) => w);
 assert.deepStrictEqual(noMeaning, [], "کلمه‌های بدون معنی");
 
 const t0 = Date.now();
-const gen = E.createGenerator(dict);
+const gen = E.createGenerator(dict, levels);
 const tSetup = Date.now() - t0;
 
-function checkLevel(name, lvl, tier) {
-  const have = E.countLetters(lvl.letters);
+function checkLevel(name, lvl, tier, rareOk) {
+  const have = E.letterCounts(lvl.letters);
   assert.ok(lvl.words.includes(lvl.seed), `${name}: کلمه‌ی اصلی در جدول نیست`);
   assert.strictEqual(new Set(lvl.words).size, lvl.words.length, `${name}: کلمه‌ی تکراری`);
   for (const w of lvl.words) {
     assert.ok(dict.has(w), `${name}: «${w}» در فهرست نیست`);
-    const need = E.countLetters(w);
-    for (const ch in need) assert.ok((have[ch] || 0) >= need[ch], `${name}: «${w}» با حروف ساخته نمی‌شود`);
+    assert.ok(E.canMake(E.letterCounts(w), have), `${name}: «${w}» با حروف ساخته نمی‌شود`);
+    if (!rareOk) assert.strictEqual(gen.levelOf(w), 1, `${name}: کلمه‌ی کمتر رایج «${w}» زود آمده`);
   }
   assert.ok(lvl.words.length >= tier.min, `${name}: فقط ${lvl.words.length} کلمه`);
+  const twos = lvl.words.filter((w) => w.length === 2).length;
+  assert.ok(twos <= tier.twos, `${name}: ${twos} کلمه‌ی دوحرفی`);
   const layout = E.buildLayout(lvl.words);
   assert.ok(layout.connected, `${name}: جدول به هم وصل نیست`);
   assert.ok(layout.rows <= 9 && layout.cols <= 9, `${name}: جدول خیلی بزرگ است`);
 }
 
-const TIER_MIN = { 4: { min: 3 }, 5: { min: 4 }, 6: { min: 5 }, 7: { min: 5 } };
+const TIER_MIN = { 4: { min: 3, twos: 2 }, 5: { min: 4, twos: 1 }, 6: { min: 5, twos: 0 }, 7: { min: 5, twos: 0 } };
 const seedsUsed = new Set();
 const t1 = Date.now();
 const generated = [];
 for (let i = E.HANDMADE_LEVELS; i < E.HANDMADE_LEVELS + 1000; i++) {
   const lvl = gen.level(i);
-  checkLevel(`مرحله‌ی ${i + 1}`, lvl, TIER_MIN[lvl.seed.length]);
+  const g = i - E.HANDMADE_LEVELS;
+  checkLevel(`مرحله‌ی ${i + 1}`, lvl, TIER_MIN[lvl.seed.length], g >= 50 || gen.levelOf(lvl.seed) > 1);
+  if (g < 150) assert.strictEqual(gen.levelOf(lvl.seed), 1, `مرحله‌ی ${i + 1}: کلمه‌ی اصلی کمتر رایج زود آمده`);
   seedsUsed.add(lvl.seed);
   generated.push(lvl);
 }
 const tLevels = Date.now() - t1;
 
-assert.deepStrictEqual(gen.level(57), E.createGenerator(dict).level(57), "مرحله‌ها قابل‌تکرار نیستند");
+assert.deepStrictEqual(gen.level(57), E.createGenerator(dict, levels).level(57), "مرحله‌ها قابل‌تکرار نیستند");
 
+// «آ» و «ا» یکی حساب می‌شوند
+assert.ok(E.canMake(E.letterCounts("آب"), E.letterCounts("باران")), "«آب» باید با حروف «باران» ساخته شود");
+assert.strictEqual(E.fold("آسمان"), E.fold("اسمان"));
+
+const rare = [...levels.values()].filter((l) => l === 2).length;
+const bonusCounts = generated.map((l) => gen.bonusWords(l).length);
+console.log(`بیشترین کلمه‌ی جایزه در یک مرحله: ${Math.max(...bonusCounts)}، میانگین: ${(bonusCounts.reduce((a, b) => a + b, 0) / bonusCounts.length).toFixed(1)}`);
+const avgWords = generated.reduce((a, l) => a + l.words.length, 0) / generated.length;
+console.log(`میانگین کلمه‌ی جدول: ${avgWords.toFixed(1)}`);
+console.log(`کلمه‌های رایج: ${dict.size - rare}، کمتر رایج: ${rare}`);
 console.log(`words.txt: ${dict.size} کلمه؛ extra-words.txt: ${extraNew.length} کلمه‌ی تازه برای صندوق`);
 console.log(`کلمه‌ی اصلی موجود: ۴حرفی ${gen.seeds[4].length}، ۵حرفی ${gen.seeds[5].length}، ۶حرفی ${gen.seeds[6].length}، ۷حرفی ${gen.seeds[7].length}`);
 console.log(`۱۰۰۰ مرحله سالم بودند. کلمه‌ی اصلی متفاوت در ۱۰۰۰ مرحله: ${seedsUsed.size}`);

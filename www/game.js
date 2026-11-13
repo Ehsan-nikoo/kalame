@@ -243,9 +243,9 @@ function claimDailyReward() {
 }
 
 // آیا کلمه با این حروف (و تعدادشان) ساخته می‌شود؟
+// «آ» و «ا» یک حرف حساب می‌شوند (fold در engine.js)
 function canSpell(word, have) {
-  const need = countLetters(word);
-  return Object.keys(need).every((ch) => (have[ch] || 0) >= need[ch]);
+  return canMake(letterCounts(word), have);
 }
 
 function startLevel(i) {
@@ -260,7 +260,7 @@ function startPuzzle(level, index, key) {
   found = (Array.isArray(part.found) ? part.found : []).filter((w) => level.words.includes(w));
   bonusWords = generator ? generator.bonusWords(level) : [];
   // کلمه‌های extra-words.txt هم اگر با حروف دایره ساخته شوند، کلمه‌ی درست‌اند
-  const have = countLetters(level.letters);
+  const have = letterCounts(level.letters);
   for (const w of extraDict.keys()) {
     if (!level.words.includes(w) && !bonusWords.includes(w) && canSpell(w, have)) bonusWords.push(w);
   }
@@ -517,9 +517,20 @@ function onPointerCancel(e) {
 
 // ---------- بررسی کلمه ----------
 
+// کلمه‌ای که بازیکن ساخته را با املای درستش برمی‌گرداند؛ «آ» و «ا» یکی حساب می‌شوند
+// (مثلاً «اسمان» که با خانه‌ی «ا» ساخته شده، همان «آسمان» است)
+function matchWord(word, list) {
+  if (list.includes(word)) return word;
+  const key = fold(word);
+  return list.find((w) => fold(w) === key) || word;
+}
+
 function submitWord(raw) {
-  const word = normalize(raw);
   const level = puzzle;
+  let word = normalize(raw);
+  word = matchWord(word, found);
+  if (!found.includes(word)) word = matchWord(word, level.words);
+  if (!level.words.includes(word)) word = matchWord(word, bonusWords);
   if (word.length < 2) {
     hidePreview();
     return;
@@ -1277,7 +1288,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = parseWords(text);
         dict = result.dict;
         if (result.errors.length) showErrors("اشکال در فایل words.txt:", result.errors);
-        generator = createGenerator(dict);
+        generator = createGenerator(dict, result.levels);
       })
       .catch(notRead("words.txt")),
     // کلمه‌های بیشتر برای صندوق؛ اگر نبود، بازی بدون آن‌ها هم کار می‌کند

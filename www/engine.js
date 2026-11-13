@@ -16,6 +16,22 @@ function normalize(text) {
     .replace(/[\p{Mn}\p{Cf}ـ\s]/gu, "");
 }
 
+// «آ» و «ا» در ساختن کلمه یک حرف حساب می‌شوند: بازیکن با هر کدام از این دو خانه‌ی دایره
+// می‌تواند کلمه‌ای را که «آ» یا «ا» دارد بسازد. در جدول، کلمه با املای درستش نشان داده می‌شود.
+function fold(text) {
+  return text.replace(/آ/g, "ا");
+}
+
+// شمارش حروف برای «ساخته می‌شود یا نه»، با یکی دانستن «آ» و «ا»
+function letterCounts(chars) {
+  return countLetters(fold(Array.isArray(chars) ? chars.join("") : chars));
+}
+
+function canMake(need, have) {
+  for (const ch in need) if ((have[ch] || 0) < need[ch]) return false;
+  return true;
+}
+
 function faDigits(n) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
 }
@@ -46,7 +62,7 @@ function parseLevels(text) {
     }
 
     const letters = [...normalize(parts[0])];
-    const available = countLetters(letters);
+    const available = letterCounts(letters);
     const words = [];
 
     for (const raw of parts[1].split(/[،,]+/)) {
@@ -56,9 +72,7 @@ function parseLevels(text) {
         errors.push(`خط ${lineNo}: کلمه‌ی «${word}» خیلی کوتاه است.`);
         continue;
       }
-      const need = countLetters(word);
-      const ok = Object.keys(need).every((ch) => (available[ch] || 0) >= need[ch]);
-      if (!ok) {
+      if (!canMake(letterCounts(word), available)) {
         errors.push(`خط ${lineNo}: کلمه‌ی «${word}» با حروف «${letters.join(" ")}» ساخته نمی‌شود.`);
         continue;
       }
@@ -80,9 +94,9 @@ function parseLevels(text) {
 // ---------------------------------------------------------------------------
 // ستون صفر سمت راست جدول است، پس کلمه‌های افقی از راست به چپ خوانده می‌شوند.
 
-// maxNodes: سقف جست‌وجو؛ سازنده‌ی مرحله برای سرعت با سقف کمتری امتحان می‌کند.
+// maxNodes: سقف جست‌وجو؛ سازنده‌ی مرحله برای سرعت با سقف خیلی کمتری امتحان می‌کند.
 // خروجی connected نشان می‌دهد همه‌ی کلمه‌ها به هم وصل شده‌اند یا نه.
-function buildLayout(words, maxNodes = 60000) {
+function buildLayout(words, maxNodes = 8000) {
   const order = [...words].sort((a, b) => b.length - a.length);
   const cells = new Map(); // "r,c" -> { ch, h, v }
   const placed = [];
@@ -146,7 +160,9 @@ function buildLayout(words, maxNodes = 60000) {
     }
     const h = maxR - minR + 1;
     const w = maxC - minC + 1;
-    return w * h + Math.abs(w - h) * 3;
+    // جدولی که از صفحه‌ی گوشی بیرون بزند، بدترین امتیاز را می‌گیرد
+    const tooBig = w > MAX_GRID || h > MAX_GRID ? 10000 : 0;
+    return w * h + Math.abs(w - h) * 3 + tooBig;
   }
 
   function search(index) {
@@ -221,23 +237,36 @@ function buildLayout(words, maxNodes = 60000) {
 
 const ALPHABET = "آابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی";
 
-// خروجی: Map از کلمه به معنی‌اش
+// خروجی: dict (Map از کلمه به معنی‌اش) و levels (Map از کلمه به میزان آشنایی: ۱ رایج، ۲ کمتر رایج)
+// شکل هر خط:  کلمه | معنی  یا  کلمه | معنی | ۲
 function parseWords(text) {
   const dict = new Map();
+  const levels = new Map();
   const errors = [];
   text.split(/\r?\n/).forEach((rawLine, i) => {
     const line = rawLine.trim();
     if (!line || line.startsWith("#")) return;
-    const bar = line.indexOf("|");
-    const word = normalize(bar < 0 ? line : line.slice(0, bar));
-    const meaning = bar < 0 ? "" : line.slice(bar + 1).trim();
+    const parts = line.split("|");
+    const word = normalize(parts[0]);
+    let level = 1;
+    if (parts.length > 2) {
+      const mark = parts[parts.length - 1].trim().replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+      if (/^[12]$/.test(mark)) {
+        level = Number(mark);
+        parts.pop();
+      }
+    }
+    const meaning = parts.slice(1).join("|").trim();
     if (word.length < 2 || ![...word].every((ch) => ALPHABET.includes(ch))) {
       errors.push(`خط ${faDigits(i + 1)}: «${word}» کلمه‌ی درستی نیست.`);
       return;
     }
-    if (!dict.has(word)) dict.set(word, meaning);
+    if (!dict.has(word)) {
+      dict.set(word, meaning);
+      levels.set(word, level);
+    }
   });
-  return { dict, errors };
+  return { dict, levels, errors };
 }
 
 // ---------------------------------------------------------------------------
@@ -275,49 +304,70 @@ function shuffled(list, rnd) {
   return out;
 }
 
-function canMake(need, have) {
-  for (const ch in need) if ((have[ch] || 0) < need[ch]) return false;
-  return true;
-}
-
-// سختی بر اساس طول کلمه‌ی اصلی: تعداد کلمه‌های جدول و کوتاه‌ترین کلمه‌ی مجاز
+// سختی بر اساس طول کلمه‌ی اصلی: تعداد کلمه‌های جدول، کوتاه‌ترین کلمه‌ی مجاز،
+// و بیشترین تعداد کلمه‌ی دوحرفی در جدول (تا جدول پر از کلمه‌های خیلی کوتاه نشود)
 const TIERS = {
-  4: { min: 3, max: 5, shortest: 2 },
-  5: { min: 4, max: 6, shortest: 2 },
-  6: { min: 5, max: 7, shortest: 3 },
-  7: { min: 5, max: 8, shortest: 3 },
+  4: { min: 3, max: 5, shortest: 2, twos: 2 },
+  5: { min: 4, max: 6, shortest: 2, twos: 1 },
+  6: { min: 5, max: 7, shortest: 3, twos: 0 },
+  7: { min: 5, max: 8, shortest: 3, twos: 0 },
 };
+// وقتی کلمه‌های ساختنی خیلی زیادند، چند کلمه‌ی بیشتر به جدول می‌آید تا بیشترشان «جایزه» نمانند
+const MAX_EXTRA = 2;
+const MAX_WORDS = 9; // بیشترین کلمه‌ی جدول، تا چیدن جدول روی گوشی‌های ضعیف کند نشود
+// میزان آشنایی: کلمه‌های «کمتر رایج» (۲) از این مرحله‌ها به بعد وارد جدول می‌شوند (شماره از صفر،
+// بعد از مرحله‌های دست‌ساز). اول به‌عنوان کلمه‌ی فرعی، بعد به‌عنوان کلمه‌ی اصلی.
+const RARE_WORDS_FROM = 50;
+const RARE_SEEDS_FROM = 150;
 const MAX_GRID = 9; // بیشترین سطر یا ستون جدول، تا روی صفحه‌ی گوشی جا شود
 
-function createGenerator(dict) {
-  const entries = [...dict.keys()].map((w) => ({ w, need: countLetters(w) }));
+function createGenerator(dict, levels = new Map()) {
+  const levelOf = (w) => levels.get(w) || 1;
+  const entries = [...dict.keys()].map((w) => ({ w, need: letterCounts(w) }));
   const subCache = new Map();
 
   // همه‌ی کلمه‌های فهرست که از این حروف ساخته می‌شوند
   function wordsFrom(letters) {
-    const key = [...letters].sort().join("");
+    const key = [...fold(letters)].sort().join("");
     if (!subCache.has(key)) {
-      const have = countLetters(letters);
+      const have = letterCounts(letters);
       subCache.set(key, entries.filter((e) => e.w.length <= letters.length && canMake(e.need, have)).map((e) => e.w));
     }
     return subCache.get(key);
   }
 
-  // کلمه‌های اصلی هر طول؛ از هر دسته‌ی حروف یکسان فقط یکی، با ترتیب ثابت ولی درهم
+  // کلمه‌هایی که می‌توانند در جدول این کلمه‌ی اصلی بیایند (با رعایت سقف کلمه‌های دوحرفی)
+  function usableCount(seed, rareOk) {
+    const tier = TIERS[seed.length];
+    let longs = 0, twos = 0;
+    for (const w of wordsFrom(seed)) {
+      if (w === seed || w.length < tier.shortest || (!rareOk && levelOf(w) > 1)) continue;
+      if (w.length === 2) twos++;
+      else longs++;
+    }
+    return 1 + longs + Math.min(twos, tier.twos); // ۱ برای خود کلمه‌ی اصلی
+  }
+
+  // کلمه‌های اصلی هر طول؛ از هر دسته‌ی حروف یکسان فقط یکی، با ترتیب ثابت ولی درهم.
+  // اول کلمه‌های رایج می‌آیند و بعد کلمه‌های کمتر رایج، تا بازی کم‌کم سخت‌تر شود.
   const seeds = {};
   for (const len of [4, 5, 6, 7]) {
     const seen = new Set();
-    const list = [];
+    const common = [];
+    const rare = [];
     for (const { w } of entries) {
       if (w.length !== len) continue;
-      const key = [...w].sort().join("");
+      const key = [...fold(w)].sort().join("");
       if (seen.has(key)) continue;
-      const usable = wordsFrom(w).filter((s) => s.length >= TIERS[len].shortest);
-      if (usable.length < TIERS[len].min) continue;
+      const isRare = levelOf(w) > 1;
+      // کلمه‌ی اصلی رایج باید فقط با کلمه‌های رایج هم جدول کامل بسازد
+      if (usableCount(w, isRare) < TIERS[len].min) continue;
       seen.add(key);
-      list.push(w);
+      (isRare ? rare : common).push(w);
     }
-    seeds[len] = shuffled(list.sort(), seededRandom(1000 + len));
+    const rnd = seededRandom(1000 + len);
+    seeds[len] = [...shuffled(common.sort(), rnd), ...shuffled(rare.sort(), rnd)];
+    seeds[len].common = common.length;
   }
 
   // طول کلمه‌ی اصلی برای مرحله‌ی ساخته‌شده‌ی شماره‌ی g (از صفر)
@@ -343,32 +393,43 @@ function createGenerator(dict) {
   }
 
   // از میان کلمه‌های ساختنی، تعدادی را انتخاب می‌کند که جدول متقاطعِ به‌هم‌وصل بسازند
-  function pickWords(seed, rnd, extra = 0) {
+  function pickWords(seed, rnd, rareOk) {
     const tier = TIERS[seed.length];
-    const target = Math.min(tier.min + Math.floor(rnd() * (tier.max - tier.min + 1)) + extra, tier.max);
     // کلمه‌های بلندتر اول امتحان می‌شوند، با کمی جابه‌جایی تصادفی تا مرحله‌ها شبیه هم نشوند
     const pool = wordsFrom(seed)
-      .filter((w) => w !== seed && w.length >= tier.shortest)
+      .filter((w) => w !== seed && w.length >= tier.shortest && (rareOk || levelOf(w) === 1))
       .map((w) => ({ w, k: w.length + rnd() * 1.5 }))
       .sort((a, b) => b.k - a.k)
       .map((x) => x.w);
+    // اگر کلمه‌های ساختنی خیلی بیشتر از جای جدول باشند، جدول کمی بزرگ‌تر می‌شود
+    const spare = pool.length - tier.max;
+    const extra = Math.max(0, Math.min(MAX_EXTRA, Math.floor(spare / 4)));
+    const base = tier.min + Math.floor(rnd() * (tier.max - tier.min + 1));
+    const target = Math.min(base + extra, MAX_WORDS);
     const picked = [seed];
+    let twos = 0;
+    let misses = 0;
     for (const w of pool) {
       if (picked.length >= target) break;
-      const layout = buildLayout([...picked, w], 6000);
-      if (layout.connected && layout.rows <= MAX_GRID && layout.cols <= MAX_GRID) picked.push(w);
+      // برای سرعت: اگر جدول به اندازه‌ی کافی کلمه دارد و چند کلمه‌ی پشت سر هم جا نشدند، بس است
+      if (picked.length >= tier.min && misses >= 4) break;
+      if (w.length === 2 && twos >= tier.twos) continue;
+      const layout = buildLayout([...picked, w], 800);
+      if (layout.connected && layout.rows <= MAX_GRID && layout.cols <= MAX_GRID) {
+        picked.push(w);
+        if (w.length === 2) twos++;
+        misses = 0;
+      } else {
+        misses++;
+      }
     }
     return picked;
-  }
-
-  function makeLevel(seed, rnd, extra) {
-    const words = pickWords(seed, rnd, extra);
-    return { letters: shuffled([...seed], rnd), words, seed };
   }
 
   return {
     seeds,
     wordsFrom,
+    levelOf,
 
     // مرحله‌ی شماره‌ی level (از صفر)، برای مرحله‌های ۱۱ به بعد
     level(level) {
@@ -376,9 +437,20 @@ function createGenerator(dict) {
       const len = lengthFor(g);
       const turn = turnOf(g, len);
       const list = seeds[len];
-      const seed = list[turn % list.length];
-      const round = Math.floor(turn / list.length); // بعد از تمام شدن کلمه‌ها، دور بعد کلمه‌های دیگری انتخاب می‌شود
-      return makeLevel(seed, seededRandom(hashText(seed) + round * 7919 + g), 0);
+      const rareOk = g >= RARE_WORDS_FROM;
+      // تا مرحله‌ی RARE_SEEDS_FROM فقط کلمه‌های اصلی رایج؛ بعد از آن همه‌ی فهرست
+      const span = g < RARE_SEEDS_FROM && list.common ? list.common : list.length;
+      const round = Math.floor(turn / span); // بعد از تمام شدن کلمه‌ها، دور بعد کلمه‌های دیگری انتخاب می‌شود
+      let best = null;
+      // اگر جدول این کلمه‌ی اصلی کم‌کلمه شد، کلمه‌ی اصلی بعدی امتحان می‌شود
+      for (let k = 0; k < 8; k++) {
+        const seed = list[(turn + k) % span];
+        const rnd = seededRandom(hashText(seed) + round * 7919 + g);
+        const words = pickWords(seed, rnd, rareOk || levelOf(seed) > 1);
+        if (!best || words.length > best.words.length) best = { letters: shuffled([...seed], rnd), words, seed };
+        if (words.length >= TIERS[len].min) break;
+      }
+      return best;
     },
 
     // کلمه‌های جایزه: کلمه‌های فهرست که از حروف مرحله ساخته می‌شوند ولی در جدول نیستند
@@ -389,6 +461,6 @@ function createGenerator(dict) {
 }
 
 if (typeof module === "object" && module.exports) {
-  module.exports = { normalize, faDigits, countLetters, parseLevels, buildLayout, parseWords, createGenerator, HANDMADE_LEVELS };
+  module.exports = { normalize, fold, letterCounts, canMake, faDigits, countLetters, parseLevels, buildLayout, parseWords, createGenerator, HANDMADE_LEVELS };
 }
 
