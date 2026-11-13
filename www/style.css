@@ -1091,3 +1091,287 @@ button { font-family: inherit; cursor: pointer; }
 .shop-pack.busy .ach-btn { opacity: 0.6; }
 .shop-pack .ach-name { justify-content: flex-start; }
 .shop-name { white-space: nowrap; }
+
+/* ---------- منو: مرحله‌ی روزانه و دکمه‌های کوچک‌تر ---------- */
+.home-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+.home-menu .menu-btn { padding: 11px 8px; font-size: 18px; }
+.home-menu .menu-btn.primary { grid-column: span 2; padding: 13px; font-size: 25px; }
+.home-menu .daily-btn { grid-column: span 2; }
+/* بدون فروشگاه (در مرورگر)، دکمه‌ی ظاهر همه‌ی ردیف را می‌گیرد */
+.home-menu:not(:has(#shopBtn:not(.hidden))) #themesBtn { grid-column: span 2; }
+.daily-btn {
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+}
+.daily-btn > svg { flex: none; width: 30px; height: 30px; color: var(--accent); }
+.daily-btn > span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.35; }
+.daily-btn.solved > svg { color: var(--coin); }
+
+/* ---------- نوار مناسبت‌ها (نوروز، یلدا، محرم) ---------- */
+.event-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px auto 0;
+  padding: 6px 16px 6px 10px;
+  max-width: 300px;
+  width: 100%;
+  border-radius: 999px;
+  border: 1.5px solid var(--event-edge, var(--edge));
+  background: var(--event-bg, var(--surface));
+  color: var(--event-ink, var(--ink));
+  box-shadow: 0 3px 0 var(--lip);
+  text-align: right;
+}
+.event-banner.hidden { display: none; }
+.event-icon { flex: none; width: 38px; height: 38px; }
+.event-icon svg { width: 100%; height: 100%; }
+.event-text { display: flex; flex-direction: column; line-height: 1.4; min-width: 0; }
+.event-text b { font-family: var(--display); font-weight: 400; font-size: 18px; }
+.event-text small { font-size: 12.5px; opacity: 0.85; }
+.event-banner.gift { animation: gift-glow 1.8s ease-in-out infinite; }
+@keyframes gift-glow { 50% { box-shadow: 0 3px 0 var(--lip), 0 0 0 5px rgba(226, 176, 74, 0.35); } }
+[data-event="nowruz"] { --event-bg: linear-gradient(90deg, #eaf7df, #fff6e6); --event-ink: #2f5a2a; --event-edge: #9fd08a; }
+[data-event="yalda"] { --event-bg: linear-gradient(90deg, #4a0f1c, #7a1a2c); --event-ink: #ffe9e0; --event-edge: #b8263a; }
+[data-event="muharram"] { --event-bg: linear-gradient(90deg, #1d1d22, #34343c); --event-ink: #eee7da; --event-edge: #4a4a52; }
+
+/* ---------- فصل‌ها ---------- */
+.chapter-banner {
+  position: absolute;
+  left: 50%;
+  width: min(84%, 340px);
+  height: 124px;
+  translate: -50% -50%;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--surface);
+  box-shadow: 0 4px 0 var(--lip), 0 10px 22px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+.chapter-scene { display: block; width: 100%; height: 100%; }
+.chapter-info {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 18px 12px 7px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.chapter-info b { font-family: var(--display); font-weight: 400; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter-info span { flex: none; font-size: 13px; font-weight: 700; }
+.chapter-banner.locked .chapter-scene { filter: grayscale(0.85) brightness(0.8); }
+.chapter-banner.locked { opacity: 0.75; }
+.chapter-banner.complete .chapter-info span { color: #ffe08a; }
+
+/* پایان فصل در پنجره‌ی پایان مرحله */
+.chapter-done { margin-top: 12px; }
+.chapter-done .chapter-scene { height: 84px; border-radius: 14px; box-shadow: 0 3px 0 var(--lip); }
+.chapter-done-text { display: flex; flex-direction: column; margin-top: 8px; color: var(--muted); font-size: 13.5px; }
+.chapter-done-text b { font-family: var(--display); font-weight: 400; font-size: 19px; color: var(--ink); }
+
+/* ---------- اشتراک نتیجه‌ی مرحله‌ی روزانه ---------- */
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.share-title { width: 100%; font-size: 14px; font-weight: 700; color: var(--muted); }
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: #7a8a8a;
+}
+.share-btn svg { width: 18px; height: 18px; }
+.share-btn.tg { background: #2aa3de; }
+.share-btn.wa { background: #25b05a; }
+.share-btn:active { transform: translateY(2px); }
+
+.setting-name small { display: block; font-family: "Vazirmatn", sans-serif; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.setting.hidden { display: none; }
+
+/* گوشی‌های کوتاه: منو جمع‌وجورتر، تا صحنه‌ی بالای منو جا داشته باشد */
+@media (max-height: 700px) {
+  :root[data-theme] .logo { font-size: 60px; }
+  .home-menu { margin-top: 12px; gap: 8px; }
+  :root .home-menu .menu-btn { padding: 7px 8px; font-size: 17px; }
+  :root .home-menu .menu-btn.primary { padding: 9px; font-size: 23px; }
+  :root[data-theme="ink"] .logo { line-height: 1.6; }
+  .daily-btn > svg { width: 26px; height: 26px; }
+  .event-banner { margin-top: 6px; padding: 3px 14px 3px 8px; }
+  .event-icon { width: 32px; height: 32px; }
+}
+.daily-btn small { line-height: 1.5; }
+[data-theme="ink"] .daily-btn > span { line-height: 1.9; }
+[data-theme="ink"] .daily-btn small { margin-top: 4px; }
+
+/* ---------- ظاهرهای پولی ---------- */
+.tcard { position: relative; }
+.tcard.locked .tcard-art { filter: saturate(0.75); }
+.tcard-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--coin);
+  color: #3a2a08;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.tcard-price svg { width: 13px; height: 13px; }
+.theme-card { text-align: center; }
+.theme-sheet-art { border: none; background: none; box-shadow: none; padding: 0; margin: 0 auto 6px; pointer-events: none; }
+.theme-sheet-art .tcard-art { width: 110px; height: 110px; font-size: 52px; }
+.theme-note { font-size: 13px; margin-top: 10px; }
+
+/* «جلوه‌های کمتر» (تنظیمات): انیمیشن‌های همیشگی تزئینی یک بار اجرا می‌شوند و ذره‌ها پنهان‌اند */
+:root[data-lite="1"] *,
+:root[data-lite="1"] *::before,
+:root[data-lite="1"] *::after { animation-iteration-count: 1 !important; }
+:root[data-lite="1"] .sand-wind,
+:root[data-lite="1"] .petal,
+:root[data-lite="1"] .workshop-light i { display: none !important; }
+
+/* ---------- صفحه‌ی بارگذاری ---------- */
+.loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #3b2d8f;
+  transition: opacity 0.45s ease;
+}
+.loading.done { opacity: 0; pointer-events: none; }
+.loading-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.loading-track {
+  position: absolute;
+  left: 50%;
+  bottom: calc(6% + env(safe-area-inset-bottom, 0px));
+  width: min(64%, 290px);
+  height: 14px;
+  translate: -50% 0;
+}
+.loading-bar {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgba(24, 14, 70, 0.6);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 238, 200, 0.7), 0 4px 14px rgba(20, 10, 60, 0.35);
+  overflow: hidden;
+}
+/* نوار از چپ به راست: خودِ پرکننده جابه‌جا می‌شود (transform)، نه پهنایش */
+.loading-bar span {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #fff1b0 0%, #ffd45c 45%, #f0a92a 100%);
+  transform: translateX(-100%);
+  will-change: transform;
+  overflow: hidden;
+}
+.loading-bar span::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: loading-shine 1.3s linear infinite;
+}
+@keyframes loading-shine {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(260%); }
+}
+/* کاشیِ حرف که سرِ نوار را همراهی می‌کند */
+.loading-tile {
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.loading-tile i {
+  position: absolute;
+  left: -22px;
+  bottom: 6px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fffaf0, #f3e6cc);
+  box-shadow: inset 0 -4px 0 #dcc7a0, 0 6px 12px rgba(30, 15, 70, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.6);
+  font-style: normal;
+  transform-origin: 50% 100%;
+  animation: loading-hop 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.loading-tile b {
+  font: 800 27px/1 "Vazirmatn", sans-serif;
+  color: #5a2fa8;
+  translate: 0 -2px;
+}
+.loading-tile::before {
+  /* سایه‌ی نرمِ زیر کاشی */
+  content: "";
+  position: absolute;
+  left: -16px;
+  bottom: -3px;
+  width: 32px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(255, 220, 120, 0.7), transparent 70%);
+  animation: loading-glow 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes loading-hop {
+  0%, 100% { transform: translateY(0) rotate(-6deg) scale(1, 1); }
+  12% { transform: translateY(0) rotate(-6deg) scale(1.08, 0.9); }
+  50% { transform: translateY(-12px) rotate(6deg) scale(0.97, 1.04); }
+  88% { transform: translateY(0) rotate(-6deg) scale(1.04, 0.95); }
+}
+@keyframes loading-glow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.5; }
+}
+/* پایان: کاشی یک دور می‌چرخد و بزرگ می‌شود */
+.loading.full .loading-tile i { animation: loading-pop 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards; }
+.loading.full .loading-tile::before { animation: none; opacity: 0; }
+@keyframes loading-pop {
+  0% { transform: translateY(0) rotate(-6deg) scale(1); }
+  60% { transform: translateY(-16px) rotate(360deg) scale(1.3); }
+  100% { transform: translateY(-10px) rotate(360deg) scale(1.15); }
+}
+.loading-spark {
+  position: absolute;
+  left: 0;
+  bottom: 30px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px;
+  border-radius: 50%;
+  background: #fff2b8;
+  box-shadow: 0 0 6px #ffd45c;
+  animation: loading-spark 0.7s ease-out forwards;
+}
+@keyframes loading-spark {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}

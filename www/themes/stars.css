@@ -58,7 +58,7 @@
   text-shadow: none;
   filter: drop-shadow(0 0 14px rgba(255, 217, 138, 0.55));
 }
-[data-theme="stars"] .logo { font-size: 84px; animation: shimmer 6s ease-in-out infinite; }
+[data-theme="stars"] .logo { font-size: 84px; animation: shimmer 6s ease-in-out 1; }
 [data-theme="stars"] .praise { background-position: 30% 0; filter: drop-shadow(0 0 10px rgba(255, 217, 138, 0.9)); }
 @keyframes shimmer {
   0%, 100% { background-position: 100% 0; }
@@ -208,7 +208,7 @@
 }
 .astrolabe { position: absolute; inset: 0; }
 .astrolabe svg { width: 100%; height: 100%; display: block; }
-[data-theme="stars"] .wheel-lines { filter: drop-shadow(0 0 4px #ffd98a) drop-shadow(0 0 10px rgba(255, 217, 138, 0.6)); }
+[data-theme="stars"] .wheel-lines { filter: drop-shadow(0 0 5px rgba(255, 217, 138, 0.9)); }
 [data-theme="stars"] .wheel-lines polyline { stroke-width: 2.2; }
 
 [data-theme="stars"] .letter {
@@ -229,9 +229,10 @@
 }
 [data-theme="stars"] .wheel.dim .letter { animation: star-flicker 0.45s linear; }
 
+/* فقط opacity، تا گوشی هر فریم حروف را از نو نکشد */
 @keyframes twinkle {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.45); }
+  0%, 100% { opacity: 0.82; }
+  50% { opacity: 1; }
 }
 @keyframes star-flicker {
   0%, 100% { opacity: 1; }
@@ -269,8 +270,8 @@
   animation: draw-in 3.2s ease-out both, breathe 5s ease-in-out 3.2s infinite;
 }
 @keyframes breathe {
-  0%, 100% { opacity: 0.92; filter: drop-shadow(0 0 8px rgba(120, 160, 200, 0.35)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(140, 180, 220, 0.55)); }
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
 }
 [data-theme="stars"] .scene-caption { color: #e9dcb8; }
 

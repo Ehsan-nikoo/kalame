@@ -25,12 +25,14 @@ const COIN_PACKS = [
   { id: "coins_1200", coins: 1200, name: "صندوق سکه", tag: "به‌صرفه" },
 ];
 
-// ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد
+// ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد.
+// ظاهرهای پولی: product همان «شناسه‌ی محصول» در پنل کافه‌بازار و مایکت است، از نوع «غیرمصرفی»
+// (یک بار خریده می‌شود و برای همیشه می‌ماند). price (تومان) فقط وقتی نشان داده می‌شود که قیمت از فروشگاه نرسیده باشد.
 const THEMES = [
-  { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی" },
-  { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود" },
-  { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله" },
-  { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد" },
+  { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی", product: "theme_stars", price: 99000 },
+  { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود", product: "theme_carpet", price: 79000 },
+  { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله", product: "theme_caravan", price: 59000 },
+  { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
 ];
@@ -46,6 +48,7 @@ const THEMES = [
 // chest: همه‌ی کلمه‌های صندوق، و چند کلمه از پر شدن بعدی جمع شده (fill)
 // stats: آمار دستاوردها (کلمه‌های جدول، مرحله‌های بی‌راهنما، ظاهرهای بازی‌شده، روزهای پشت سر هم)
 // achievements: هر دستاورد تا چه سطحی جایزه‌اش گرفته شده
+// dailyPuzzle: مرحله‌ی روزانه (daily.js)؛ events: عیدی‌های گرفته‌شده‌ی مناسبت‌ها
 // paid: شناسه‌ی خریدهایی (purchaseToken) که سکه‌شان داده شده، تا یک خرید دو بار سکه ندهد
 
 const SAVE_KEY = "kalame-save";
@@ -68,6 +71,18 @@ function readExtras(data) {
     },
     achievements: objOr(data.achievements),
     paid: strings(data.paid).slice(-100),
+    // مرحله‌ی روزانه: آخرین روزی که حل شده، چند روز پشت سر هم، بهترین رکورد، تعداد کل
+    dailyPuzzle: {
+      last: typeof objOr(data.dailyPuzzle).last === "string" ? data.dailyPuzzle.last : null,
+      run: intOr(objOr(data.dailyPuzzle).run, 0),
+      best: intOr(objOr(data.dailyPuzzle).best, 0),
+      count: intOr(objOr(data.dailyPuzzle).count, 0),
+      hinted: objOr(data.dailyPuzzle).hinted === true,
+    },
+    // عیدی‌های گرفته‌شده‌ی مناسبت‌ها (مثل nowruz-1406)
+    events: objOr(data.events),
+    // ظاهرهای پولی خریده‌شده (شناسه‌ی ظاهر)؛ از روی خریدهای فروشگاه هم دوباره ساخته می‌شود
+    owned: strings(data.owned),
   };
 }
 
@@ -120,6 +135,12 @@ let themeTeardown = null;
 
 function defineTheme(id, def) {
   themeDefs[id] = def;
+}
+
+// ظاهر رایگان است یا خریده شده؟
+function themeOwned(id) {
+  const t = THEMES.find((x) => x.id === id);
+  return !!t && (!t.product || save.owned.includes(id));
 }
 
 function applyTheme(id) {
@@ -196,12 +217,23 @@ function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+// برای آزمودن روزهای دیگر در مرورگر: index.html?today=2027-03-21
+const TODAY_OVERRIDE = new URLSearchParams(location.search).get("today");
+
+function nowDate() {
+  if (TODAY_OVERRIDE) {
+    const d = new Date(TODAY_OVERRIDE + "T" + new Date().toTimeString().slice(0, 8));
+    if (!isNaN(d)) return d;
+  }
+  return new Date();
+}
+
 function todayKey() {
-  return dateKey(new Date());
+  return dateKey(nowDate());
 }
 
 function yesterdayKey() {
-  const d = new Date();
+  const d = nowDate();
   d.setDate(d.getDate() - 1);
   return dateKey(d);
 }
@@ -251,6 +283,7 @@ function claimDailyReward() {
   flyCoins(coins, fromRect, document.querySelector("#screenHome .coins"));
   noteAchievements();
   updateAchBadge();
+  askReminders(); // بار اول اجازه‌ی اعلان یادآوری را می‌پرسد (daily.js)
 }
 
 // آیا کلمه با این حروف (و تعدادشان) ساخته می‌شود؟
@@ -278,7 +311,7 @@ function startPuzzle(level, index, key) {
   layout = buildLayout(level.words);
 
   const name = levelName(index);
-  $("levelLabel").textContent = `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
+  $("levelLabel").textContent = isDaily() ? dailyLabel() : `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
   renderBoard();
   renderWheel();
   hidePreview();
@@ -292,8 +325,8 @@ function startPuzzle(level, index, key) {
   for (const w of found) fillWord(w, false);
   updateCoins();
   updateChest();
-  emit("level", { level: index });
-  prepareLevel(index + 1);
+  emit("level", { level: index, daily: isDaily() });
+  if (!isDaily()) prepareLevel(index + 1);
 }
 
 // مرحله‌ی بعد را وقتی گوشی بیکار است از قبل می‌سازد، تا رفتن به مرحله‌ی بعد مکث نداشته باشد
@@ -921,13 +954,15 @@ function hidePreview() {
 // ---------- پایان مرحله ----------
 
 function finishLevel() {
+  const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
+  if (isDaily()) return finishDaily(hinted); // daily.js
   locked = true;
   const first = current === save.unlocked;
-  const reward = first ? COINS_PER_LEVEL : 0;
+  // پایان هر فصل (۲۰ مرحله) سکه‌ی بیشتری دارد (chapters.js)
+  const reward = first ? COINS_PER_LEVEL + (endsChapter(current) ? CHAPTER_REWARD : 0) : 0;
   if (first) save.unlocked++;
   save.coins += reward;
   // آمار دستاوردها؛ کلمه‌ها و «بدون راهنما» فقط بار اولِ هر مرحله شمرده می‌شوند
-  const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
   if (first) {
     save.stats.words = (save.stats.words || 0) + puzzle.words.length;
     if (!hinted) save.stats.noHint++;
@@ -956,6 +991,7 @@ function showComplete(first, reward) {
     : first ? `مرحله‌ی ${n} تموم شد.` : `مرحله‌ی ${n} دوباره تموم شد.`;
   $("overlayReward").classList.toggle("hidden", !reward);
   $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(reward);
+  if (first && endsChapter(current)) $("overlayText").after(chapterDoneCard(current));
   if (newAchievement) {
     $("overlayReward").insertAdjacentHTML("afterend", `<div class="extra ach-note">دستاورد تازه! از منو بگیرش</div>`);
     newAchievement = false;
@@ -1031,7 +1067,8 @@ function flyCoins(amount, from, target) {
 
 // جشن پایان مرحله: تکه‌های رنگی از بالای پنجره بیرون می‌پرند (شکل و رنگشان را هر ظاهر تعیین می‌کند)
 function celebrate() {
-  if (calm()) return;
+  const ev = eventNow();
+  if (calm() || (ev && ev.quiet)) return; // در روزهای سوگواری بی‌کاغذرنگی
   const r = document.querySelector("#overlay .card").getBoundingClientRect();
   const cx = r.left + r.width / 2;
   const cy = r.top + 30;
@@ -1076,9 +1113,11 @@ function initStore() {
     $("shopBtn").classList.remove("hidden");
     for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
     if (!info.ready) return;
-    nativeStore.products({ ids: COIN_PACKS.map((p) => p.id) }).then((res) => {
+    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product)];
+    nativeStore.products({ ids }).then((res) => {
       for (const p of res.products || []) shopPrices[p.id] = p.price;
       if (screenNow === "shop") renderShop();
+      if (screenNow === "themes") renderThemes();
     }).catch(() => {});
     deliverPending();
   }).catch(() => {});
@@ -1092,6 +1131,8 @@ function deliverPending() {
 }
 
 function deliver(purchase, fromEl) {
+  const look = THEMES.find((t) => t.product && t.product === purchase.id);
+  if (look) return deliverTheme(look);
   const pack = COIN_PACKS.find((p) => p.id === purchase.id);
   if (!pack || !purchase.token) return;
   const isNew = !save.paid.includes(purchase.token);
@@ -1201,6 +1242,7 @@ function route() {
   hideMeanings();
   hideLevelSheet();
   hideChest();
+  hideThemeSheet();
 
   if (name === "themes") renderThemes();
   if (name === "home") renderHome();
@@ -1232,25 +1274,104 @@ function renderThemes() {
   const list = $("themeList");
   list.innerHTML = "";
   for (const t of THEMES) {
+    const owned = themeOwned(t.id);
     const card = document.createElement("button");
     card.type = "button";
-    card.className = "tcard tc-" + t.id + (save.theme === t.id ? " selected" : "");
+    card.className = "tcard tc-" + t.id + (save.theme === t.id && owned ? " selected" : "") + (owned ? "" : " locked");
     card.innerHTML = `<span class="tcard-art"></span><span class="tcard-name"></span><span class="tcard-desc"></span>`;
     card.querySelector(".tcard-name").textContent = t.name;
     card.querySelector(".tcard-desc").textContent = t.desc;
+    if (!owned) {
+      const tag = document.createElement("span");
+      tag.className = "tcard-price";
+      tag.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.2" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg><span></span>`;
+      tag.querySelector("span").textContent = themePrice(t);
+      card.appendChild(tag);
+    }
     card.onclick = () => chooseTheme(t.id);
     list.appendChild(card);
   }
   $("themesBack").classList.toggle("hidden", !save.theme);
 }
 
+// قیمت از فروشگاه، یا قیمتی که در THEMES نوشته شده
+function themePrice(t) {
+  if (shopPrices[t.product]) return faDigits(shopPrices[t.product]);
+  return `${faDigits(t.price / 1000)} هزار تومان`;
+}
+
 function chooseTheme(id) {
+  if (!themeOwned(id)) return showThemeSheet(THEMES.find((t) => t.id === id));
   const firstTime = !save.theme;
   save.theme = id;
   persist();
   applyTheme(id);
   if (firstTime) route();
   else goHome();
+}
+
+// ---------- خرید ظاهر ----------
+
+let themeOnSheet = null;
+
+function showThemeSheet(t) {
+  themeOnSheet = t;
+  const art = $("themeSheetArt");
+  art.className = "tcard tc-" + t.id + " theme-sheet-art";
+  $("themeSheetName").textContent = t.name;
+  $("themeSheetDesc").textContent = t.desc;
+  const btn = $("themeBuy");
+  const canBuy = !!(store && store.ready);
+  btn.disabled = !canBuy || shopBusy;
+  btn.textContent = `خرید با ${themePrice(t)}`;
+  // در مرورگر خرید نداریم؛ برای آزمودن، ظاهر بی‌پرداخت باز می‌شود
+  $("themeTry").classList.toggle("hidden", !!nativeStore);
+  $("themeSheetNote").textContent = canBuy ? "یک بار می‌خری و همیشه مال خودته."
+    : nativeStore ? (store && store.reason) || "خرید الان ممکن نیست."
+    : "خرید فقط در نسخه‌ی بازار و مایکت ممکن است.";
+  $("themeSheet").classList.remove("hidden");
+}
+
+function hideThemeSheet() {
+  $("themeSheet").classList.add("hidden");
+  themeOnSheet = null;
+}
+
+function buyTheme() {
+  const t = themeOnSheet;
+  if (!t || shopBusy || !store || !store.ready) return;
+  shopBusy = true;
+  $("themeBuy").disabled = true;
+  nativeStore.buy({ id: t.product })
+    .then((purchase) => deliver(purchase, null))
+    .catch((err) => {
+      if (err && err.code === "CANCELED") return;
+      if (err && err.code === "ALREADY_OWNED") return deliverPending();
+      $("themeSheetNote").textContent = (err && err.message) || "خرید انجام نشد. دوباره امتحان کن.";
+    })
+    .finally(() => {
+      shopBusy = false;
+      if (themeOnSheet) $("themeBuy").disabled = false;
+    });
+}
+
+// ظاهر خریده‌شده: برای همیشه باز است و مصرف نمی‌شود (برای همین بعد از نصب دوباره هم برمی‌گردد)
+function deliverTheme(t) {
+  const isNew = !save.owned.includes(t.id);
+  if (isNew) {
+    save.owned.push(t.id);
+    persist();
+  }
+  // بازیکن قبلاً این ظاهر را انتخاب کرده بود و تا رسیدن خرید «ساده» می‌دید
+  if (save.theme === t.id && activeTheme !== t.id) {
+    applyTheme(t.id);
+    route();
+  }
+  if (themeOnSheet && themeOnSheet.id === t.id) {
+    hideThemeSheet();
+    if (isNew) sound("reward");
+    chooseTheme(t.id);
+  } else if (screenNow === "themes") renderThemes();
 }
 
 function renderHome() {
@@ -1264,10 +1385,11 @@ function renderHome() {
   $("continueBtn").disabled = !ready;
   if (ready) prepareLevel(next);
   updateAchBadge();
-  const name = ready ? levelName(next) : "";
+  renderDailyBtn(); // daily.js
+  renderEvent();
   $("continueSub").textContent = allDone && ready
     ? "همه‌ی مرحله‌ها تموم شده"
-    : `مرحله‌ی ${faDigits(next + 1)}` + (name ? " · " + name : "");
+    : `مرحله‌ی ${faDigits(next + 1)} · ${chapterInfo(chapterOf(next)).name}`;
 
   // اولین بار هر روز که منو باز می‌شود، جایزه‌ی روزانه نشان داده می‌شود
   if (rewardDue()) setTimeout(() => {
@@ -1293,13 +1415,14 @@ const MAP_PAD = 80;    // فاصله‌ی اولین و آخرین مرحله ا
 const mapX = (i) => 50 + 26 * Math.sin(i * 1.15); // جای افقی هر مرحله، به درصد
 
 const MAP_AHEAD = 10;   // چند مرحله‌ی قفل جلوتر از مرحله‌ی فعلی روی نقشه دیده شود
+const MAP_GAP = 170;   // جای کارت هر فصل، زیر اولین مرحله‌اش
 
 function renderLevels() {
   const map = $("levelMap");
   // مرحله‌ها بی‌پایان‌اند؛ نقشه تا چند مرحله جلوتر از مرحله‌ی فعلی کشیده می‌شود
   const n = generator ? Math.max(save.unlocked + 1 + MAP_AHEAD, handmade.length) : handmade.length;
-  const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP;
-  const y = (i) => H - MAP_PAD - i * MAP_STEP;
+  const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP + (chapterOf(Math.max(n - 1, 0)) + 1) * MAP_GAP;
+  const y = (i) => H - MAP_PAD - i * MAP_STEP - (chapterOf(i) + 1) * MAP_GAP;
   // منحنی نرم از مرحله‌ی اول تا مرحله‌ی count
   const road = (count) => {
     let d = `M${mapX(0)} ${y(0)}`;
@@ -1356,6 +1479,13 @@ function renderLevels() {
     }
     prevName = name;
 
+    // کارت فصل (اسم و منظره) زیر اولین مرحله‌ی هر فصل
+    if (i % CHAPTER_SIZE === 0) {
+      const banner = chapterBanner(chapterOf(i));
+      banner.style.top = y(i) + (MAP_STEP + MAP_GAP) / 2 - 10 + "px";
+      track.appendChild(banner);
+    }
+
     if (status === "current") {
       const marker = document.createElement("span");
       marker.className = "map-marker";
@@ -1404,6 +1534,18 @@ $("chestSheet").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) hideChest();
 });
 $("themesBtn").addEventListener("click", () => open("themes"));
+$("themeBuy").addEventListener("click", buyTheme);
+$("themeClose").addEventListener("click", hideThemeSheet);
+$("themeSheet").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) hideThemeSheet();
+});
+$("themeTry").addEventListener("click", () => {
+  const t = themeOnSheet;
+  if (!t) return;
+  save.owned.push(t.id);
+  hideThemeSheet();
+  chooseTheme(t.id);
+});
 $("shopBtn").addEventListener("click", openShop);
 for (const el of document.querySelectorAll(".coins")) {
   el.addEventListener("click", () => {
@@ -1414,18 +1556,81 @@ for (const btn of document.querySelectorAll("[data-back]")) btn.addEventListener
 $("hintLetterBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_LETTER);
 $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_WORD);
 
+// ---------- صفحه‌ی بارگذاری (در index.html) ----------
+const LOADING_MIN_MS = 2000; // دست‌کم این‌قدر دیده می‌شود تا تصویرش به چشم بیاید
+
+// نمایش نرم: عدد نشان‌داده‌شده هر فریم کمی به هدف نزدیک می‌شود و تا وقتی کار تمام نشده،
+// آرام خودش جلو می‌رود تا نوار هیچ‌وقت نایستد. فقط transform عوض می‌شود (بدون چیدمان دوباره).
+const loadingBar = { target: 0, shown: 0, raf: 0, done: false, last: 0 };
+
+function loadingFrame(now) {
+  const fill = $("loadingFill"), tile = $("loadingTile"), track = $("loadingTrack");
+  if (!fill || !tile || !track) return;
+  const dt = Math.min(64, now - (loadingBar.last || now));
+  loadingBar.last = now;
+  if (!loadingBar.done) loadingBar.target = Math.min(0.9, loadingBar.target + dt * 0.00006);
+  const goal = loadingBar.done ? 1 : loadingBar.target;
+  loadingBar.shown += (goal - loadingBar.shown) * (1 - Math.exp(-dt / (loadingBar.done ? 160 : 260)));
+  const p = loadingBar.shown;
+  fill.style.transform = "translateX(" + ((p - 1) * 100).toFixed(2) + "%)";
+  tile.style.transform = "translateX(" + (p * track.offsetWidth).toFixed(1) + "px)";
+  if (loadingBar.done && p > 0.995) return;
+  loadingBar.raf = requestAnimationFrame(loadingFrame);
+}
+
+function loadingProgress(frac) {
+  loadingBar.target = Math.max(loadingBar.target, Math.min(frac, 1));
+  if (!loadingBar.raf) loadingBar.raf = requestAnimationFrame(loadingFrame);
+}
+
+function loadingBurst() {
+  const tile = $("loadingTile");
+  if (!tile) return;
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement("span");
+    s.className = "loading-spark";
+    const a = (i / 10) * Math.PI * 2;
+    s.style.setProperty("--dx", Math.cos(a) * 46 + "px");
+    s.style.setProperty("--dy", Math.sin(a) * 46 + "px");
+    tile.appendChild(s);
+  }
+}
+
+function hideLoading() {
+  const el = $("loading");
+  if (!el) return;
+  // تا کمینه‌ی زمان نمایش، نوار آرام جلو می‌رود؛ بعد تا ته پر می‌شود و کاشی می‌پرد
+  const wait = Math.max(0, LOADING_MIN_MS - 700 - (Date.now() - (window.loadingStart || 0)));
+  loadingProgress(0.85);
+  setTimeout(() => {
+    loadingBar.done = true;
+    loadingProgress(1);
+    setTimeout(() => {
+      el.classList.add("full");
+      loadingBurst();
+    }, 380);
+    setTimeout(() => {
+      el.classList.add("done");
+      setTimeout(() => el.remove(), 500);
+    }, 1000);
+  }, wait);
+}
+
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
 document.addEventListener("DOMContentLoaded", () => {
-  applyTheme(save.theme || "plain");
+  // ظاهر پولی‌ای که (هنوز) خریده نشده، تا رسیدن خریدها از فروشگاه «ساده» نشان داده می‌شود
+  applyTheme(save.theme && themeOwned(save.theme) ? save.theme : "plain");
   initStore();
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 
+  loadingProgress(0.15);
+  let loaded = 0;
   const load = (file) =>
     fetch(file, { cache: "no-store" }).then((res) => {
       if (!res.ok) throw new Error(res.status);
       return res.text();
-    });
+    }).finally(() => loadingProgress(0.15 + 0.25 * ++loaded));
   const notRead = (file) => () =>
     showErrors(`فایل ${file} خوانده نشد.`, ["بازی را با start-game.cmd یا دستور npm start اجرا کنید."]);
 
@@ -1456,5 +1661,6 @@ document.addEventListener("DOMContentLoaded", () => {
     estimateWordStats();
     noteAchievements();
     route();
+    hideLoading();
   });
 });

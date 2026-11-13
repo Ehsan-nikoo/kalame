@@ -32,6 +32,15 @@ function canMake(need, have) {
   return true;
 }
 
+// نشانه‌ی ۳۲بیتی حروف یک کلمه، برای رد کردن سریع: اگر کلمه حرفی دارد که در حروف دایره نیست،
+// بیت آن حرف در mask دایره خاموش است. (چند حرف ممکن است یک بیت داشته باشند؛ برای همین بعد از آن
+// canMake هم بررسی می‌شود.)
+function letterMask(text) {
+  let m = 0;
+  for (const ch of fold(text)) m |= 1 << (ch.codePointAt(0) % 32);
+  return m;
+}
+
 function faDigits(n) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
 }
@@ -323,7 +332,7 @@ const MAX_GRID = 9; // بیشترین سطر یا ستون جدول، تا رو�
 
 function createGenerator(dict, levels = new Map()) {
   const levelOf = (w) => levels.get(w) || 1;
-  const entries = [...dict.keys()].map((w) => ({ w, need: letterCounts(w) }));
+  const entries = [...dict.keys()].map((w) => ({ w, need: letterCounts(w), mask: letterMask(w), len: w.length }));
   const subCache = new Map();
 
   // همه‌ی کلمه‌های فهرست که از این حروف ساخته می‌شوند
@@ -331,7 +340,8 @@ function createGenerator(dict, levels = new Map()) {
     const key = [...fold(letters)].sort().join("");
     if (!subCache.has(key)) {
       const have = letterCounts(letters);
-      subCache.set(key, entries.filter((e) => e.w.length <= letters.length && canMake(e.need, have)).map((e) => e.w));
+      const mask = letterMask(letters), len = letters.length;
+      subCache.set(key, entries.filter((e) => e.len <= len && (e.mask & ~mask) === 0 && canMake(e.need, have)).map((e) => e.w));
     }
     return subCache.get(key);
   }
@@ -393,12 +403,15 @@ function createGenerator(dict, levels = new Map()) {
   }
 
   // از میان کلمه‌های ساختنی، تعدادی را انتخاب می‌کند که جدول متقاطعِ به‌هم‌وصل بسازند
-  function pickWords(seed, rnd, rareOk) {
+  // first: کلمه‌هایی که اگر ساخته شوند، زودتر از بقیه امتحان می‌شوند (مثلاً کلمه‌های مناسبت‌ها)
+  function pickWords(seed, rnd, rareOk, first = []) {
     const tier = TIERS[seed.length];
     // کلمه‌های بلندتر اول امتحان می‌شوند، با کمی جابه‌جایی تصادفی تا مرحله‌ها شبیه هم نشوند
-    const pool = wordsFrom(seed)
-      .filter((w) => w !== seed && w.length >= tier.shortest && (rareOk || levelOf(w) === 1))
-      .map((w) => ({ w, k: w.length + rnd() * 1.5 }))
+    const have = letterCounts(seed);
+    const more = first.filter((w) => w !== seed && !wordsFrom(seed).includes(w) && canMake(letterCounts(w), have));
+    const pool = [...wordsFrom(seed), ...more]
+      .filter((w) => w !== seed && (first.includes(w) || (w.length >= tier.shortest && (rareOk || levelOf(w) === 1))))
+      .map((w) => ({ w, k: w.length + rnd() * 1.5 + (first.includes(w) ? 100 : 0) }))
       .sort((a, b) => b.k - a.k)
       .map((x) => x.w);
     // اگر کلمه‌های ساختنی خیلی بیشتر از جای جدول باشند، جدول کمی بزرگ‌تر می‌شود
@@ -450,6 +463,46 @@ function createGenerator(dict, levels = new Map()) {
         if (!best || words.length > best.words.length) best = { letters: shuffled([...seed], rnd), words, seed };
         if (words.length >= TIERS[len].min) break;
       }
+      return best;
+    },
+
+    // مرحله‌ی روزانه: برای هر روز (day مثل "2026-11-13") برای همه‌ی بازیکن‌ها یکسان است.
+    // prefer: کلمه‌های مناسبت (نوروز، یلدا، ...)؛ تا جایی که بشود، چند تا از آن‌ها در جدول می‌آیند.
+    daily(day, prefer = []) {
+      const rnd0 = seededRandom(hashText("daily:" + day));
+      const r = rnd0();
+      const len = r < 0.6 ? 5 : 6;
+      const commons = (L) => seeds[L].slice(0, seeds[L].common || seeds[L].length);
+      const want = [...new Set(prefer)]; // می‌توانند از extra-words.txt هم باشند
+      let cands = [];
+      if (want.length) {
+        // کلمه‌های اصلی‌ای که بیشترین کلمه‌ی مناسبت را می‌سازند، اول
+        const needs = want.map(letterCounts);
+        const scored = [];
+        for (const L of [5, 6, 7]) {
+          for (const s of commons(L)) {
+            const have = letterCounts(s);
+            const n = needs.filter((need) => canMake(need, have)).length + (want.includes(s) ? 1 : 0);
+            if (n) scored.push({ s, n: n + rnd0() * 0.5 });
+          }
+        }
+        cands = scored.sort((a, b) => b.n - a.n).slice(0, 12).map((x) => x.s);
+      }
+      const plain = cands.length === 0;
+      if (plain) cands = commons(len);
+      const start = plain ? Math.floor(rnd0() * cands.length) : 0;
+      let best = null;
+      for (let k = 0; k < Math.min(8, cands.length); k++) {
+        const seed = cands[(start + k * 17) % cands.length];
+        const rnd = seededRandom(hashText(seed + "|" + day));
+        const words = pickWords(seed, rnd, false, want);
+        const hits = words.filter((w) => want.includes(w)).length;
+        const ok = words.length >= TIERS[seed.length].min;
+        const score = (ok ? 1000 : 0) + hits * 100 + words.length;
+        if (!best || score > best.score) best = { letters: shuffled([...seed], rnd), words, seed, score };
+        if (ok && (plain || hits >= 2)) break;
+      }
+      delete best.score;
       return best;
     },
 

@@ -11,14 +11,14 @@ const E = require("../www/engine.js");
 
 const www = path.join(__dirname, "..", "www");
 
-// engine.js، game.js و feel.js در مرورگر کنار هم اجرا می‌شوند؛ اسم یکسان در هر دو، یکی را بی‌صدا خراب می‌کند
+// فایل‌های بازی در مرورگر کنار هم اجرا می‌شوند؛ اسم یکسان در دو فایل، یکی را بی‌صدا خراب می‌کند
 const topNames = (file) => new Set([...fs.readFileSync(path.join(www, file), "utf8")
   .matchAll(/^(?:function|const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]));
-const scriptNames = ["engine.js", "game.js", "feel.js"].map(topNames);
+const scriptNames = ["engine.js", "game.js", "feel.js", "chapters.js", "daily.js"].map(topNames);
 for (let i = 0; i < scriptNames.length; i++) {
   for (let j = i + 1; j < scriptNames.length; j++) {
     const clash = [...scriptNames[i]].filter((n) => scriptNames[j].has(n));
-    assert.deepStrictEqual(clash, [], "اسم‌های یکسان در فایل‌های بازی (engine.js، game.js، feel.js)");
+    assert.deepStrictEqual(clash, [], "اسم‌های یکسان در فایل‌های بازی (engine.js، game.js، feel.js، chapters.js، daily.js)");
   }
 }
 const { dict, levels, errors: wordErrors } = E.parseWords(fs.readFileSync(path.join(www, "words.txt"), "utf8"));
@@ -77,6 +77,31 @@ assert.deepStrictEqual(gen.level(57), E.createGenerator(dict, levels).level(57),
 assert.ok(E.canMake(E.letterCounts("آب"), E.letterCounts("باران")), "«آب» باید با حروف «باران» ساخته شود");
 assert.strictEqual(E.fold("آسمان"), E.fold("اسمان"));
 
+// مرحله‌ی روزانه: برای هر روز یکسان، سالم، و در روزهای مناسبت با کلمه‌های همان مناسبت
+const extraDict = E.parseWords(fs.readFileSync(path.join(www, "extra-words.txt"), "utf8")).dict;
+const okWord = (w) => dict.has(w) || extraDict.has(w);
+let tDaily = Date.now();
+for (let k = 0; k < 120; k++) {
+  const day = new Date(Date.UTC(2026, 10, 1 + k)).toISOString().slice(0, 10);
+  const lvl = gen.daily(day);
+  if (k < 3) assert.deepStrictEqual(lvl, E.createGenerator(dict, levels).daily(day), "مرحله‌ی روزانه قابل‌تکرار نیست: " + day);
+  assert(lvl.words.length >= 4, "مرحله‌ی روزانه کم‌کلمه است: " + day);
+  const lay = E.buildLayout(lvl.words);
+  assert(lay.connected && lay.rows <= 9 && lay.cols <= 9, "جدول مرحله‌ی روزانه جا نمی‌شود: " + day);
+}
+tDaily = Date.now() - tDaily;
+const eventsSrc = fs.readFileSync(path.join(www, "daily.js"), "utf8");
+for (const m of eventsSrc.matchAll(/words: \[([^\]]+)\]/g)) {
+  const words = [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
+  const missing = words.filter((w) => !okWord(w));
+  assert.deepStrictEqual(missing, [], "کلمه‌ی مناسبت در words.txt یا extra-words.txt نیست");
+  for (let k = 0; k < 5; k++) {
+    const lvl = gen.daily("2030-01-0" + (k + 1), words);
+    assert(lvl.words.some((w) => words.includes(w)), "مرحله‌ی مناسبت کلمه‌ی مناسبت ندارد: " + words[0]);
+    assert(lvl.words.every(okWord), "کلمه‌ی ناشناخته در مرحله‌ی مناسبت");
+  }
+}
+console.log(`مرحله‌ی روزانه: ۱۲۰ روز سالم (${tDaily}ms)`);
 const rare = [...levels.values()].filter((l) => l === 2).length;
 const bonusCounts = generated.map((l) => gen.bonusWords(l).length);
 console.log(`بیشترین کلمه‌ی جایزه در یک مرحله: ${Math.max(...bonusCounts)}، میانگین: ${(bonusCounts.reduce((a, b) => a + b, 0) / bonusCounts.length).toFixed(1)}`);

@@ -15,7 +15,9 @@ const TEXT_SIZES = [
 ];
 
 function loadSettings() {
-  const fresh = { sound: true, haptics: true, text: "normal", tutorial: false };
+  // گوشی‌های کم‌حافظه از اول با «جلوه‌های کمتر» شروع می‌کنند
+  const weak = !!(navigator.deviceMemory && navigator.deviceMemory <= 3);
+  const fresh = { sound: true, haptics: true, text: "normal", tutorial: false, reminders: true, askedNotes: false, lite: weak };
   try {
     const data = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     if (!data || typeof data !== "object") return fresh;
@@ -24,6 +26,9 @@ function loadSettings() {
       haptics: data.haptics !== false,
       text: TEXT_SIZES.some((t) => t.id === data.text) ? data.text : "normal",
       tutorial: data.tutorial === true, // آموزش مرحله‌ی اول دیده شده؟
+      reminders: data.reminders !== false, // اعلان یادآوری روزانه (daily.js)
+      askedNotes: data.askedNotes === true, // اجازه‌ی اعلان یک بار پرسیده شده؟
+      lite: typeof data.lite === "boolean" ? data.lite : weak, // جلوه‌های کمتر برای گوشی‌های ضعیف
     };
   } catch {
     return fresh;
@@ -42,6 +47,7 @@ function saveSettings() {
 
 function applyTextSize() {
   document.documentElement.dataset.text = settings.text;
+  document.documentElement.dataset.lite = settings.lite ? "1" : "";
 }
 
 // ---------------------------------------------------------------------------
@@ -279,6 +285,8 @@ function stopTutorial() {
 function renderSettings() {
   $("setSound").checked = settings.sound;
   $("setHaptics").checked = settings.haptics;
+  $("setReminders").checked = settings.reminders;
+  $("setLite").checked = settings.lite;
   for (const btn of document.querySelectorAll("#setText button")) {
     btn.classList.toggle("selected", btn.dataset.size === settings.text);
   }
@@ -309,6 +317,14 @@ function setupSettings() {
     settings.haptics = e.target.checked;
     saveSettings();
     haptic("medium");
+  });
+  $("setLite").addEventListener("change", (e) => {
+    settings.lite = e.target.checked;
+    saveSettings();
+    applyTextSize();
+    // ظاهر از نو ساخته می‌شود تا جلوه‌هایش با تنظیم تازه شروع شوند
+    applyTheme(activeTheme);
+    sound("tap");
   });
   $("setTutorial").addEventListener("click", () => {
     settings.tutorial = false;

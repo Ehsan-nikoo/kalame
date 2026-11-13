@@ -13,6 +13,26 @@
   <link rel="stylesheet" href="themes/ink.css">
 </head>
 <body>
+  <!-- صفحه‌ی بارگذاری: هر بار یکی از تصویرهای پوشه‌ی loading (نه همانی که دفعه‌ی قبل دیده شد) -->
+  <div class="loading" id="loading" aria-label="در حال بارگذاری">
+    <img class="loading-img" id="loadingImg" alt="">
+    <div class="loading-track" id="loadingTrack" dir="ltr">
+      <div class="loading-bar"><span id="loadingFill"></span></div>
+      <div class="loading-tile" id="loadingTile"><i><b id="loadingLetter">ک</b></i></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var count = 11, last = 0, pick;
+      try { last = parseInt(localStorage.getItem("kalame-loading"), 10) || 0; } catch (e) {}
+      do { pick = 1 + Math.floor(Math.random() * count); } while (pick === last && count > 1);
+      try { localStorage.setItem("kalame-loading", String(pick)); } catch (e) {}
+      document.getElementById("loadingImg").src = "loading/" + pick + ".webp";
+      var letters = "کلمهابپتسشرزدنومیعفقگح";
+      document.getElementById("loadingLetter").textContent = letters.charAt(Math.floor(Math.random() * letters.length));
+      window.loadingStart = Date.now();
+    })();
+  </script>
   <!-- انتخاب ظاهر -->
   <section class="screen hidden" id="screenThemes">
     <header class="screen-top">
@@ -35,8 +55,13 @@
     <div class="home-scene" id="homeScene"></div>
     <h1 class="logo">کلمه</h1>
     <p class="home-sub" id="homeSub"></p>
+    <button class="event-banner hidden" id="eventBanner" type="button"></button>
     <nav class="home-menu">
       <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
+      <button class="menu-btn daily-btn" id="dailyBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M12 12.6l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3Z" fill="currentColor"/></svg>
+        <span>مرحله‌ی روزانه<small id="dailySub"></small></span>
+      </button>
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
       <button class="menu-btn" id="achBtn" type="button">دستاوردها<span class="badge hidden" id="achBadge"></span></button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
@@ -85,6 +110,14 @@
       <label class="setting">
         <span class="setting-name">لرزش</span>
         <input type="checkbox" class="switch" id="setHaptics">
+      </label>
+      <label class="setting">
+        <span class="setting-name">یادآوری روزانه<small>اعلان ساعت ۷ عصر، وقتی جایزه یا مرحله‌ی روزانه مانده</small></span>
+        <input type="checkbox" class="switch" id="setReminders">
+      </label>
+      <label class="setting">
+        <span class="setting-name">جلوه‌های کمتر<small>برای گوشی‌هایی که بازی روی آن‌ها کند است</small></span>
+        <input type="checkbox" class="switch" id="setLite">
       </label>
       <div class="setting column">
         <span class="setting-name">اندازه‌ی متن</span>
@@ -216,6 +249,19 @@
     </div>
   </div>
 
+  <!-- خرید ظاهر پولی -->
+  <div class="sheet center hidden" id="themeSheet" role="dialog" aria-modal="true" aria-labelledby="themeSheetName">
+    <div class="card sheet-card theme-card">
+      <div id="themeSheetArt"><span class="tcard-art"></span></div>
+      <div class="card-title" id="themeSheetName"></div>
+      <div class="card-text" id="themeSheetDesc"></div>
+      <button class="card-btn" id="themeBuy" type="button"></button>
+      <div class="card-text theme-note" id="themeSheetNote"></div>
+      <button class="card-link hidden" id="themeTry" type="button">باز کردن آزمایشی (فقط در مرورگر)</button>
+      <button class="card-link" id="themeClose" type="button">بستن</button>
+    </div>
+  </div>
+
   <!-- جایزه‌ی روزانه (اولین بار هر روز که منو باز می‌شود) -->
   <div class="sheet center hidden" id="rewardSheet" role="dialog" aria-modal="true" aria-label="جایزه‌ی روزانه">
     <div class="card reward-card">
@@ -232,6 +278,8 @@
   <script src="sound.js"></script>
   <script src="game.js"></script>
   <script src="feel.js"></script>
+  <script src="chapters.js"></script>
+  <script src="daily.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
   <script src="themes/caravan-scenes.js"></script>
