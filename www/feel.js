@@ -155,7 +155,8 @@ function haptic(kind = "light") {
 // واکنش صدا و لرزش به اتفاق‌های بازی (از emit در game.js صدا زده می‌شود)
 function feel(name, detail) {
   switch (name) {
-    case "found": sound("found"); haptic("medium"); break;
+    // هر ظاهر صدای «کلمه پیدا شد» خودش را دارد (sound.js)؛ صدای عمومی فقط وقتی آن نیست
+    case "found": if (!window.KalameSound) sound("found"); haptic("medium"); break;
     case "bonus": sound("bonus"); haptic("light"); break;
     case "repeat": sound("repeat"); break;
     case "wrong": sound("wrong"); haptic("error"); break;

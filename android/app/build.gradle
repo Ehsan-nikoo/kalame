@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+// کلید عمومی فروشگاه: اول از متغیر محیطی (Secrets گیت‌هاب)، بعد از gradle.properties
+def storeKey(String env, String prop) {
+    def v = System.getenv(env) ?: (project.findProperty(prop) ?: "")
+    return v.toString().replaceAll("\\s", "")
+}
+
 android {
     namespace = "com.kalame.game"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -26,6 +32,33 @@ android {
             keyAlias "kalame"
             keyPassword System.getenv("KEYSTORE_PASSWORD")
             storeType "pkcs12"
+        }
+    }
+    buildFeatures {
+        aidl = true          // رابط پرداخت فروشگاه‌ها (src/main/aidl)
+        buildConfig = true
+    }
+    // دو نسخه‌ی جدا از بازی: یکی برای کافه‌بازار و یکی برای مایکت.
+    // کلید عمومی (RSA) هر فروشگاه را از پنل توسعه‌دهندگان همان فروشگاه بردارید و یا در Secrets گیت‌هاب
+    // با نام‌های BAZAAR_RSA_KEY و MYKET_RSA_KEY بگذارید، یا در فایل android/gradle.properties
+    // با نام‌های bazaarRsaKey و myketRsaKey. بدون کلید، فروشگاه سکه در بازی غیرفعال می‌ماند.
+    flavorDimensions "store"
+    productFlavors {
+        bazaar {
+            dimension "store"
+            buildConfigField "String", "STORE_ID", '"bazaar"'
+            buildConfigField "String", "STORE_NAME", '"کافه‌بازار"'
+            buildConfigField "String", "STORE_PACKAGE", '"com.farsitel.bazaar"'
+            buildConfigField "String", "STORE_BILLING_ACTION", '"ir.cafebazaar.pardakht.InAppBillingService.BIND"'
+            buildConfigField "String", "STORE_RSA_KEY", '"' + storeKey("BAZAAR_RSA_KEY", "bazaarRsaKey") + '"'
+        }
+        myket {
+            dimension "store"
+            buildConfigField "String", "STORE_ID", '"myket"'
+            buildConfigField "String", "STORE_NAME", '"مایکت"'
+            buildConfigField "String", "STORE_PACKAGE", '"ir.mservices.market"'
+            buildConfigField "String", "STORE_BILLING_ACTION", '"ir.mservices.market.InAppBillingService.BIND"'
+            buildConfigField "String", "STORE_RSA_KEY", '"' + storeKey("MYKET_RSA_KEY", "myketRsaKey") + '"'
         }
     }
     buildTypes {

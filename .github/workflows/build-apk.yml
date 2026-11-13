@@ -2,6 +2,9 @@
 # فقط وقتی اجرا می‌شود که در بخش Actions، دکمه‌ی Run workflow زده شود
 # (فرستادن تغییرها به گیت‌هاب به‌تنهایی APK نمی‌سازد).
 # گیت‌هاب بازی را به APK تبدیل می‌کند و آن را در بخش Releases می‌گذارد.
+# دو APK ساخته می‌شود: یکی برای کافه‌بازار و یکی برای مایکت (هر کدام با پرداخت همان فروشگاه).
+# کلید عمومی (RSA) هر فروشگاه را از پنل توسعه‌دهندگانش بردارید و در Secrets مخزن با نام‌های
+# BAZAAR_RSA_KEY و MYKET_RSA_KEY بگذارید؛ بدون آن فروشگاه سکه در آن نسخه غیرفعال می‌ماند.
 
 name: ساخت APK
 
@@ -49,19 +52,24 @@ jobs:
       - name: کپی بازی داخل پروژه‌ی اندروید
         run: npx cap sync android
 
-      - name: ساخت APK
+      - name: ساخت APK (بازار و مایکت)
         working-directory: android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          BAZAAR_RSA_KEY: ${{ secrets.BAZAAR_RSA_KEY }}
+          MYKET_RSA_KEY: ${{ secrets.MYKET_RSA_KEY }}
         run: |
+          if [ -z "$BAZAAR_RSA_KEY" ]; then echo "::warning::BAZAAR_RSA_KEY تنظیم نشده؛ خرید سکه در نسخه‌ی بازار کار نمی‌کند."; fi
+          if [ -z "$MYKET_RSA_KEY" ]; then echo "::warning::MYKET_RSA_KEY تنظیم نشده؛ خرید سکه در نسخه‌ی مایکت کار نمی‌کند."; fi
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
-          cp app/build/outputs/apk/release/app-release.apk "../kalame-$VERSION.apk"
+          ./gradlew assembleBazaarRelease assembleMyketRelease --no-daemon
+          cp app/build/outputs/apk/bazaar/release/app-bazaar-release.apk "../kalame-$VERSION-bazaar.apk"
+          cp app/build/outputs/apk/myket/release/app-myket-release.apk "../kalame-$VERSION-myket.apk"
 
       - name: گذاشتن APK در Releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v$VERSION" "kalame-$VERSION.apk" \
+          gh release create "v$VERSION" "kalame-$VERSION-bazaar.apk" "kalame-$VERSION-myket.apk" \
             --title "کلمه $VERSION" \
-            --notes "برای نصب، فایل kalame-$VERSION.apk را روی گوشی دانلود و باز کنید."
+            --notes "kalame-$VERSION-bazaar.apk برای انتشار در کافه‌بازار و kalame-$VERSION-myket.apk برای مایکت است. برای آزمایش روی گوشی هم هر کدام را می‌شود نصب کرد."
