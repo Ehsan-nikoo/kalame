@@ -1,41 +1,15 @@
-نقاشی‌های صورت‌های فلکی از نسخه‌ی خطی «صور الکواکب الثابته» عبدالرحمن صوفی
-موزه‌ی متروپولیتن نیویورک (MET 13.160.10) — مالکیت عمومی (CC0)
-تصویرها بریده و به خطوط طلایی روی زمینه‌ی شفاف تبدیل شده‌اند.
+تصویرهای صورت‌های فلکی از اطلس «Firmamentum Sobiescianum, sive Uranographia»
+یوهانس هِوِلیوس (گدانسک، ۱۶۹۰) — اثر قرن هفدهم، مالکیت عمومی (Public Domain).
+اسکن‌ها از ویکی‌مدیا کامنز (نسخه‌ی کتابخانه‌ی ملی فرانسه، btv1b2600014b، و نسخه‌ی ایتالیایی Prodromus Astronomia).
 
-dobe-akbar.png  https://commons.wikimedia.org/wiki/File:Kitab_suwar_al-kawakib_al-thabita_(Book_of_the_Images_of_the_Fixed_Stars)_of_al-Sufi_MET_80404.jpg
-gheyfavus.png   https://commons.wikimedia.org/wiki/File:Kitab_suwar_al-kawakib_al-thabita_(Book_of_the_Images_of_the_Fixed_Stars)_of_al-Sufi_MET_18918.jpg
-andromeda.png   https://commons.wikimedia.org/wiki/File:Kitab_suwar_al-kawakib_al-thabita_(Book_of_the_Images_of_the_Fixed_Stars)_of_al-Sufi_MET_21317.jpg
-dobe-asghar.png https://commons.wikimedia.org/wiki/File:Kitab_suwar_al-kawakib_al-thabita_(Book_of_the_Images_of_the_Fixed_Stars)_of_al-Sufi_MET_80403.jpg
-tanin.png       https://commons.wikimedia.org/wiki/File:Kitab_suwar_al-kawakib_al-thabita_(Book_of_the_Images_of_the_Fixed_Stars)_of_al-Sufi_MET_80406.jpg
+هِوِلیوس صورت‌ها را از بیرونِ کره‌ی آسمان کشیده بود؛ تصویرها آینه شده‌اند تا مثل آسمانِ واقعی دیده شوند.
+هر صورت جدا شده، به رنگ آبیِ کم‌رنگ با خطوط حکاکیِ سرمه‌ای درآمده و ستاره‌های اصلی‌اش
+با ستاره‌های کرم‌رنگ و خط‌های نازک به هم وصل شده‌اند.
 
-نقاشی‌های دیگر از نسخه‌ی خطی همین کتاب در کتابخانه‌ی بادلیان آکسفورد (MS. Marsh 144)، از ویکی‌مدیا کامنز.
-خطوط کمی پررنگ‌تر شده‌اند تا در اندازه‌ی کوچک دیده شوند.
+صفحه‌ها (شماره‌ی تصویر در مجموعه‌ی «Illustrations de Prodomus astronomiae … btv1b2600014b (N of 55)»):
+dobe-asghar 02 · tanin 03 · gheyfavus 04 · dobe-akbar 05 · zanu-zade 07 · avva 08 · makian 11
+zat-ol-korsi 14 · marafsa 16 · faras-azam 18 · andromeda 19 · mosallas 19 · dolfin 20 · oghab 20
+barsavosh 22 · arabe-ran 23 · hamal 27 · sour 28 · jowza 29 · sonbole 30 · mizan 31 · aghrab 34
+ghows 35 · jadi 36 · dalv 37 · hut 38 · gheytas 39 · nahr 40 · jabbar 41 · jam 43 · ghorab 43 · ghantures 47
 
-makian.png        https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0102_cygnus.jpg
-arabe-ran.png     https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0127_auriga.jpg
-marafsa.png       https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0143_serpentarius.jpg
-oghab.png         https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0154_aquila.jpg
-dolfin.png        https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0156_delphinus.jpg
-faras-azam.png    https://commons.wikimedia.org/wiki/File:Auv0164_pegasus.jpg
-mosallas.png      https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0181_Triangulum.jpg
-hamal.png         https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0189_aries.jpg
-sour.png          https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0204_taurus.jpg
-jowza.png         https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0218_gemini.jpg
-sonbole.png       https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0231_virgo.jpg
-mizan.png         https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0243_libra.jpg
-aghrab.png        https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0250_scorpio.jpg
-asad.png          https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0275_Leo.jpg
-jadi.png          https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0288_Capricorn.jpg
-dalv.png          https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0302_Aquarius.jpg
-hut.png           https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0313_Pisces.jpg
-gheytas.png       https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0323_Cetus.jpg
-nahr.png          https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0344_Eridanus.jpg
-jam.png           https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0391_Crater.jpg
-ghorab.png        https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0394_Corvus.jpg
-ghantures.png     https://commons.wikimedia.org/wiki/File:Book_of_the_Fixed_Stars_Auv0409_Centaurus.jpg
-avva.png          https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00080_p-70_reduced.jpg
-zanu-zade.png     https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00091_p-81_reduced.jpg
-zat-ol-korsi.png  https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00110_p-100_reduced.jpg
-barsavosh.png     https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00121_p-111_reduced.jpg
-ghows.png         https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00121_p-273_reduced.jpg
-jabbar.png        https://commons.wikimedia.org/wiki/File:Bodleian-Library-MS-Marsh-144_00335_p-325_reduced.jpg
+asad.png: https://commons.wikimedia.org/wiki/File:Johannes_Hevelius_-_Prodromus_Astronomia_-_Volume_III_%22Firmamentum_Sobiescianum,_sive_uranographia%22_-_Tavola_FF_-_Leo.jpg

@@ -170,12 +170,37 @@ button { font-family: inherit; cursor: pointer; }
 .tcard-desc { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
 
 /* نمونه‌ی کوچک هر ظاهر، مستقل از ظاهری که الان انتخاب شده */
-.tc-stars .tcard-art { background: radial-gradient(circle at 50% 120%, #3b2a63, #0b0f2e 70%); color: #ffe9b0; text-shadow: 0 0 10px #ffd98a; }
-.tc-carpet .tcard-art { background: #9b2d2d; color: #f4e9d4; border-radius: 14px; box-shadow: inset 0 0 0 5px #1e2a4a, inset 0 0 0 7px #e8c46a; }
-.tc-caravan .tcard-art { background: radial-gradient(circle, #fdf6e3 0 44%, #2fa4a9 45% 68%, #1d4e89 69%); color: #1d4e89; box-shadow: 0 0 0 3px #d9a441; }
-.tc-garden .tcard-art { background: radial-gradient(circle, #5e9e5a 0 40%, #8fd3e0 41%, #3b9bb5 100%); color: #fff8ec; box-shadow: 0 0 0 4px #2fa4a9; }
-.tc-ink .tcard-art { background: #f1e4c6; color: #1b130a; font-family: "Nastaliq", serif; font-weight: 400; line-height: 2.2; padding-bottom: 14px; box-shadow: inset 0 0 0 2px #c9a14a, inset 0 0 0 7px #1f3b73, inset 0 0 0 9px #c9a14a; }
-.tc-plain .tcard-art { background: #f4f1ea; color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3; }
+.tc-stars .tcard-art {
+  background:
+    url("themes/stars/makian.png") 50% 55% / 86% auto no-repeat,
+    radial-gradient(1px 1px at 20% 30%, #fff, transparent), radial-gradient(1px 1px at 75% 20%, #fff, transparent), radial-gradient(1px 1px at 65% 80%, #fff, transparent),
+    linear-gradient(130deg, transparent 30%, rgba(190, 180, 255, 0.28) 48%, transparent 66%),
+    radial-gradient(circle at 50% 120%, #3b2a63, #0b0f2e 70%);
+  color: transparent;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 217, 138, 0.7), 0 0 14px rgba(120, 140, 255, 0.3);
+}
+.tc-carpet .tcard-art {
+  background: url("themes/carpet/field.svg") 0 0 / 30px 30px, url("themes/carpet/pile.svg") 0 0 / 120px 120px, #9b2d2d;
+  background-blend-mode: normal, overlay, normal;
+  color: #f4e9d4; text-shadow: 0 1px 3px #3a0c0a;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 5px #1e2a4a, inset 0 0 0 6.5px #e8c46a, 0 3px 6px rgba(58, 28, 20, 0.3);
+}
+.tc-caravan .tcard-art {
+  background: radial-gradient(circle, #fdf6e3 0 40%, transparent 41%), url("themes/caravan/girih.svg") 50% 50% / 36px 36px, linear-gradient(#36b3b8, #1d4e89);
+  color: #1d4e89;
+  box-shadow: 0 0 0 3px #d9a441, inset 0 0 0 2px rgba(255, 255, 255, 0.35), 0 3px 8px rgba(29, 78, 137, 0.35);
+}
+.tc-garden .tcard-art {
+  background:
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.6), transparent 25%),
+    radial-gradient(circle at 50% 55%, #5e9e5a 0 30%, #4a8a48 31% 33%, transparent 34%),
+    radial-gradient(circle at 50% 50%, #8fd3e0, #3b9bb5 70%, #2c7f96);
+  color: #fff8ec; text-shadow: 0 1px 2px rgba(20, 60, 30, 0.6);
+  box-shadow: 0 0 0 4px #d8d0bc, 0 0 0 5px #2fa4a9, 0 3px 8px rgba(30, 80, 100, 0.3);
+}
+.tc-ink .tcard-art { background: url("themes/ink/zarafshan.svg") 0 0 / 60px 60px, url("themes/ink/fibers.svg") 0 0 / 120px 120px, #f1e4c6; color: #1b130a; font-family: "Nastaliq", serif; font-weight: 400; line-height: 2.2; padding-bottom: 14px; box-shadow: inset 0 0 0 2px #c9a14a, inset 0 0 0 7px #1f3b73, inset 0 0 0 9px #c9a14a; }
+.tc-plain .tcard-art { background: linear-gradient(180deg, #ffffff, #efebe2); color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3, 0 2px 6px rgba(47, 58, 58, 0.12); }
 
 /* ---------- منوی اصلی ---------- */
 .home-top { display: flex; justify-content: space-between; align-items: center; }
@@ -409,6 +434,31 @@ button { font-family: inherit; cursor: pointer; }
 .cell.again {
   animation: flash 0.5s ease;
 }
+
+/* ---------- ظاهر «ساده»: همان آرامش، با کمی عمق نرم (بدون بافت و انیمیشن اضافه، برای گوشی‌های ضعیف) ---------- */
+[data-theme="plain"] body { background: linear-gradient(180deg, #f7f4ee 0%, #f1ede4 60%, #ebe5d9 100%) fixed; }
+[data-theme="plain"] .cell.slot { box-shadow: inset 0 2px 3px rgba(47, 58, 58, 0.1), inset 0 -1px 0 rgba(255, 255, 255, 0.7); }
+[data-theme="plain"] .cell.filled {
+  background: linear-gradient(180deg, #6f9c8b 0%, #5f8a7a 55%, #557d6e 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 0 #46695c, 0 4px 8px rgba(47, 58, 58, 0.18);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+[data-theme="plain"] .wheel {
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfaf7 60%, #f3f0e9 100%);
+  box-shadow: 0 0 0 1px rgba(47, 58, 58, 0.06), 0 10px 28px rgba(47, 58, 58, 0.12), inset 0 -4px 10px rgba(47, 58, 58, 0.04);
+}
+[data-theme="plain"] .menu-btn,
+[data-theme="plain"] .icon-btn,
+[data-theme="plain"] .coins,
+[data-theme="plain"] .level-label { background: linear-gradient(180deg, #ffffff, #faf8f4); }
+[data-theme="plain"] .menu-btn.primary,
+[data-theme="plain"] .card-btn { background: linear-gradient(180deg, #6f9c8b, #5f8a7a 60%, #557d6e); }
+[data-theme="plain"] .card { box-shadow: 0 1px 2px rgba(47, 58, 58, 0.08), 0 14px 40px rgba(47, 58, 58, 0.16); }
+[data-theme="plain"] .tcard,
+[data-theme="plain"] .ach,
+[data-theme="plain"] .reward-day { background: linear-gradient(180deg, #ffffff, #faf8f4); box-shadow: 0 1px 2px rgba(47, 58, 58, 0.06), 0 4px 12px rgba(47, 58, 58, 0.08); }
+[data-theme="plain"] .ach-bar,
+[data-theme="plain"] .chest-bar { box-shadow: inset 0 1px 2px rgba(47, 58, 58, 0.12); }
 
 /* ---------- محل بازی (پایین صفحه) ---------- */
 .play-area {

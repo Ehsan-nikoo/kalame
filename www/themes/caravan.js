@@ -87,6 +87,15 @@
     setTimeout(() => old.forEach((el) => el.remove()), 1300);
   }
 
+  // ذره‌های ریز گرد و خاک که باد از راست به چپ می‌برد (هم‌جهت با کاروان)
+  function sandWind() {
+    const r = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
+    const grains = Array.from({ length: 18 }, () =>
+      `<i style="left:${r(30, 110)}%;top:${r(35, 98)}%;--s:${r(1.2, 3)}px;--o:${r(0.3, 0.75)};--y:${r(-60, 10)}px;--d:${r(7, 14)}s;--w:${r(-14, 0)}s"></i>`
+    ).join("");
+    return `<div class="sand-wind" aria-hidden="true">${grains}</div>`;
+  }
+
   // ---------- کاشی شمسه‌ی دایره‌ی حروف ----------
 
   function star8(r) {
@@ -109,10 +118,26 @@
     const div = document.createElement("div");
     div.className = "medallion";
     div.innerHTML = `<svg viewBox="-50 -50 100 100" aria-hidden="true">
-        <circle r="50" fill="#d9a441"/><circle r="48.3" fill="#1d4e89"/>${dots}
-        <polygon points="${star8(44)}" fill="#2fa4a9" stroke="#fdf6e3" stroke-width=".9"/>
-        <polygon points="${star8(30)}" fill="#1d4e89" stroke="#d9a441" stroke-width=".7" transform="rotate(22.5)"/>
-        <circle r="17" fill="#2fa4a9" stroke="#fdf6e3" stroke-width=".8"/>${petals}<circle r="5" fill="#d9a441"/>
+        <defs>
+          <linearGradient id="med-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe3a0"/><stop offset=".45" stop-color="#d9a441"/><stop offset="1" stop-color="#7a5412"/></linearGradient>
+          <radialGradient id="med-lapis" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2a63a6"/><stop offset=".85" stop-color="#1d4e89"/><stop offset="1" stop-color="#11345f"/></radialGradient>
+          <radialGradient id="med-turq" cx=".5" cy=".45" r=".55"><stop offset="0" stop-color="#4cc3c7"/><stop offset=".7" stop-color="#2fa4a9"/><stop offset="1" stop-color="#1b7880"/></radialGradient>
+          <radialGradient id="med-gloss" cx=".32" cy=".2" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".55" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="med-rimshade" r=".5"><stop offset=".86" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+          <filter id="med-craze" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="turbulence" baseFrequency=".09" numOctaves="2" seed="21"/>
+            <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3 0 0 0 .14"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
+        </defs>
+        <circle r="50" fill="url(#med-gold)"/><circle r="48.3" fill="url(#med-lapis)"/>${dots}
+        <polygon points="${star8(44)}" fill="url(#med-turq)" stroke="#fdf6e3" stroke-width=".9"/>
+        <polygon points="${star8(30)}" fill="url(#med-lapis)" stroke="#e0b04a" stroke-width=".7" transform="rotate(22.5)"/>
+        <circle r="17" fill="url(#med-turq)" stroke="#fdf6e3" stroke-width=".8"/>${petals}<circle r="5" fill="url(#med-gold)"/>
+        <circle r="48.3" fill="#fff" filter="url(#med-craze)"/>
+        <circle r="48.3" fill="url(#med-rimshade)"/>
+        <circle r="48.3" fill="url(#med-gloss)"/>
+        <circle r="49.2" fill="none" stroke="rgba(255, 245, 210, .6)" stroke-width=".6"/>
       </svg>`;
     document.getElementById("wheel").prepend(div);
   }
@@ -181,20 +206,30 @@
     return `<svg class="home-arch" viewBox="0 0 200 222" aria-hidden="true">
         <defs>
           <clipPath id="arch-in"><path d="${arch}"/></clipPath>
-          <linearGradient id="arch-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a96b"/><stop offset=".7" stop-color="#fde7c2"/></linearGradient>
+          <linearGradient id="arch-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0875a"/><stop offset=".45" stop-color="#f6b57c"/><stop offset=".72" stop-color="#ffe6bd"/></linearGradient>
+          <radialGradient id="arch-halo"><stop offset="0" stop-color="#fff6dc" stop-opacity=".9"/><stop offset=".3" stop-color="#ffe2a8" stop-opacity=".45"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient>
+          <linearGradient id="arch-dune1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c88c"/><stop offset="1" stop-color="#d29a5e"/></linearGradient>
+          <linearGradient id="arch-dune2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6a46a"/><stop offset="1" stop-color="#9a6436"/></linearGradient>
+          <linearGradient id="arch-shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a1c08" stop-opacity=".25"/><stop offset=".5" stop-color="#3a1c08" stop-opacity="0"/><stop offset="1" stop-color="#3a1c08" stop-opacity=".18"/></linearGradient>
+          <linearGradient id="arch-sill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b884"/><stop offset="1" stop-color="#a8713f"/></linearGradient>
         </defs>
         <g clip-path="url(#arch-in)">
           <rect width="200" height="222" fill="url(#arch-sky)"/>
-          <circle class="arch-sun" cx="134" cy="92" r="20" fill="#fff3d6"/>
-          <path d="M0 152 Q60 128 120 146 T200 140 V222 H0Z" fill="#e8bf86"/>
+          <circle cx="134" cy="92" r="80" fill="url(#arch-halo)"/>
+          <circle class="arch-sun" cx="134" cy="92" r="18" fill="#fff6e0"/>
+          <path d="M0 136 Q40 120 80 132 T150 126 T200 130 V222 H0Z" fill="#e9b98a" opacity=".55"/>
+          <path d="M0 152 Q60 128 120 146 T200 140 V222 H0Z" fill="url(#arch-dune1)"/>
           <g transform="translate(0 130)"><g class="walkers">${camels}</g></g>
-          <path d="M0 184 Q80 164 200 182 V222 H0Z" fill="#d6a46a"/>
+          <path d="M0 184 Q80 164 200 182 V222 H0Z" fill="url(#arch-dune2)"/>
+          <path d="M10 196q30-6 60 0t60 0t60 0" stroke="#fff1d6" stroke-width="1" fill="none" opacity=".35"/>
+          <rect width="200" height="222" fill="url(#arch-shade)"/>
         </g>
         <path d="${arch}" fill="none" stroke="#1d4e89" stroke-width="13"/>
         <path d="${arch}" fill="none" stroke="#2fa4a9" stroke-width="8"/>
         <path d="${arch}" fill="none" stroke="#d9a441" stroke-width="1.6"/>
-        <rect x="6" y="208" width="188" height="12" rx="2" fill="#c98f5c"/>
-        <rect x="6" y="208" width="188" height="3" fill="#e0b07a"/>
+        <path d="${arch}" fill="none" stroke="#fff" stroke-width="2.4" opacity=".22" stroke-dasharray="60 400" stroke-dashoffset="-40"/>
+        <rect x="6" y="208" width="188" height="12" rx="2" fill="url(#arch-sill)"/>
+        <rect x="6" y="208" width="188" height="2" fill="#f4d3a4"/>
       </svg>`;
   }
 
@@ -206,8 +241,9 @@
     setup() {
       showScene(legOf(save.unlocked));
       addMedallion();
+      document.body.insertAdjacentHTML("afterbegin", sandWind());
       return () => {
-        document.querySelectorAll(".scene, .medallion").forEach((el) => el.remove());
+        document.querySelectorAll(".scene, .medallion, .sand-wind").forEach((el) => el.remove());
         currentScene = null;
       };
     },

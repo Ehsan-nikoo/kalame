@@ -15,11 +15,25 @@
       `<path d="M0 -4 C4 -10 3 -16 0 -19 C-3 -16 -4 -10 0 -4Z" transform="rotate(${i * 45})"/>`).join("");
     const div = document.createElement("div");
     div.className = "toranj";
+    // ترنج تذهیب: طلای ورقه با سایه‌روشن، لاجورد با گل‌های ریز، و متن کاغذی با سایه‌ی لبه
+    const vine = Array.from({ length: 16 }, (_, i) => {
+      const a = (i * Math.PI) / 8;
+      const x = (Math.cos(a) * 42.1).toFixed(2), y = (Math.sin(a) * 42.1).toFixed(2);
+      return `<g transform="translate(${x} ${y}) rotate(${i * 22.5})"><ellipse rx=".7" ry="1.4" fill="#e7c978"/><ellipse cx="0" cy="0" rx="1.4" ry=".55" fill="#b8432d" opacity=".8"/></g>`;
+    }).join("");
     div.innerHTML = `<svg viewBox="-52 -52 104 104" aria-hidden="true">
-        ${scallops}<circle r="45" fill="#c9a14a"/><circle r="43.6" fill="#1f3b73"/>${dots}
-        <circle r="40.6" fill="#c9a14a"/><circle r="39.6" fill="#f6ead0"/>
+        <defs>
+          <linearGradient id="tz-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe7a6"/><stop offset=".35" stop-color="#d4af5a"/><stop offset=".6" stop-color="#9a7426"/><stop offset=".8" stop-color="#e8c978"/><stop offset="1" stop-color="#a8812e"/></linearGradient>
+          <radialGradient id="tz-scallop" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fbe7a6"/><stop offset=".6" stop-color="#c9a14a"/><stop offset="1" stop-color="#8f6a22"/></radialGradient>
+          <radialGradient id="tz-lapis" r=".5"><stop offset=".8" stop-color="#24468a"/><stop offset="1" stop-color="#132a57"/></radialGradient>
+          <radialGradient id="tz-paper" r=".5"><stop offset="0" stop-color="#f8eed6"/><stop offset=".8" stop-color="#f1e2c0"/><stop offset="1" stop-color="#d9c08e"/></radialGradient>
+        </defs>
+        ${scallops.replaceAll('fill="#c9a14a"', 'fill="url(#tz-scallop)"')}
+        <circle r="45" fill="url(#tz-gold)"/><circle r="43.6" fill="url(#tz-lapis)"/>${dots}${vine}
+        <circle r="40.6" fill="url(#tz-gold)"/><circle r="39.6" fill="url(#tz-paper)"/>
         <circle r="36.8" fill="none" stroke="#c9a14a" stroke-width=".5"/>
-        <g fill="#c9a14a" opacity=".28">${petals}<circle r="3"/></g>
+        <circle r="35.6" fill="none" stroke="#1f3b73" stroke-width=".3" opacity=".5"/>
+        <g fill="url(#tz-gold)" opacity=".32">${petals}<circle r="3"/></g>
       </svg>`;
     document.getElementById("wheel").prepend(div);
   }
