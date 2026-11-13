@@ -13,6 +13,21 @@
   <link rel="stylesheet" href="themes/ink.css">
 </head>
 <body>
+  <!-- صفحه‌ی بارگذاری: هر بار یکی از تصویرهای پوشه‌ی loading (نه همانی که دفعه‌ی قبل دیده شد) -->
+  <div class="loading" id="loading" aria-label="در حال بارگذاری">
+    <img class="loading-img" id="loadingImg" alt="">
+    <div class="loading-bar"><span id="loadingFill"></span></div>
+  </div>
+  <script>
+    (function () {
+      var count = 11, last = 0, pick;
+      try { last = parseInt(localStorage.getItem("kalame-loading"), 10) || 0; } catch (e) {}
+      do { pick = 1 + Math.floor(Math.random() * count); } while (pick === last && count > 1);
+      try { localStorage.setItem("kalame-loading", String(pick)); } catch (e) {}
+      document.getElementById("loadingImg").src = "loading/" + pick + ".webp";
+      window.loadingStart = Date.now();
+    })();
+  </script>
   <!-- انتخاب ظاهر -->
   <section class="screen hidden" id="screenThemes">
     <header class="screen-top">

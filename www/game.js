@@ -1556,6 +1556,28 @@ for (const btn of document.querySelectorAll("[data-back]")) btn.addEventListener
 $("hintLetterBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_LETTER);
 $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_WORD);
 
+// ---------- صفحه‌ی بارگذاری (در index.html) ----------
+const LOADING_MIN_MS = 2000; // دست‌کم این‌قدر دیده می‌شود تا تصویرش به چشم بیاید
+
+function loadingProgress(frac) {
+  const fill = $("loadingFill");
+  if (fill) fill.style.width = Math.round(Math.max(parseFloat(fill.style.width) || 0, frac * 100)) + "%";
+}
+
+function hideLoading() {
+  const el = $("loading");
+  if (!el) return;
+  const wait = Math.max(0, LOADING_MIN_MS - (Date.now() - (window.loadingStart || 0)));
+  // نوار در همان زمانِ باقی‌مانده آرام پر می‌شود
+  const fill = $("loadingFill");
+  if (fill) fill.style.transitionDuration = Math.max(0.4, wait / 1000) + "s";
+  loadingProgress(1);
+  setTimeout(() => {
+    el.classList.add("done");
+    setTimeout(() => el.remove(), 500);
+  }, wait + 250);
+}
+
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
 document.addEventListener("DOMContentLoaded", () => {
   // ظاهر پولی‌ای که (هنوز) خریده نشده، تا رسیدن خریدها از فروشگاه «ساده» نشان داده می‌شود
@@ -1564,11 +1586,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 
+  loadingProgress(0.15);
+  let loaded = 0;
   const load = (file) =>
     fetch(file, { cache: "no-store" }).then((res) => {
       if (!res.ok) throw new Error(res.status);
       return res.text();
-    });
+    }).finally(() => loadingProgress(0.15 + 0.25 * ++loaded));
   const notRead = (file) => () =>
     showErrors(`فایل ${file} خوانده نشد.`, ["بازی را با start-game.cmd یا دستور npm start اجرا کنید."]);
 
@@ -1599,5 +1623,6 @@ document.addEventListener("DOMContentLoaded", () => {
     estimateWordStats();
     noteAchievements();
     route();
+    hideLoading();
   });
 });
