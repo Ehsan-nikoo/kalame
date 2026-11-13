@@ -1222,3 +1222,24 @@ button { font-family: inherit; cursor: pointer; }
 .daily-btn small { line-height: 1.5; }
 [data-theme="ink"] .daily-btn > span { line-height: 1.9; }
 [data-theme="ink"] .daily-btn small { margin-top: 4px; }
+
+/* ---------- ظاهرهای پولی ---------- */
+.tcard { position: relative; }
+.tcard.locked .tcard-art { filter: saturate(0.75); }
+.tcard-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--coin);
+  color: #3a2a08;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.tcard-price svg { width: 13px; height: 13px; }
+.theme-card { text-align: center; }
+.theme-sheet-art { border: none; background: none; box-shadow: none; padding: 0; margin: 0 auto 6px; pointer-events: none; }
+.theme-sheet-art .tcard-art { width: 110px; height: 110px; font-size: 52px; }
+.theme-note { font-size: 13px; margin-top: 10px; }

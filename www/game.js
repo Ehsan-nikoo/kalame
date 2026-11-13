@@ -25,12 +25,14 @@ const COIN_PACKS = [
   { id: "coins_1200", coins: 1200, name: "صندوق سکه", tag: "به‌صرفه" },
 ];
 
-// ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد
+// ظاهرهای بازی؛ هر کدام (جز «ساده») یک فایل css و js در پوشه‌ی themes دارد.
+// ظاهرهای پولی: product همان «شناسه‌ی محصول» در پنل کافه‌بازار و مایکت است، از نوع «غیرمصرفی»
+// (یک بار خریده می‌شود و برای همیشه می‌ماند). price (تومان) فقط وقتی نشان داده می‌شود که قیمت از فروشگاه نرسیده باشد.
 const THEMES = [
-  { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی" },
-  { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود" },
-  { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله" },
-  { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد" },
+  { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی", product: "theme_stars", price: 99000 },
+  { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود", product: "theme_carpet", price: 79000 },
+  { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله", product: "theme_caravan", price: 59000 },
+  { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
 ];
@@ -79,6 +81,8 @@ function readExtras(data) {
     },
     // عیدی‌های گرفته‌شده‌ی مناسبت‌ها (مثل nowruz-1406)
     events: objOr(data.events),
+    // ظاهرهای پولی خریده‌شده (شناسه‌ی ظاهر)؛ از روی خریدهای فروشگاه هم دوباره ساخته می‌شود
+    owned: strings(data.owned),
   };
 }
 
@@ -131,6 +135,12 @@ let themeTeardown = null;
 
 function defineTheme(id, def) {
   themeDefs[id] = def;
+}
+
+// ظاهر رایگان است یا خریده شده؟
+function themeOwned(id) {
+  const t = THEMES.find((x) => x.id === id);
+  return !!t && (!t.product || save.owned.includes(id));
 }
 
 function applyTheme(id) {
@@ -1103,9 +1113,11 @@ function initStore() {
     $("shopBtn").classList.remove("hidden");
     for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
     if (!info.ready) return;
-    nativeStore.products({ ids: COIN_PACKS.map((p) => p.id) }).then((res) => {
+    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product)];
+    nativeStore.products({ ids }).then((res) => {
       for (const p of res.products || []) shopPrices[p.id] = p.price;
       if (screenNow === "shop") renderShop();
+      if (screenNow === "themes") renderThemes();
     }).catch(() => {});
     deliverPending();
   }).catch(() => {});
@@ -1119,6 +1131,8 @@ function deliverPending() {
 }
 
 function deliver(purchase, fromEl) {
+  const look = THEMES.find((t) => t.product && t.product === purchase.id);
+  if (look) return deliverTheme(look);
   const pack = COIN_PACKS.find((p) => p.id === purchase.id);
   if (!pack || !purchase.token) return;
   const isNew = !save.paid.includes(purchase.token);
@@ -1228,6 +1242,7 @@ function route() {
   hideMeanings();
   hideLevelSheet();
   hideChest();
+  hideThemeSheet();
 
   if (name === "themes") renderThemes();
   if (name === "home") renderHome();
@@ -1259,25 +1274,104 @@ function renderThemes() {
   const list = $("themeList");
   list.innerHTML = "";
   for (const t of THEMES) {
+    const owned = themeOwned(t.id);
     const card = document.createElement("button");
     card.type = "button";
-    card.className = "tcard tc-" + t.id + (save.theme === t.id ? " selected" : "");
+    card.className = "tcard tc-" + t.id + (save.theme === t.id && owned ? " selected" : "") + (owned ? "" : " locked");
     card.innerHTML = `<span class="tcard-art"></span><span class="tcard-name"></span><span class="tcard-desc"></span>`;
     card.querySelector(".tcard-name").textContent = t.name;
     card.querySelector(".tcard-desc").textContent = t.desc;
+    if (!owned) {
+      const tag = document.createElement("span");
+      tag.className = "tcard-price";
+      tag.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.2" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg><span></span>`;
+      tag.querySelector("span").textContent = themePrice(t);
+      card.appendChild(tag);
+    }
     card.onclick = () => chooseTheme(t.id);
     list.appendChild(card);
   }
   $("themesBack").classList.toggle("hidden", !save.theme);
 }
 
+// قیمت از فروشگاه، یا قیمتی که در THEMES نوشته شده
+function themePrice(t) {
+  if (shopPrices[t.product]) return faDigits(shopPrices[t.product]);
+  return `${faDigits(t.price / 1000)} هزار تومان`;
+}
+
 function chooseTheme(id) {
+  if (!themeOwned(id)) return showThemeSheet(THEMES.find((t) => t.id === id));
   const firstTime = !save.theme;
   save.theme = id;
   persist();
   applyTheme(id);
   if (firstTime) route();
   else goHome();
+}
+
+// ---------- خرید ظاهر ----------
+
+let themeOnSheet = null;
+
+function showThemeSheet(t) {
+  themeOnSheet = t;
+  const art = $("themeSheetArt");
+  art.className = "tcard tc-" + t.id + " theme-sheet-art";
+  $("themeSheetName").textContent = t.name;
+  $("themeSheetDesc").textContent = t.desc;
+  const btn = $("themeBuy");
+  const canBuy = !!(store && store.ready);
+  btn.disabled = !canBuy || shopBusy;
+  btn.textContent = `خرید با ${themePrice(t)}`;
+  // در مرورگر خرید نداریم؛ برای آزمودن، ظاهر بی‌پرداخت باز می‌شود
+  $("themeTry").classList.toggle("hidden", !!nativeStore);
+  $("themeSheetNote").textContent = canBuy ? "یک بار می‌خری و همیشه مال خودته."
+    : nativeStore ? (store && store.reason) || "خرید الان ممکن نیست."
+    : "خرید فقط در نسخه‌ی بازار و مایکت ممکن است.";
+  $("themeSheet").classList.remove("hidden");
+}
+
+function hideThemeSheet() {
+  $("themeSheet").classList.add("hidden");
+  themeOnSheet = null;
+}
+
+function buyTheme() {
+  const t = themeOnSheet;
+  if (!t || shopBusy || !store || !store.ready) return;
+  shopBusy = true;
+  $("themeBuy").disabled = true;
+  nativeStore.buy({ id: t.product })
+    .then((purchase) => deliver(purchase, null))
+    .catch((err) => {
+      if (err && err.code === "CANCELED") return;
+      if (err && err.code === "ALREADY_OWNED") return deliverPending();
+      $("themeSheetNote").textContent = (err && err.message) || "خرید انجام نشد. دوباره امتحان کن.";
+    })
+    .finally(() => {
+      shopBusy = false;
+      if (themeOnSheet) $("themeBuy").disabled = false;
+    });
+}
+
+// ظاهر خریده‌شده: برای همیشه باز است و مصرف نمی‌شود (برای همین بعد از نصب دوباره هم برمی‌گردد)
+function deliverTheme(t) {
+  const isNew = !save.owned.includes(t.id);
+  if (isNew) {
+    save.owned.push(t.id);
+    persist();
+  }
+  // بازیکن قبلاً این ظاهر را انتخاب کرده بود و تا رسیدن خرید «ساده» می‌دید
+  if (save.theme === t.id && activeTheme !== t.id) {
+    applyTheme(t.id);
+    route();
+  }
+  if (themeOnSheet && themeOnSheet.id === t.id) {
+    hideThemeSheet();
+    if (isNew) sound("reward");
+    chooseTheme(t.id);
+  } else if (screenNow === "themes") renderThemes();
 }
 
 function renderHome() {
@@ -1440,6 +1534,18 @@ $("chestSheet").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) hideChest();
 });
 $("themesBtn").addEventListener("click", () => open("themes"));
+$("themeBuy").addEventListener("click", buyTheme);
+$("themeClose").addEventListener("click", hideThemeSheet);
+$("themeSheet").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) hideThemeSheet();
+});
+$("themeTry").addEventListener("click", () => {
+  const t = themeOnSheet;
+  if (!t) return;
+  save.owned.push(t.id);
+  hideThemeSheet();
+  chooseTheme(t.id);
+});
 $("shopBtn").addEventListener("click", openShop);
 for (const el of document.querySelectorAll(".coins")) {
   el.addEventListener("click", () => {
@@ -1452,7 +1558,8 @@ $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_W
 
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
 document.addEventListener("DOMContentLoaded", () => {
-  applyTheme(save.theme || "plain");
+  // ظاهر پولی‌ای که (هنوز) خریده نشده، تا رسیدن خریدها از فروشگاه «ساده» نشان داده می‌شود
+  applyTheme(save.theme && themeOwned(save.theme) ? save.theme : "plain");
   initStore();
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
