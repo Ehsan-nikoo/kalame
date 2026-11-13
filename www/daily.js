@@ -5,7 +5,7 @@
 
 const DAILY_COINS = 20; // جایزه‌ی حل کردن مرحله‌ی روزانه، یک بار در روز
 // لینکی که با نتیجه فرستاده می‌شود (صفحه‌ی بازی در کافه‌بازار)
-const SHARE_URL = "https://cafebazaar.ir/app/com.kalame.game";
+const SHARE_URL = "https://cafebazaar.ir/app/com.kalameh.game";
 const REMIND_HOUR = 19; // ساعت اعلان یادآوری (به وقت گوشی)
 
 // ---------------------------------------------------------------------------

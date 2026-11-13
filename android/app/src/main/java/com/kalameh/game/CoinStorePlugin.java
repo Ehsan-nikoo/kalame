@@ -1,4 +1,4 @@
-package com.kalame.game;
+package com.kalameh.game;
 
 import android.app.Activity;
 import android.app.PendingIntent;

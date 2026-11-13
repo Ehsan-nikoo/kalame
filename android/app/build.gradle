@@ -7,10 +7,10 @@ def storeKey(String env, String prop) {
 }
 
 android {
-    namespace = "com.kalame.game"
+    namespace = "com.kalameh.game"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.kalame.game"
+        applicationId "com.kalameh.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // شماره‌ی نسخه هر بار که گیت‌هاب APK می‌سازد یکی بالا می‌رود
