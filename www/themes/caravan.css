@@ -350,3 +350,38 @@
   from { transform: translateY(0) rotate(-1.6deg); }
   to { transform: translateY(-1.5px) rotate(1.6deg); }
 }
+
+/* ---------- پنجره‌ها و فهرست‌ها: کاشی معرق با قاب لاجورد و طلا ---------- */
+[data-theme="caravan"] .sheet { background: radial-gradient(ellipse at 50% 40%, rgba(59, 42, 26, 0.3), rgba(30, 16, 6, 0.6)); }
+[data-theme="caravan"] .tcard,
+[data-theme="caravan"] .ach,
+[data-theme="caravan"] .reward-day {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.45), transparent 70%),
+    var(--grain) 0 0 / 200px 200px,
+    #f6e8c8;
+  background-blend-mode: normal, overlay, normal;
+  border: 1.5px solid #c99a3c;
+}
+[data-theme="caravan"] .tcard,
+[data-theme="caravan"] .ach { box-shadow: inset 0 0 0 4px #f6e8c8, inset 0 0 0 5.5px #1d4e89, inset 0 0 0 6.5px #e0b04a, 0 3px 0 #b98a4a, var(--soft-shadow); }
+[data-theme="caravan"] .tcard.selected { border-color: #1d4e89; box-shadow: inset 0 0 0 4px #f6e8c8, inset 0 0 0 6px #2fa4a9, 0 0 0 2.5px #1d4e89, var(--soft-shadow); }
+[data-theme="caravan"] .ach.ready { box-shadow: inset 0 0 0 4px #f6e8c8, inset 0 0 0 6px #e0b04a, 0 0 0 3px rgba(224, 176, 74, 0.45), var(--soft-shadow); }
+[data-theme="caravan"] .ach-icon {
+  border-radius: 12px;
+  background: radial-gradient(ellipse 80% 70% at 30% 0%, rgba(255, 255, 255, 0.3), transparent 60%), var(--crackle) 0 0 / 120px 120px, linear-gradient(#36b3b8, #2fa4a9 55%, #1f7f84);
+  box-shadow: inset 0 0 0 1.5px #c99a3c, inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  color: #fdf6e3;
+}
+[data-theme="caravan"] .ach.done .ach-icon { background: radial-gradient(ellipse 80% 70% at 30% 0%, rgba(255, 255, 255, 0.5), transparent 60%), var(--crackle) 0 0 / 120px 120px, linear-gradient(#f0c86a, #e0b04a 55%, #b98a2a); color: #3b2a1a; }
+[data-theme="caravan"] .ach-bar,
+[data-theme="caravan"] .chest-bar { background: rgba(59, 42, 26, 0.12); box-shadow: inset 0 1px 2px rgba(59, 42, 26, 0.3); }
+[data-theme="caravan"] .ach-bar span { background: linear-gradient(90deg, #1d4e89, #2fa4a9); opacity: 1; }
+[data-theme="caravan"] .ach.ready .ach-bar span,
+[data-theme="caravan"] .ach.done .ach-bar span,
+[data-theme="caravan"] .chest-bar span { background: linear-gradient(90deg, #b98a2a, #e0b04a, #f6d98a); }
+[data-theme="caravan"] .reward-day.today { border-color: #1d4e89; box-shadow: inset 0 0 0 2px #f6e8c8, inset 0 0 0 3.5px #2fa4a9, 0 0 0 2px #1d4e89; }
+[data-theme="caravan"] .meaning + .meaning,
+[data-theme="caravan"] .level-words .meaning + .meaning { border-top: 1px solid rgba(201, 154, 60, 0.45); }
+[data-theme="caravan"] .level-words { border-color: rgba(29, 78, 137, 0.35); }
+[data-theme="caravan"] { --chest-wood: #a8692f; --chest-wood-2: #6e4220; --chest-band: #2fa4a9; }
