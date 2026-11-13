@@ -45,6 +45,147 @@
   let stars = [], sparks = [], meteorSky = null, nextMeteor = 3000, lastTime = 0;
   let lastLetters = [];
 
+  // ---------- صورت فلکی که با هر کلمه در آسمان پشت جدول ساخته می‌شود ----------
+  // تصویر صورت فلکی همان مرحله اول خیلی کم‌رنگ دیده می‌شود. تصویر به چند تکه تقسیم شده و
+  // هر کلمه‌ی درست، تکه‌های خودش را با نوری که آرام پخش می‌شود روشن می‌کند؛ با آخرین کلمه کامل می‌شود.
+
+  const GRID_COLS = 5, GRID_ROWS = 4;
+  const GHOST = 0.09;     // پیدایی تصویر کامل از اول مرحله
+  const LIT = 0.62;       // پیدایی تکه‌های روشن‌شده (کم، تا حروف جدول خوانا بمانند)
+  const GROW_MS = 1100;   // زمان پخش شدن نور هر تکه
+  let cons = null;        // { level, img, spots, lit, total, full, fullFrom }
+  let consLayer = null, consMask = null, consKey = "";
+
+  function seeded(n) {
+    let a = n >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function startConstellation(level, total, already) {
+    const c = constellationOf(level);
+    const img = new Image();
+    img.src = "themes/stars/" + c.file + ".png";
+    // تکه‌ها به ترتیبی درهم ولی ثابت برای هر مرحله
+    const rnd = seeded(level * 7919 + 13);
+    const cells = [];
+    for (let r = 0; r < GRID_ROWS; r++) for (let q = 0; q < GRID_COLS; q++) cells.push({ q, r });
+    for (let i = cells.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+    const spots = cells.map((cell, i) => ({
+      // مرکز تکه با کمی جابه‌جایی، به نسبت اندازه‌ی تصویر (۰ تا ۱)
+      x: (cell.q + 0.5 + (rnd() - 0.5) * 0.4) / GRID_COLS,
+      y: (cell.r + 0.5 + (rnd() - 0.5) * 0.4) / GRID_ROWS,
+      word: Math.floor((i * total) / cells.length), // چندمین کلمه این تکه را روشن می‌کند
+      start: null,
+    }));
+    cons = { level, img, spots, lit: 0, total, full: false, fullFrom: null };
+    lightUpTo(already, true);
+  }
+
+  // تکه‌های همه‌ی کلمه‌ها تا شماره‌ی count روشن می‌شوند (now: بی‌انیمیشن، برای ادامه‌ی مرحله‌ی نیمه‌کاره)
+  function lightUpTo(count, now) {
+    if (!cons) return;
+    const t = now ? -1e9 : performance.now();
+    for (const s of cons.spots) {
+      if (s.word < count && s.start === null) {
+        s.start = t;
+        if (!now) setTimeout(() => { const p = spotPoint(s); if (p) burst(p.x, p.y, 10, 0.07); }, 120);
+      }
+    }
+    cons.lit = count;
+    if (count >= cons.total && !cons.full) {
+      cons.full = true;
+      cons.fullFrom = now ? -1e9 : performance.now() + GROW_MS * 0.6;
+    }
+  }
+
+  // جای تصویر: وسط ناحیه‌ی جدول، با حفظ نسبت تصویر
+  function consRect() {
+    const area = document.querySelector("#app .board-area");
+    if (!area || !cons || !cons.img.complete || !cons.img.naturalWidth) return null;
+    const r = area.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    const ratio = cons.img.naturalWidth / cons.img.naturalHeight;
+    let w = r.width * 1.05, h = w / ratio;
+    if (h > r.height * 1.05) { h = r.height * 1.05; w = h * ratio; }
+    return { x: r.left + (r.width - w) / 2, y: r.top + (r.height - h) / 2, w, h };
+  }
+
+  function spotPoint(s) {
+    const r = consRect();
+    return r ? { x: r.x + s.x * r.w, y: r.y + s.y * r.h } : null;
+  }
+
+  function drawConstellation(time) {
+    if (!cons || document.getElementById("app").classList.contains("hidden")) return;
+    const r = consRect();
+    if (!r) return;
+    // سایه‌ی کم‌رنگ کل صورت فلکی
+    ctx.globalAlpha = GHOST;
+    ctx.drawImage(cons.img, r.x, r.y, r.w, r.h);
+
+    const W = Math.ceil(r.w * dpr), H = Math.ceil(r.h * dpr);
+    if (!consLayer) {
+      consLayer = document.createElement("canvas");
+      consMask = document.createElement("canvas");
+    }
+    const key = W + "x" + H;
+    if (consKey !== key) {
+      consLayer.width = consMask.width = W;
+      consLayer.height = consMask.height = H;
+      consKey = key;
+    }
+    // نقاب: دایره‌های نرم نور که از مرکز هر تکه بزرگ می‌شوند
+    const m = consMask.getContext("2d");
+    m.setTransform(1, 0, 0, 1, 0, 0);
+    m.clearRect(0, 0, W, H);
+    const full = cons.full ? Math.min(1, Math.max(0, (time - cons.fullFrom) / GROW_MS)) : 0;
+    if (full > 0) {
+      m.globalAlpha = full;
+      m.fillStyle = "#000";
+      m.fillRect(0, 0, W, H);
+      m.globalAlpha = 1;
+    }
+    const reach = Math.hypot(W / GRID_COLS, H / GRID_ROWS) * 0.6;
+    for (const s of cons.spots) {
+      if (s.start === null) continue;
+      const k = Math.min(1, Math.max(0, (time - s.start) / GROW_MS));
+      if (k <= 0) continue;
+      const e = 1 - (1 - k) ** 3;
+      const rad = reach * (0.15 + 0.85 * e);
+      const cx = s.x * W, cy = s.y * H;
+      const g = m.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      g.addColorStop(0, "rgba(0,0,0,1)");
+      g.addColorStop(0.6, "rgba(0,0,0,0.9)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      m.fillStyle = g;
+      m.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+    }
+    // تصویر فقط جایی که نقاب روشن است
+    const l = consLayer.getContext("2d");
+    l.globalCompositeOperation = "source-over";
+    l.clearRect(0, 0, W, H);
+    l.drawImage(consMask, 0, 0);
+    l.globalCompositeOperation = "source-in";
+    l.drawImage(cons.img, 0, 0, W, H);
+    l.globalCompositeOperation = "source-over";
+
+    ctx.globalAlpha = LIT;
+    ctx.save();
+    ctx.shadowColor = "rgba(140, 180, 230, 0.6)";
+    ctx.shadowBlur = 12;
+    ctx.drawImage(consLayer, r.x, r.y, r.w, r.h);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
   // ---------- آسمان ----------
 
   // آسمان ثابت پشت ستاره‌های چشمک‌زن، یک بار کشیده می‌شود: کهکشان راه شیری با ابرهای رنگی کم‌رنگ،
@@ -145,6 +286,8 @@
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    drawConstellation(time);
 
     // شهاب تصادفی در آسمان
     nextMeteor -= dt;
@@ -300,6 +443,7 @@
         window.removeEventListener("pointermove", trail);
         document.querySelectorAll(".sky, .dunes, .meteor, .astrolabe").forEach((el) => el.remove());
         sparks = [];
+        cons = null;
       };
     },
 
@@ -313,6 +457,10 @@
         box.querySelector(".scene-caption").textContent =
           d.done >= d.total ? "همه‌ی آسمان کامل شد ✦" : `صورت فلکی بعدی: «${c.name}»`;
       },
+      // شروع یا ادامه‌ی مرحله: صورت فلکی همین مرحله کم‌رنگ پشت جدول؛ کلمه‌های پیدا شده روشنش کرده‌اند
+      level(d) {
+        startConstellation(d.level, puzzle.words.length, found.length);
+      },
       submit(d) {
         lastLetters = d.letters;
       },
@@ -321,6 +469,9 @@
         const wheel = document.getElementById("wheel");
         d.cells.forEach((cell, i) => meteor(centerOf(lastLetters[i] || lastLetters[0] || wheel), cell, i * 110));
         lastLetters = [];
+        // تکه‌ی تازه‌ای از صورت فلکی، بعد از رسیدن شهاب‌ها
+        const count = found.length;
+        setTimeout(() => lightUpTo(count), 380);
       },
       hint(d) {
         // شهاب از بالای آسمان
@@ -341,6 +492,7 @@
         );
       },
       complete(d) {
+        lightUpTo(cons ? cons.total : 0); // اگر با راهنما تمام شده باشد، بقیه‌ی صورت فلکی هم روشن می‌شود
         const c = constellationOf(d.level);
         const img = document.createElement("img");
         img.className = "extra constellation";
