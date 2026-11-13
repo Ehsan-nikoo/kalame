@@ -1091,3 +1091,134 @@ button { font-family: inherit; cursor: pointer; }
 .shop-pack.busy .ach-btn { opacity: 0.6; }
 .shop-pack .ach-name { justify-content: flex-start; }
 .shop-name { white-space: nowrap; }
+
+/* ---------- منو: مرحله‌ی روزانه و دکمه‌های کوچک‌تر ---------- */
+.home-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+.home-menu .menu-btn { padding: 11px 8px; font-size: 18px; }
+.home-menu .menu-btn.primary { grid-column: span 2; padding: 13px; font-size: 25px; }
+.home-menu .daily-btn { grid-column: span 2; }
+/* بدون فروشگاه (در مرورگر)، دکمه‌ی ظاهر همه‌ی ردیف را می‌گیرد */
+.home-menu:not(:has(#shopBtn:not(.hidden))) #themesBtn { grid-column: span 2; }
+.daily-btn {
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+}
+.daily-btn > svg { flex: none; width: 30px; height: 30px; color: var(--accent); }
+.daily-btn > span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.35; }
+.daily-btn.solved > svg { color: var(--coin); }
+
+/* ---------- نوار مناسبت‌ها (نوروز، یلدا، محرم) ---------- */
+.event-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px auto 0;
+  padding: 6px 16px 6px 10px;
+  max-width: 300px;
+  width: 100%;
+  border-radius: 999px;
+  border: 1.5px solid var(--event-edge, var(--edge));
+  background: var(--event-bg, var(--surface));
+  color: var(--event-ink, var(--ink));
+  box-shadow: 0 3px 0 var(--lip);
+  text-align: right;
+}
+.event-banner.hidden { display: none; }
+.event-icon { flex: none; width: 38px; height: 38px; }
+.event-icon svg { width: 100%; height: 100%; }
+.event-text { display: flex; flex-direction: column; line-height: 1.4; min-width: 0; }
+.event-text b { font-family: var(--display); font-weight: 400; font-size: 18px; }
+.event-text small { font-size: 12.5px; opacity: 0.85; }
+.event-banner.gift { animation: gift-glow 1.8s ease-in-out infinite; }
+@keyframes gift-glow { 50% { box-shadow: 0 3px 0 var(--lip), 0 0 0 5px rgba(226, 176, 74, 0.35); } }
+[data-event="nowruz"] { --event-bg: linear-gradient(90deg, #eaf7df, #fff6e6); --event-ink: #2f5a2a; --event-edge: #9fd08a; }
+[data-event="yalda"] { --event-bg: linear-gradient(90deg, #4a0f1c, #7a1a2c); --event-ink: #ffe9e0; --event-edge: #b8263a; }
+[data-event="muharram"] { --event-bg: linear-gradient(90deg, #1d1d22, #34343c); --event-ink: #eee7da; --event-edge: #4a4a52; }
+
+/* ---------- فصل‌ها ---------- */
+.chapter-banner {
+  position: absolute;
+  left: 50%;
+  width: min(84%, 340px);
+  height: 124px;
+  translate: -50% -50%;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--surface);
+  box-shadow: 0 4px 0 var(--lip), 0 10px 22px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+.chapter-scene { display: block; width: 100%; height: 100%; }
+.chapter-info {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 18px 12px 7px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.chapter-info b { font-family: var(--display); font-weight: 400; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter-info span { flex: none; font-size: 13px; font-weight: 700; }
+.chapter-banner.locked .chapter-scene { filter: grayscale(0.85) brightness(0.8); }
+.chapter-banner.locked { opacity: 0.75; }
+.chapter-banner.complete .chapter-info span { color: #ffe08a; }
+
+/* پایان فصل در پنجره‌ی پایان مرحله */
+.chapter-done { margin-top: 12px; }
+.chapter-done .chapter-scene { height: 84px; border-radius: 14px; box-shadow: 0 3px 0 var(--lip); }
+.chapter-done-text { display: flex; flex-direction: column; margin-top: 8px; color: var(--muted); font-size: 13.5px; }
+.chapter-done-text b { font-family: var(--display); font-weight: 400; font-size: 19px; color: var(--ink); }
+
+/* ---------- اشتراک نتیجه‌ی مرحله‌ی روزانه ---------- */
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.share-title { width: 100%; font-size: 14px; font-weight: 700; color: var(--muted); }
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: #7a8a8a;
+}
+.share-btn svg { width: 18px; height: 18px; }
+.share-btn.tg { background: #2aa3de; }
+.share-btn.wa { background: #25b05a; }
+.share-btn:active { transform: translateY(2px); }
+
+.setting-name small { display: block; font-family: "Vazirmatn", sans-serif; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.setting.hidden { display: none; }
+
+/* گوشی‌های کوتاه: منو جمع‌وجورتر، تا صحنه‌ی بالای منو جا داشته باشد */
+@media (max-height: 700px) {
+  :root[data-theme] .logo { font-size: 60px; }
+  .home-menu { margin-top: 12px; gap: 8px; }
+  :root .home-menu .menu-btn { padding: 7px 8px; font-size: 17px; }
+  :root .home-menu .menu-btn.primary { padding: 9px; font-size: 23px; }
+  :root[data-theme="ink"] .logo { line-height: 1.6; }
+  .daily-btn > svg { width: 26px; height: 26px; }
+  .event-banner { margin-top: 6px; padding: 3px 14px 3px 8px; }
+  .event-icon { width: 32px; height: 32px; }
+}
+.daily-btn small { line-height: 1.5; }
+[data-theme="ink"] .daily-btn > span { line-height: 1.9; }
+[data-theme="ink"] .daily-btn small { margin-top: 4px; }

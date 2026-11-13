@@ -35,8 +35,13 @@
     <div class="home-scene" id="homeScene"></div>
     <h1 class="logo">کلمه</h1>
     <p class="home-sub" id="homeSub"></p>
+    <button class="event-banner hidden" id="eventBanner" type="button"></button>
     <nav class="home-menu">
       <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
+      <button class="menu-btn daily-btn" id="dailyBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M12 12.6l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3Z" fill="currentColor"/></svg>
+        <span>مرحله‌ی روزانه<small id="dailySub"></small></span>
+      </button>
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
       <button class="menu-btn" id="achBtn" type="button">دستاوردها<span class="badge hidden" id="achBadge"></span></button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
@@ -85,6 +90,10 @@
       <label class="setting">
         <span class="setting-name">لرزش</span>
         <input type="checkbox" class="switch" id="setHaptics">
+      </label>
+      <label class="setting">
+        <span class="setting-name">یادآوری روزانه<small>اعلان ساعت ۷ عصر، وقتی جایزه یا مرحله‌ی روزانه مانده</small></span>
+        <input type="checkbox" class="switch" id="setReminders">
       </label>
       <div class="setting column">
         <span class="setting-name">اندازه‌ی متن</span>
@@ -232,6 +241,8 @@
   <script src="sound.js"></script>
   <script src="game.js"></script>
   <script src="feel.js"></script>
+  <script src="chapters.js"></script>
+  <script src="daily.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
   <script src="themes/caravan-scenes.js"></script>

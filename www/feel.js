@@ -15,7 +15,7 @@ const TEXT_SIZES = [
 ];
 
 function loadSettings() {
-  const fresh = { sound: true, haptics: true, text: "normal", tutorial: false };
+  const fresh = { sound: true, haptics: true, text: "normal", tutorial: false, reminders: true, askedNotes: false };
   try {
     const data = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     if (!data || typeof data !== "object") return fresh;
@@ -24,6 +24,8 @@ function loadSettings() {
       haptics: data.haptics !== false,
       text: TEXT_SIZES.some((t) => t.id === data.text) ? data.text : "normal",
       tutorial: data.tutorial === true, // آموزش مرحله‌ی اول دیده شده؟
+      reminders: data.reminders !== false, // اعلان یادآوری روزانه (daily.js)
+      askedNotes: data.askedNotes === true, // اجازه‌ی اعلان یک بار پرسیده شده؟
     };
   } catch {
     return fresh;
@@ -279,6 +281,7 @@ function stopTutorial() {
 function renderSettings() {
   $("setSound").checked = settings.sound;
   $("setHaptics").checked = settings.haptics;
+  $("setReminders").checked = settings.reminders;
   for (const btn of document.querySelectorAll("#setText button")) {
     btn.classList.toggle("selected", btn.dataset.size === settings.text);
   }

@@ -46,6 +46,7 @@ const THEMES = [
 // chest: همه‌ی کلمه‌های صندوق، و چند کلمه از پر شدن بعدی جمع شده (fill)
 // stats: آمار دستاوردها (کلمه‌های جدول، مرحله‌های بی‌راهنما، ظاهرهای بازی‌شده، روزهای پشت سر هم)
 // achievements: هر دستاورد تا چه سطحی جایزه‌اش گرفته شده
+// dailyPuzzle: مرحله‌ی روزانه (daily.js)؛ events: عیدی‌های گرفته‌شده‌ی مناسبت‌ها
 // paid: شناسه‌ی خریدهایی (purchaseToken) که سکه‌شان داده شده، تا یک خرید دو بار سکه ندهد
 
 const SAVE_KEY = "kalame-save";
@@ -68,6 +69,16 @@ function readExtras(data) {
     },
     achievements: objOr(data.achievements),
     paid: strings(data.paid).slice(-100),
+    // مرحله‌ی روزانه: آخرین روزی که حل شده، چند روز پشت سر هم، بهترین رکورد، تعداد کل
+    dailyPuzzle: {
+      last: typeof objOr(data.dailyPuzzle).last === "string" ? data.dailyPuzzle.last : null,
+      run: intOr(objOr(data.dailyPuzzle).run, 0),
+      best: intOr(objOr(data.dailyPuzzle).best, 0),
+      count: intOr(objOr(data.dailyPuzzle).count, 0),
+      hinted: objOr(data.dailyPuzzle).hinted === true,
+    },
+    // عیدی‌های گرفته‌شده‌ی مناسبت‌ها (مثل nowruz-1406)
+    events: objOr(data.events),
   };
 }
 
@@ -196,12 +207,23 @@ function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+// برای آزمودن روزهای دیگر در مرورگر: index.html?today=2027-03-21
+const TODAY_OVERRIDE = new URLSearchParams(location.search).get("today");
+
+function nowDate() {
+  if (TODAY_OVERRIDE) {
+    const d = new Date(TODAY_OVERRIDE + "T" + new Date().toTimeString().slice(0, 8));
+    if (!isNaN(d)) return d;
+  }
+  return new Date();
+}
+
 function todayKey() {
-  return dateKey(new Date());
+  return dateKey(nowDate());
 }
 
 function yesterdayKey() {
-  const d = new Date();
+  const d = nowDate();
   d.setDate(d.getDate() - 1);
   return dateKey(d);
 }
@@ -251,6 +273,7 @@ function claimDailyReward() {
   flyCoins(coins, fromRect, document.querySelector("#screenHome .coins"));
   noteAchievements();
   updateAchBadge();
+  askReminders(); // بار اول اجازه‌ی اعلان یادآوری را می‌پرسد (daily.js)
 }
 
 // آیا کلمه با این حروف (و تعدادشان) ساخته می‌شود؟
@@ -278,7 +301,7 @@ function startPuzzle(level, index, key) {
   layout = buildLayout(level.words);
 
   const name = levelName(index);
-  $("levelLabel").textContent = `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
+  $("levelLabel").textContent = isDaily() ? dailyLabel() : `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
   renderBoard();
   renderWheel();
   hidePreview();
@@ -292,8 +315,8 @@ function startPuzzle(level, index, key) {
   for (const w of found) fillWord(w, false);
   updateCoins();
   updateChest();
-  emit("level", { level: index });
-  prepareLevel(index + 1);
+  emit("level", { level: index, daily: isDaily() });
+  if (!isDaily()) prepareLevel(index + 1);
 }
 
 // مرحله‌ی بعد را وقتی گوشی بیکار است از قبل می‌سازد، تا رفتن به مرحله‌ی بعد مکث نداشته باشد
@@ -921,13 +944,15 @@ function hidePreview() {
 // ---------- پایان مرحله ----------
 
 function finishLevel() {
+  const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
+  if (isDaily()) return finishDaily(hinted); // daily.js
   locked = true;
   const first = current === save.unlocked;
-  const reward = first ? COINS_PER_LEVEL : 0;
+  // پایان هر فصل (۲۰ مرحله) سکه‌ی بیشتری دارد (chapters.js)
+  const reward = first ? COINS_PER_LEVEL + (endsChapter(current) ? CHAPTER_REWARD : 0) : 0;
   if (first) save.unlocked++;
   save.coins += reward;
   // آمار دستاوردها؛ کلمه‌ها و «بدون راهنما» فقط بار اولِ هر مرحله شمرده می‌شوند
-  const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
   if (first) {
     save.stats.words = (save.stats.words || 0) + puzzle.words.length;
     if (!hinted) save.stats.noHint++;
@@ -956,6 +981,7 @@ function showComplete(first, reward) {
     : first ? `مرحله‌ی ${n} تموم شد.` : `مرحله‌ی ${n} دوباره تموم شد.`;
   $("overlayReward").classList.toggle("hidden", !reward);
   $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(reward);
+  if (first && endsChapter(current)) $("overlayText").after(chapterDoneCard(current));
   if (newAchievement) {
     $("overlayReward").insertAdjacentHTML("afterend", `<div class="extra ach-note">دستاورد تازه! از منو بگیرش</div>`);
     newAchievement = false;
@@ -1031,7 +1057,8 @@ function flyCoins(amount, from, target) {
 
 // جشن پایان مرحله: تکه‌های رنگی از بالای پنجره بیرون می‌پرند (شکل و رنگشان را هر ظاهر تعیین می‌کند)
 function celebrate() {
-  if (calm()) return;
+  const ev = eventNow();
+  if (calm() || (ev && ev.quiet)) return; // در روزهای سوگواری بی‌کاغذرنگی
   const r = document.querySelector("#overlay .card").getBoundingClientRect();
   const cx = r.left + r.width / 2;
   const cy = r.top + 30;
@@ -1264,10 +1291,11 @@ function renderHome() {
   $("continueBtn").disabled = !ready;
   if (ready) prepareLevel(next);
   updateAchBadge();
-  const name = ready ? levelName(next) : "";
+  renderDailyBtn(); // daily.js
+  renderEvent();
   $("continueSub").textContent = allDone && ready
     ? "همه‌ی مرحله‌ها تموم شده"
-    : `مرحله‌ی ${faDigits(next + 1)}` + (name ? " · " + name : "");
+    : `مرحله‌ی ${faDigits(next + 1)} · ${chapterInfo(chapterOf(next)).name}`;
 
   // اولین بار هر روز که منو باز می‌شود، جایزه‌ی روزانه نشان داده می‌شود
   if (rewardDue()) setTimeout(() => {
@@ -1293,13 +1321,14 @@ const MAP_PAD = 80;    // فاصله‌ی اولین و آخرین مرحله ا
 const mapX = (i) => 50 + 26 * Math.sin(i * 1.15); // جای افقی هر مرحله، به درصد
 
 const MAP_AHEAD = 10;   // چند مرحله‌ی قفل جلوتر از مرحله‌ی فعلی روی نقشه دیده شود
+const MAP_GAP = 170;   // جای کارت هر فصل، زیر اولین مرحله‌اش
 
 function renderLevels() {
   const map = $("levelMap");
   // مرحله‌ها بی‌پایان‌اند؛ نقشه تا چند مرحله جلوتر از مرحله‌ی فعلی کشیده می‌شود
   const n = generator ? Math.max(save.unlocked + 1 + MAP_AHEAD, handmade.length) : handmade.length;
-  const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP;
-  const y = (i) => H - MAP_PAD - i * MAP_STEP;
+  const H = MAP_PAD * 2 + Math.max(n - 1, 0) * MAP_STEP + (chapterOf(Math.max(n - 1, 0)) + 1) * MAP_GAP;
+  const y = (i) => H - MAP_PAD - i * MAP_STEP - (chapterOf(i) + 1) * MAP_GAP;
   // منحنی نرم از مرحله‌ی اول تا مرحله‌ی count
   const road = (count) => {
     let d = `M${mapX(0)} ${y(0)}`;
@@ -1355,6 +1384,13 @@ function renderLevels() {
       track.appendChild(label);
     }
     prevName = name;
+
+    // کارت فصل (اسم و منظره) زیر اولین مرحله‌ی هر فصل
+    if (i % CHAPTER_SIZE === 0) {
+      const banner = chapterBanner(chapterOf(i));
+      banner.style.top = y(i) + (MAP_STEP + MAP_GAP) / 2 - 10 + "px";
+      track.appendChild(banner);
+    }
 
     if (status === "current") {
       const marker = document.createElement("span");
