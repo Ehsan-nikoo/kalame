@@ -178,7 +178,7 @@ button { font-family: inherit; cursor: pointer; }
 .tc-plain .tcard-art { background: #f4f1ea; color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3; }
 
 /* ---------- منوی اصلی ---------- */
-.home-top { display: flex; justify-content: flex-end; }
+.home-top { display: flex; justify-content: space-between; align-items: center; }
 /* صحنه‌ی زنده‌ی هر ظاهر بالای لوگو؛ فضای خالی بالای صفحه را پر می‌کند */
 .home-scene {
   flex: 1 1 0;
@@ -885,4 +885,113 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* ---------- تنظیمات ---------- */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 2px 2px 16px;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1.5px solid var(--edge);
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--lip);
+  color: var(--ink);
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+}
+.setting.column { flex-direction: column; align-items: stretch; cursor: default; }
+.setting-name { font-family: var(--display); font-size: 20px; line-height: 1.5; }
+.setting-link svg { width: 22px; height: 22px; color: var(--muted); }
+
+/* کلید روشن/خاموش */
+.switch {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 30px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--cell-empty);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: right 0.2s;
+}
+.switch:checked { background: var(--accent); }
+.switch:checked::after { right: 25px; }
+.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* انتخاب اندازه‌ی متن */
+.segmented {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--cell-empty);
+}
+.segmented button {
+  flex: 1;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 4px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.segmented button.selected { background: var(--surface); font-weight: 700; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+
+/* اندازه‌ی متن: نوشته‌های منو، کارت‌ها، معنی‌ها و پیام‌ها بزرگ‌تر می‌شوند (جدول و دایره نه) */
+[data-text="large"] :is(.home-menu, .home-sub, .sheet-card, .card, .preview, .ach-list, .theme-list, .settings-list) { zoom: 1.12; }
+[data-text="xlarge"] :is(.home-menu, .home-sub, .sheet-card, .card, .preview, .ach-list, .theme-list, .settings-list) { zoom: 1.25; }
+
+/* ---------- یادآوری راهنما: دکمه آرام چشمک می‌زند ---------- */
+.tool.nudge { animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge {
+  0%, 100% { transform: none; box-shadow: 0 4px 0 var(--lip), 0 0 0 0 rgba(226, 176, 74, 0); }
+  50% { transform: scale(1.08); box-shadow: 0 4px 0 var(--lip), 0 0 0 6px rgba(226, 176, 74, 0.45); }
+}
+
+/* ---------- آموزش مرحله‌ی اول: انگشت روی دایره ---------- */
+.tutorial-hand {
+  position: absolute;
+  z-index: 5;
+  width: 52px;
+  height: 52px;
+  margin: -6px 0 0 -14px;
+  pointer-events: none;
+  color: var(--ink);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
+  transition: left 0.55s ease-in-out, top 0.55s ease-in-out, opacity 0.3s, scale 0.3s;
+}
+.tutorial-hand.jump { transition: opacity 0.3s, scale 0.3s; }
+.tutorial-hand.lift { opacity: 0; scale: 1.3; }
+.tutorial-hand svg { width: 100%; height: 100%; fill: #fff; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tool.nudge { animation: none; outline: 3px solid var(--coin); }
 }

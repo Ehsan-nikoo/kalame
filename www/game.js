@@ -124,6 +124,7 @@ function applyTheme(id) {
 }
 
 function emit(name, detail) {
+  feel(name, detail || {}); // صدا، لرزش، آموزش و یادآوری راهنما (feel.js)
   const def = themeDefs[activeTheme];
   if (def && def.on && def.on[name]) def.on[name](detail);
 }
@@ -233,6 +234,7 @@ function claimDailyReward() {
   save.stats.bestRun = Math.max(save.stats.bestRun, save.stats.dayRun);
   save.daily = { last: todayKey(), streak: day };
   save.coins += coins;
+  sound("reward");
   persist();
   const from = $("rewardDays").querySelector(".today .coin-icon");
   const fromRect = from ? from.getBoundingClientRect() : null;
@@ -282,6 +284,14 @@ function startPuzzle(level, index, key) {
   updateCoins();
   updateChest();
   emit("level", { level: index });
+  prepareLevel(index + 1);
+}
+
+// مرحله‌ی بعد را وقتی گوشی بیکار است از قبل می‌سازد، تا رفتن به مرحله‌ی بعد مکث نداشته باشد
+function prepareLevel(i) {
+  if (!hasLevel(i) || levelCache.has(i) || i < handmade.length) return;
+  const later = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
+  later(() => levelAt(i));
 }
 
 function saveLevelState() {
@@ -461,6 +471,7 @@ function pickLetter(i) {
   const el = letterEls[i];
   el.classList.add("picked");
   setTimeout(() => el.classList.remove("picked"), 140);
+  feelLetter(path.length);
 }
 
 function onPointerDown(e) {
@@ -688,6 +699,7 @@ function openChest() {
   persist();
   const art = $("chestArt");
   art.classList.add("opened");
+  sound("reward");
   const target = document.querySelector(screenNow === "play" ? "#app .coins" : ".screen:not(.hidden) .coins");
   flyCoins(CHEST_REWARD, art.getBoundingClientRect(), target);
   updateChest();
@@ -774,6 +786,7 @@ function claimAchievement(a, btn) {
   save.achievements[a.id] = tier + 1;
   save.coins += reward;
   persist();
+  sound("reward");
   flyCoins(reward, btn.getBoundingClientRect(), document.querySelector("#screenAchievements .coins"));
   achSeen = readyCount();
   renderAchievements();
@@ -959,6 +972,7 @@ const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 function flyCoins(amount, from, target) {
   const to = target ? target.getBoundingClientRect() : null;
   if (calm() || !from || !from.width || !to || !to.width) {
+    sound("coin");
     updateCoins();
     return bumpCoins();
   }
@@ -990,6 +1004,7 @@ function flyCoins(amount, from, target) {
       { duration: 720, delay: k * 90, easing: "cubic-bezier(.45,0,.55,1)", fill: "backwards" }
     ).finished.then(() => {
       coin.remove();
+      sound("coin");
       shown += amount / N;
       count.textContent = faDigits(Math.round(shown));
       ghost.classList.remove("bump");
@@ -1041,7 +1056,7 @@ function showErrors(title, errors) {
 // ---------------------------------------------------------------------------
 // منو صفحه‌ی اصلی است؛ بقیه با # در آدرس باز می‌شوند تا دکمه‌ی «برگشت» اندروید هم کار کند.
 
-const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), play: $("app") };
+const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), settings: $("screenSettings"), play: $("app") };
 
 function route() {
   let name = location.hash.slice(1);
@@ -1062,6 +1077,8 @@ function route() {
   if (name === "home") renderHome();
   if (name === "levels") renderLevels();
   if (name === "achievements") renderAchievements();
+  if (name === "settings") renderSettings();
+  if (name !== "play") stopNudge();
   if (name === "play") sizeBoard();
   updateCoins();
 }
@@ -1115,6 +1132,7 @@ function renderHome() {
   const next = allDone ? save.unlocked - 1 : save.unlocked;
   if (ready) emit("home", { level: next, done: save.unlocked, total: generator ? Infinity : handmade.length });
   $("continueBtn").disabled = !ready;
+  if (ready) prepareLevel(next);
   updateAchBadge();
   const name = ready ? levelName(next) : "";
   $("continueSub").textContent = allDone && ready

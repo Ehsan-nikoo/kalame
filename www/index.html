@@ -27,6 +27,9 @@
   <!-- منوی اصلی -->
   <section class="screen hidden" id="screenHome">
     <div class="home-top">
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="تنظیمات">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.4 7.4 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 2.6-1.5l2.4 1 2-3.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </div>
     <div class="home-scene" id="homeScene"></div>
@@ -62,6 +65,35 @@
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </header>
     <div class="ach-list" id="achList"></div>
+  </section>
+
+  <!-- تنظیمات -->
+  <section class="screen hidden" id="screenSettings">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">تنظیمات</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <div class="settings-list">
+      <label class="setting">
+        <span class="setting-name">صدا</span>
+        <input type="checkbox" class="switch" id="setSound">
+      </label>
+      <label class="setting">
+        <span class="setting-name">لرزش</span>
+        <input type="checkbox" class="switch" id="setHaptics">
+      </label>
+      <div class="setting column">
+        <span class="setting-name">اندازه‌ی متن</span>
+        <div class="segmented" id="setText"></div>
+      </div>
+      <button class="setting setting-link" id="setTutorial" type="button">
+        <span class="setting-name">دیدن دوباره‌ی آموزش</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
   </section>
 
   <!-- خود بازی -->
@@ -171,6 +203,7 @@
 
   <script src="engine.js"></script>
   <script src="game.js"></script>
+  <script src="feel.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
   <script src="themes/caravan-scenes.js"></script>
