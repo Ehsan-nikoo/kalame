@@ -1559,23 +1559,61 @@ $("hintWordBtn").querySelector(".cost-count").textContent = faDigits(COST_HINT_W
 // ---------- صفحه‌ی بارگذاری (در index.html) ----------
 const LOADING_MIN_MS = 2000; // دست‌کم این‌قدر دیده می‌شود تا تصویرش به چشم بیاید
 
+// نمایش نرم: عدد نشان‌داده‌شده هر فریم کمی به هدف نزدیک می‌شود و تا وقتی کار تمام نشده،
+// آرام خودش جلو می‌رود تا نوار هیچ‌وقت نایستد. فقط transform عوض می‌شود (بدون چیدمان دوباره).
+const loadingBar = { target: 0, shown: 0, raf: 0, done: false, last: 0 };
+
+function loadingFrame(now) {
+  const fill = $("loadingFill"), tile = $("loadingTile"), track = $("loadingTrack");
+  if (!fill || !tile || !track) return;
+  const dt = Math.min(64, now - (loadingBar.last || now));
+  loadingBar.last = now;
+  if (!loadingBar.done) loadingBar.target = Math.min(0.9, loadingBar.target + dt * 0.00006);
+  const goal = loadingBar.done ? 1 : loadingBar.target;
+  loadingBar.shown += (goal - loadingBar.shown) * (1 - Math.exp(-dt / (loadingBar.done ? 160 : 260)));
+  const p = loadingBar.shown;
+  fill.style.transform = "translateX(" + ((p - 1) * 100).toFixed(2) + "%)";
+  tile.style.transform = "translateX(" + (p * track.offsetWidth).toFixed(1) + "px)";
+  if (loadingBar.done && p > 0.995) return;
+  loadingBar.raf = requestAnimationFrame(loadingFrame);
+}
+
 function loadingProgress(frac) {
-  const fill = $("loadingFill");
-  if (fill) fill.style.width = Math.round(Math.max(parseFloat(fill.style.width) || 0, frac * 100)) + "%";
+  loadingBar.target = Math.max(loadingBar.target, Math.min(frac, 1));
+  if (!loadingBar.raf) loadingBar.raf = requestAnimationFrame(loadingFrame);
+}
+
+function loadingBurst() {
+  const tile = $("loadingTile");
+  if (!tile) return;
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement("span");
+    s.className = "loading-spark";
+    const a = (i / 10) * Math.PI * 2;
+    s.style.setProperty("--dx", Math.cos(a) * 46 + "px");
+    s.style.setProperty("--dy", Math.sin(a) * 46 + "px");
+    tile.appendChild(s);
+  }
 }
 
 function hideLoading() {
   const el = $("loading");
   if (!el) return;
-  const wait = Math.max(0, LOADING_MIN_MS - (Date.now() - (window.loadingStart || 0)));
-  // نوار در همان زمانِ باقی‌مانده آرام پر می‌شود
-  const fill = $("loadingFill");
-  if (fill) fill.style.transitionDuration = Math.max(0.4, wait / 1000) + "s";
-  loadingProgress(1);
+  // تا کمینه‌ی زمان نمایش، نوار آرام جلو می‌رود؛ بعد تا ته پر می‌شود و کاشی می‌پرد
+  const wait = Math.max(0, LOADING_MIN_MS - 700 - (Date.now() - (window.loadingStart || 0)));
+  loadingProgress(0.85);
   setTimeout(() => {
-    el.classList.add("done");
-    setTimeout(() => el.remove(), 500);
-  }, wait + 250);
+    loadingBar.done = true;
+    loadingProgress(1);
+    setTimeout(() => {
+      el.classList.add("full");
+      loadingBurst();
+    }, 380);
+    setTimeout(() => {
+      el.classList.add("done");
+      setTimeout(() => el.remove(), 500);
+    }, 1000);
+  }, wait);
 }
 
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم

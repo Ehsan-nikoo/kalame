@@ -1262,24 +1262,116 @@ button { font-family: inherit; cursor: pointer; }
 }
 .loading.done { opacity: 0; pointer-events: none; }
 .loading-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.loading-bar {
+.loading-track {
   position: absolute;
   left: 50%;
-  bottom: calc(5% + env(safe-area-inset-bottom, 0px));
-  width: min(62%, 280px);
-  height: 12px;
+  bottom: calc(6% + env(safe-area-inset-bottom, 0px));
+  width: min(64%, 290px);
+  height: 14px;
   translate: -50% 0;
+}
+.loading-bar {
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
-  background: rgba(20, 12, 60, 0.55);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45), 0 0 0 2px rgba(255, 236, 190, 0.55);
+  background: rgba(24, 14, 70, 0.6);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 238, 200, 0.7), 0 4px 14px rgba(20, 10, 60, 0.35);
   overflow: hidden;
 }
+/* نوار از چپ به راست: خودِ پرکننده جابه‌جا می‌شود (transform)، نه پهنایش */
 .loading-bar span {
   position: absolute;
-  inset: 0 0 0 auto; /* از راست به چپ پر می‌شود */
-  width: 0;
+  inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, #ffe58a, #f2b630);
-  box-shadow: 0 0 10px rgba(255, 210, 100, 0.8);
-  transition: width 0.5s ease;
+  background: linear-gradient(180deg, #fff1b0 0%, #ffd45c 45%, #f0a92a 100%);
+  transform: translateX(-100%);
+  will-change: transform;
+  overflow: hidden;
+}
+.loading-bar span::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: loading-shine 1.3s linear infinite;
+}
+@keyframes loading-shine {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(260%); }
+}
+/* کاشیِ حرف که سرِ نوار را همراهی می‌کند */
+.loading-tile {
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.loading-tile i {
+  position: absolute;
+  left: -22px;
+  bottom: 6px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fffaf0, #f3e6cc);
+  box-shadow: inset 0 -4px 0 #dcc7a0, 0 6px 12px rgba(30, 15, 70, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.6);
+  font-style: normal;
+  transform-origin: 50% 100%;
+  animation: loading-hop 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.loading-tile b {
+  font: 800 27px/1 "Vazirmatn", sans-serif;
+  color: #5a2fa8;
+  translate: 0 -2px;
+}
+.loading-tile::before {
+  /* سایه‌ی نرمِ زیر کاشی */
+  content: "";
+  position: absolute;
+  left: -16px;
+  bottom: -3px;
+  width: 32px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(255, 220, 120, 0.7), transparent 70%);
+  animation: loading-glow 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes loading-hop {
+  0%, 100% { transform: translateY(0) rotate(-6deg) scale(1, 1); }
+  12% { transform: translateY(0) rotate(-6deg) scale(1.08, 0.9); }
+  50% { transform: translateY(-12px) rotate(6deg) scale(0.97, 1.04); }
+  88% { transform: translateY(0) rotate(-6deg) scale(1.04, 0.95); }
+}
+@keyframes loading-glow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.5; }
+}
+/* پایان: کاشی یک دور می‌چرخد و بزرگ می‌شود */
+.loading.full .loading-tile i { animation: loading-pop 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards; }
+.loading.full .loading-tile::before { animation: none; opacity: 0; }
+@keyframes loading-pop {
+  0% { transform: translateY(0) rotate(-6deg) scale(1); }
+  60% { transform: translateY(-16px) rotate(360deg) scale(1.3); }
+  100% { transform: translateY(-10px) rotate(360deg) scale(1.15); }
+}
+.loading-spark {
+  position: absolute;
+  left: 0;
+  bottom: 30px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px;
+  border-radius: 50%;
+  background: #fff2b8;
+  box-shadow: 0 0 6px #ffd45c;
+  animation: loading-spark 0.7s ease-out forwards;
+}
+@keyframes loading-spark {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
 }
