@@ -46,6 +46,12 @@ jobs:
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
 
+      - name: بررسی کلیدهای عمومی بازار و مایکت
+        env:
+          BAZAAR_RSA_KEY: ${{ secrets.BAZAAR_RSA_KEY }}
+          MYKET_RSA_KEY: ${{ secrets.MYKET_RSA_KEY }}
+        run: bash tools/check-store-keys.sh --strict
+
       - name: نصب ابزارهای پروژه
         run: npm ci
 
