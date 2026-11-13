@@ -1,0 +1,32 @@
+# بررسی اینکه کد اندروید (هر دو نسخه‌ی بازار و مایکت) بدون خطا ساخته می‌شود.
+# روی هر Pull Request اجرا می‌شود و چیزی منتشر نمی‌کند.
+
+name: بررسی ساخت اندروید
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npx cap sync android
+      - name: ساخت نسخه‌ی آزمایشی بازار و مایکت
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleBazaarDebug assembleMyketDebug --no-daemon

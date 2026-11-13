@@ -27,6 +27,9 @@
   <!-- منوی اصلی -->
   <section class="screen hidden" id="screenHome">
     <div class="home-top">
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="تنظیمات">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.4 7.4 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 2.6-1.5l2.4 1 2-3.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </div>
     <div class="home-scene" id="homeScene"></div>
@@ -37,6 +40,7 @@
       <button class="menu-btn" id="levelsBtn" type="button">مرحله‌ها</button>
       <button class="menu-btn" id="achBtn" type="button">دستاوردها<span class="badge hidden" id="achBadge"></span></button>
       <button class="menu-btn" id="themesBtn" type="button">ظاهر بازی</button>
+      <button class="menu-btn hidden" id="shopBtn" type="button">فروشگاه سکه</button>
     </nav>
   </section>
 
@@ -62,6 +66,48 @@
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </header>
     <div class="ach-list" id="achList"></div>
+  </section>
+
+  <!-- تنظیمات -->
+  <section class="screen hidden" id="screenSettings">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">تنظیمات</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <div class="settings-list">
+      <label class="setting">
+        <span class="setting-name">صدا</span>
+        <input type="checkbox" class="switch" id="setSound">
+      </label>
+      <label class="setting">
+        <span class="setting-name">لرزش</span>
+        <input type="checkbox" class="switch" id="setHaptics">
+      </label>
+      <div class="setting column">
+        <span class="setting-name">اندازه‌ی متن</span>
+        <div class="segmented" id="setText"></div>
+      </div>
+      <button class="setting setting-link" id="setTutorial" type="button">
+        <span class="setting-name">دیدن دوباره‌ی آموزش</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- فروشگاه سکه (فقط در نسخه‌ی بازار و مایکت فعال است) -->
+  <section class="screen hidden" id="screenShop">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">فروشگاه سکه</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <p class="shop-note hidden" id="shopNote"></p>
+    <div class="ach-list" id="shopList"></div>
   </section>
 
   <!-- خود بازی -->
@@ -136,17 +182,30 @@
   <div class="sheet center hidden" id="chestSheet" role="dialog" aria-modal="true" aria-labelledby="chestTitle">
     <div class="card sheet-card level-card chest-card">
       <svg class="chest-art" id="chestArt" viewBox="0 0 120 92" aria-hidden="true">
+        <defs>
+          <linearGradient id="chWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--chest-wood, #a8692f)"/><stop offset="1" stop-color="var(--chest-wood-2, #6e4220)"/></linearGradient>
+          <linearGradient id="chLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+          <linearGradient id="chMetal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6420"/><stop offset=".35" stop-color="#f6dc8e"/><stop offset=".6" stop-color="var(--chest-band, #e0b04a)"/><stop offset="1" stop-color="#7a5418"/></linearGradient>
+          <pattern id="chGrain" width="84" height="8" patternUnits="userSpaceOnUse"><path d="M0 2Q20 0 42 3T84 2M0 6Q30 4 50 7T84 5" stroke="#000" stroke-opacity=".14" stroke-width=".7" fill="none"/></pattern>
+        </defs>
         <circle class="chest-glow" cx="60" cy="50" r="40"/>
-        <rect x="18" y="44" width="84" height="40" rx="5" fill="#a8692f"/>
-        <rect x="18" y="54" width="84" height="6" fill="#e0b04a"/>
-        <rect x="30" y="44" width="7" height="40" fill="#e0b04a"/><rect x="83" y="44" width="7" height="40" fill="#e0b04a"/>
+        <ellipse cx="60" cy="86" rx="46" ry="4" fill="#000" opacity=".22"/>
+        <rect x="18" y="44" width="84" height="40" rx="4" fill="url(#chWood)"/>
+        <rect x="18" y="44" width="84" height="40" rx="4" fill="url(#chGrain)"/>
+        <path d="M18 64H102M18 74H102" stroke="#000" stroke-opacity=".22" stroke-width=".8"/>
+        <rect x="18" y="80" width="84" height="4" rx="2" fill="url(#chMetal)"/>
+        <rect x="29" y="44" width="8" height="40" fill="url(#chMetal)"/><rect x="83" y="44" width="8" height="40" fill="url(#chMetal)"/>
+        <g fill="#5a3a10" opacity=".7"><circle cx="33" cy="50" r="1.1"/><circle cx="33" cy="78" r="1.1"/><circle cx="87" cy="50" r="1.1"/><circle cx="87" cy="78" r="1.1"/></g>
         <g class="chest-lid">
-          <path d="M18 46V32Q18 16 36 16H84Q102 16 102 32V46Z" fill="#b97a3a"/>
-          <rect x="30" y="16" width="7" height="30" fill="#e0b04a"/><rect x="83" y="16" width="7" height="30" fill="#e0b04a"/>
-          <rect x="18" y="40" width="84" height="6" fill="#8a5426"/>
+          <path d="M18 46V32Q18 16 36 16H84Q102 16 102 32V46Z" fill="url(#chWood)"/>
+          <path d="M18 46V32Q18 16 36 16H84Q102 16 102 32V46Z" fill="url(#chGrain)"/>
+          <path d="M18 46V32Q18 16 36 16H84Q102 16 102 32V46Z" fill="url(#chLid)"/>
+          <rect x="29" y="16.5" width="8" height="29.5" fill="url(#chMetal)"/><rect x="83" y="16.5" width="8" height="29.5" fill="url(#chMetal)"/>
+          <rect x="18" y="41" width="84" height="5" fill="url(#chMetal)"/>
+          <g fill="#5a3a10" opacity=".7"><circle cx="33" cy="22" r="1.1"/><circle cx="87" cy="22" r="1.1"/></g>
         </g>
-        <rect x="52" y="38" width="16" height="18" rx="3" fill="#f2cf72" stroke="#8a5426" stroke-width="1.5"/>
-        <circle cx="60" cy="45" r="2.4" fill="#5e3b20"/><rect x="59" y="46" width="2" height="5" fill="#5e3b20"/>
+        <path d="M52 40H68V52Q60 59 52 52Z" fill="url(#chMetal)" stroke="#5a3a10" stroke-width="1"/>
+        <circle cx="60" cy="46" r="2.3" fill="#3a240c"/><path d="M59 47H61L61.6 52H58.4Z" fill="#3a240c"/>
       </svg>
       <div class="card-title" id="chestTitle">صندوق کلمه‌ها</div>
       <div class="card-text" id="chestText"></div>
@@ -170,7 +229,9 @@
   <div class="error hidden" id="errorBox"></div>
 
   <script src="engine.js"></script>
+  <script src="sound.js"></script>
   <script src="game.js"></script>
+  <script src="feel.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
   <script src="themes/caravan-scenes.js"></script>

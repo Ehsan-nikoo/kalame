@@ -31,13 +31,16 @@ const CaravanScenes = (function () {
   function dome(cx, base, w, h, color) {
     return p(`M${cx - w} ${base}C${cx - w} ${base - h * 0.75} ${cx - w * 0.2} ${base - h * 0.8} ${cx} ${base - h}` +
       `C${cx + w * 0.2} ${base - h * 0.8} ${cx + w} ${base - h * 0.75} ${cx + w} ${base}Z`, color) +
+      p(`M${cx + w * 0.15} ${base}C${cx + w * 0.3} ${base - h * 0.6} ${cx + w * 0.15} ${base - h * 0.85} ${cx} ${base - h}` +
+        `C${cx + w * 0.2} ${base - h * 0.8} ${cx + w} ${base - h * 0.75} ${cx + w} ${base}Z`, "#000", ' opacity=".14"') +
+      p(`M${cx - w * 0.75} ${base - h * 0.35}C${cx - w * 0.7} ${base - h * 0.7} ${cx - w * 0.35} ${base - h * 0.8} ${cx - w * 0.1} ${base - h * 0.9}`, "none", ' stroke="#fff" stroke-width="3" opacity=".25" stroke-linecap="round"') +
       r(cx - 1.5, base - h - 16, 3, 16, C.gold);
   }
 
   // مناره: بدنه، دو نوار کاشی، بالکن و کلاهک
   function minaret(cx, base, h, body = C.cream, cap = C.turq, w = 16) {
     const x = cx - w / 2, top = base - h;
-    return r(x, top, w, h, body) + r(x, top + h * 0.35, w, 6, cap) + r(x, top + h * 0.6, w, 5, cap) +
+    return r(x, top, w, h, body) + shade(x, top, w, h) + r(x, top + h * 0.35, w, 6, cap) + r(x, top + h * 0.6, w, 5, cap) +
       r(x - 5, top, w + 10, 8, cap) + r(x + 2, top - 30, w - 4, 30, body) +
       p(`M${x + 1} ${top - 30}L${cx} ${top - 52}L${x + w - 1} ${top - 30}Z`, cap);
   }
@@ -49,20 +52,23 @@ const CaravanScenes = (function () {
       p(`M${cx - w / 2 - 4} ${base - h}L${cx} ${base - h - capH}L${cx + w / 2 + 4} ${base - h}Z`, cap);
   }
 
+  // سایه‌ی طرف راست هر ساختمان، تا حجم داشته باشد
+  const shade = (x, top, w, h) => r(x + w * 0.68, top, w * 0.32, h, "#000", ' opacity=".1"');
+
   function house(x, base, w, h, color, roof = "#000") {
-    return r(x, base - h, w, h, color) + r(x, base - h, w, 5, roof, ' opacity=".18"') +
+    return r(x, base - h, w, h, color) + shade(x, base - h, w, h) + r(x, base - h, w, 5, roof, ' opacity=".18"') +
       r(x + w / 2 - 7, base - 22, 14, 22, C.wood) +
       (h > 45 ? r(x + 10, base - h + 16, 10, 12, C.wood, ' opacity=".7"') + r(x + w - 20, base - h + 16, 10, 12, C.wood, ' opacity=".7"') : "");
   }
 
   function gableHouse(x, base, w, h, wall, roof) {
-    return r(x, base - h, w, h, wall) + p(`M${x - 8} ${base - h}L${x + w / 2} ${base - h - w * 0.35}L${x + w + 8} ${base - h}Z`, roof) +
+    return r(x, base - h, w, h, wall) + shade(x, base - h, w, h) + p(`M${x - 8} ${base - h}L${x + w / 2} ${base - h - w * 0.35}L${x + w + 8} ${base - h}Z`, roof) +
       r(x + 10, base - h + 12, 12, 14, C.wood) + r(x + w - 22, base - h + 12, 12, 14, C.wood) + r(x + w / 2 - 7, base - 22, 14, 22, C.wood);
   }
 
   // بادگیر
   function badgir(x, base, h) {
-    return r(x, base - h, 18, h, C.brick) + r(x - 3, base - h - 7, 24, 7, "#a8713f") +
+    return r(x, base - h, 18, h, C.brick) + shade(x, base - h, 18, h) + r(x - 3, base - h - 7, 24, 7, "#a8713f") +
       each([3, 8, 13], (d) => r(x + d, base - h + 8, 2, 26, C.brickDark));
   }
 
@@ -109,14 +115,53 @@ const CaravanScenes = (function () {
 
   // ---------- منطقه‌ها: آسمان، دوردست، خانه‌های دو طرف و زمین ----------
 
+  // آسمان نقاشی‌شده: رنگ‌های چندلایه، هاله‌ی بزرگ خورشید، پرتوهای کم‌رنگ و ابرهای سایه‌دار
   function sky(id, top, bottom, sun, sx, sy) {
     const cloud = (x, y, s) => `<g class="cloud"><g transform="translate(${x} ${y}) scale(${s})">` +
-      `<ellipse cx="0" cy="0" rx="60" ry="17" fill="#fff" opacity=".75"/><ellipse cx="34" cy="-11" rx="36" ry="16" fill="#fff" opacity=".75"/></g></g>`;
-    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${top}"/><stop offset=".62" stop-color="${bottom}"/></linearGradient></defs>
+      `<ellipse cx="6" cy="6" rx="66" ry="15" fill="url(#${id}-cl)" opacity=".55"/>` +
+      `<ellipse cx="0" cy="0" rx="60" ry="17" fill="url(#${id}-cl)"/><ellipse cx="34" cy="-11" rx="36" ry="16" fill="url(#${id}-cl)"/>` +
+      `<ellipse cx="-22" cy="-6" rx="26" ry="12" fill="url(#${id}-cl)"/></g></g>`;
+    const rays = each([-28, -12, 4, 20, 36], (a, i) =>
+      `<path d="M${sx} ${sy}L${sx - 900} ${sy + 700 + a * 6}L${sx - 900} ${sy + 760 + a * 6}Z" fill="${sun}" opacity="${[0.07, 0.05, 0.08, 0.04, 0.06][i]}" transform="rotate(${a} ${sx} ${sy})"/>`);
+    return `<defs>
+        <linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="${top}"/><stop offset=".45" stop-color="${bottom}"/>
+          <stop offset=".64" stop-color="${sun}"/><stop offset="1" stop-color="${bottom}"/></linearGradient>
+        <radialGradient id="${id}-halo"><stop offset="0" stop-color="${sun}" stop-opacity=".9"/>
+          <stop offset=".25" stop-color="${sun}" stop-opacity=".45"/><stop offset="1" stop-color="${sun}" stop-opacity="0"/></radialGradient>
+        <radialGradient id="${id}-disc" cx=".45" cy=".42"><stop offset="0" stop-color="#fffdf4"/><stop offset=".7" stop-color="${sun}"/>
+          <stop offset="1" stop-color="${sun}" stop-opacity=".6"/></radialGradient>
+        <linearGradient id="${id}-cl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/>
+          <stop offset="1" stop-color="${top}" stop-opacity=".5"/></linearGradient>
+        <linearGradient id="${id}-haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bottom}" stop-opacity="0"/>
+          <stop offset="1" stop-color="${sun}" stop-opacity=".6"/></linearGradient>
+        <linearGradient id="${id}-near" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bottom}" stop-opacity="0"/>
+          <stop offset="1" stop-color="${bottom}" stop-opacity=".28"/></linearGradient>
+        <radialGradient id="${id}-light" cx="${sx / W}" cy="${sy / 800}" r="1.1"><stop offset="0" stop-color="#fff2d4" stop-opacity=".5"/>
+          <stop offset=".45" stop-color="#fff2d4" stop-opacity="0"/><stop offset="1" stop-color="#2a1608" stop-opacity=".35"/></radialGradient>
+        <linearGradient id="${id}-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1608" stop-opacity=".35"/>
+          <stop offset="1" stop-color="#2a1608" stop-opacity="0"/></linearGradient>
+      </defs>
       ${r(0, 0, W, 800, `url(#${id})`)}
-      <circle class="sun" cx="${sx}" cy="${sy}" r="58" fill="${sun}" opacity=".95"/>
+      <circle cx="${sx}" cy="${sy}" r="340" fill="url(#${id}-halo)"/>
+      ${rays}
+      <circle class="sun" cx="${sx}" cy="${sy}" r="56" fill="url(#${id}-disc)"/>
       ${cloud(150, 170, 1)}${cloud(620, 240, 0.8)}${cloud(980, 150, 1.1)}`;
+  }
+
+  // رشته‌کوه یا تپه‌های خیلی دور، کم‌رنگ در مه
+  function farRidge(color) {
+    let d = `M0 ${B - 70}`;
+    for (let x = 0; x <= W; x += 60) d += `L${x} ${B - 70 - Math.round(40 + 35 * Math.sin(x / 97) + 20 * Math.sin(x / 41))}`;
+    return p(d + `L${W} ${B}H0Z`, color, ' opacity=".35"');
+  }
+
+  // موج‌های ریز روی زمین (ماسه یا خاک)
+  function ripples(y0, color) {
+    return each([0, 1, 2, 3, 4, 5], (i) => {
+      const y = y0 + 22 + i * 26 + (i % 2) * 6;
+      return `<path d="M${-40 + (i % 3) * 70} ${y}q90 -10 180 0t180 0t180 0t180 0t180 0t180 0t180 0" stroke="${color}" stroke-width="${2 - i * 0.15}" fill="none" opacity="${0.22 - i * 0.02}"/>`;
+    });
   }
 
   // خانه‌های دو طرف نقاشی (روی گوشی دیده نمی‌شوند)
@@ -498,15 +543,30 @@ const CaravanScenes = (function () {
       each([0, 1, 2, 3], (i) => cypress(500 - i * 20, B - 100 + i * 32, 120) + cypress(700 + i * 20, B - 100 + i * 32, 120)),
   };
 
-  // نقاشی کامل منظره‌ی یک شهر
+  // نقاشی کامل منظره‌ی یک شهر، با عمق: دوردست در مه، سایه‌ی پای ساختمان‌ها، زمین سایه‌روشن و نور خورشید
   function draw(city, region, id) {
     const reg = REGIONS[region] || REGIONS.desert;
     const mark = LANDMARKS[city] ? LANDMARKS[city]() : "";
     const { back = "", front = "" } = typeof mark === "string" ? { front: mark } : mark;
     const [g1, g2] = reg.ground;
-    return sky(id, ...reg.sky) + reg.far() + back + sides(reg.side) +
-      p(`M0 ${B}Q300 ${B - 14} 600 ${B}T${W} ${B}V800H0Z`, g1) + front +
-      p(`M0 ${B + 95}Q400 ${B + 62} ${W} ${B + 100}V800H0Z`, g2);
+    const grounds = `<defs>
+        <linearGradient id="${id}-g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${g1}"/><stop offset="1" stop-color="${g2}"/></linearGradient>
+        <linearGradient id="${id}-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${g2}"/><stop offset="1" stop-color="#3a2414"/></linearGradient>
+        <filter id="${id}-sil" x="-10%" y="-10%" width="120%" height="120%">
+          <feColorMatrix values="0 0 0 0 .16  0 0 0 0 .08  0 0 0 0 .03  0 0 0 .34 0"/><feGaussianBlur stdDeviation="2.5"/>
+        </filter>
+      </defs>`;
+    // سایه‌ی بلند ساختمان‌ها روی زمین، به طرف مخالف خورشید
+    const k = reg.sky[3] > W / 2 ? -1.1 : 1.1;
+    const shadow = `<g filter="url(#${id}-sil)" transform="matrix(1 0 ${-k} -0.28 ${k * B} ${B * 1.28})">${sides(reg.side)}${front}</g>`;
+    return grounds + sky(id, ...reg.sky) + farRidge(reg.ground[1]) +
+      r(0, B - 260, W, 262, `url(#${id}-haze)`) +
+      reg.far() + r(0, B - 160, W, 162, `url(#${id}-near)`) +
+      back + sides(reg.side) +
+      p(`M0 ${B}Q300 ${B - 14} 600 ${B}T${W} ${B}V800H0Z`, `url(#${id}-g1)`) +
+      r(0, B - 4, W, 26, `url(#${id}-shade)`) + ripples(B, "#fff4dc") + shadow + front +
+      p(`M0 ${B + 95}Q400 ${B + 62} ${W} ${B + 100}V800H0Z`, `url(#${id}-g2)`) + ripples(B + 90, "#2a1608") +
+      r(0, 0, W, 800, `url(#${id}-light)`, ' style="mix-blend-mode:soft-light"');
   }
 
   return { draw, W, cities: () => Object.keys(LANDMARKS) };

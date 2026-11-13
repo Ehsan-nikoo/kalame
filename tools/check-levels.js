@@ -11,12 +11,16 @@ const E = require("../www/engine.js");
 
 const www = path.join(__dirname, "..", "www");
 
-// engine.js و game.js در مرورگر کنار هم اجرا می‌شوند؛ اسم یکسان در هر دو، یکی را بی‌صدا خراب می‌کند
+// engine.js، game.js و feel.js در مرورگر کنار هم اجرا می‌شوند؛ اسم یکسان در هر دو، یکی را بی‌صدا خراب می‌کند
 const topNames = (file) => new Set([...fs.readFileSync(path.join(www, file), "utf8")
   .matchAll(/^(?:function|const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]));
-const engineNames = topNames("engine.js");
-const clash = [...topNames("game.js")].filter((n) => engineNames.has(n));
-assert.deepStrictEqual(clash, [], "اسم‌های یکسان در engine.js و game.js");
+const scriptNames = ["engine.js", "game.js", "feel.js"].map(topNames);
+for (let i = 0; i < scriptNames.length; i++) {
+  for (let j = i + 1; j < scriptNames.length; j++) {
+    const clash = [...scriptNames[i]].filter((n) => scriptNames[j].has(n));
+    assert.deepStrictEqual(clash, [], "اسم‌های یکسان در فایل‌های بازی (engine.js، game.js، feel.js)");
+  }
+}
 const { dict, levels, errors: wordErrors } = E.parseWords(fs.readFileSync(path.join(www, "words.txt"), "utf8"));
 const { levels: handmade, errors: levelErrors } = E.parseLevels(fs.readFileSync(path.join(www, "levels.txt"), "utf8"));
 assert.deepStrictEqual(wordErrors, [], "اشکال در words.txt");
