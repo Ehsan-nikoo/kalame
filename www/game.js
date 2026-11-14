@@ -466,7 +466,7 @@ function shuffle() {
 
 // تبدیل مختصات صفحه به درصد داخل دایره
 function toWheel(e) {
-  const rect = wheelEl.getBoundingClientRect();
+  const rect = dragRect || wheelEl.getBoundingClientRect();
   return {
     x: ((e.clientX - rect.left) / rect.width) * 100,
     y: ((e.clientY - rect.top) / rect.height) * 100,
@@ -481,18 +481,38 @@ function letterAt(p) {
   return -1;
 }
 
+// خط بین حروف: یک polyline ثابت که فقط نقطه‌هایش عوض می‌شود (نه ساختن دوباره‌ی SVG)
+let linePoly = null;
 function drawLines() {
+  if (!linePoly || !linesEl.contains(linePoly)) {
+    linesEl.setAttribute("viewBox", "0 0 100 100");
+    linesEl.innerHTML =
+      `<polyline points="" fill="none" stroke="var(--line)" stroke-width="3.5" ` +
+      `stroke-linecap="round" stroke-linejoin="round"/>`;
+    linePoly = linesEl.firstChild;
+  }
   if (path.length === 0) {
-    linesEl.innerHTML = "";
+    linePoly.setAttribute("points", "");
     return;
   }
   const points = path.map(letterCenter);
   if (pointer) points.push(pointer);
-  const pts = points.map((p) => `${p.x},${p.y}`).join(" ");
-  linesEl.setAttribute("viewBox", "0 0 100 100");
-  linesEl.innerHTML =
-    `<polyline points="${pts}" fill="none" stroke="var(--line)" stroke-width="3.5" ` +
-    `stroke-linecap="round" stroke-linejoin="round"/>`;
+  linePoly.setAttribute("points", points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" "));
+}
+
+// کشیدن انگشت: همه‌ی حرکت‌ها جمع می‌شوند و در هر فریم فقط یک بار صفحه به‌روز می‌شود
+let dragFrame = 0;
+let dragRect = null;     // جای دایره، یک بار در شروع کشیدن خوانده می‌شود
+let pathChanged = false;
+function scheduleDraw() {
+  if (dragFrame) return;
+  dragFrame = requestAnimationFrame(() => {
+    dragFrame = 0;
+    if (pathChanged) {
+      pathChanged = false;
+      updateSelection();
+    } else drawLines();
+  });
 }
 
 function currentWord() {
@@ -503,8 +523,9 @@ function updateSelection() {
   letterEls.forEach((el, i) => el.classList.toggle("active", path.includes(i)));
   const word = currentWord();
   clearTimeout(previewTimer);
-  previewEl.className = "preview" + (word ? " show" : "");
-  previewEl.textContent = word;
+  const cls = "preview" + (word ? " show" : "");
+  if (previewEl.className !== cls) previewEl.className = cls;
+  if (previewEl.textContent !== word) previewEl.textContent = word;
   drawLines();
 }
 
@@ -522,6 +543,7 @@ function onPointerDown(e) {
   const i = letterAt(p);
   if (i < 0) return;
   e.preventDefault();
+  dragRect = wheelEl.getBoundingClientRect();
   dragging = true;
   dragPointer = e.pointerId;
   path = [i];
@@ -532,19 +554,29 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
   if (!dragging || e.pointerId !== dragPointer) return;
-  pointer = toWheel(e);
-  const i = letterAt(pointer);
-  if (i >= 0) {
-    if (i === path[path.length - 2]) path.pop();   // برگشتن انگشت = پاک کردن آخرین حرف
-    else if (!path.includes(i)) {
+  // حرکت‌های ریزی که مرورگر بین دو رویداد جمع کرده هم بررسی می‌شوند تا حرفی جا نماند
+  const list = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+  for (const ev of list.length ? list : [e]) {
+    pointer = toWheel(ev);
+    const i = letterAt(pointer);
+    if (i < 0) continue;
+    if (i === path[path.length - 2]) {             // برگشتن انگشت = پاک کردن آخرین حرف
+      path.pop();
+      pathChanged = true;
+    } else if (!path.includes(i)) {
       path.push(i);
       pickLetter(i);
+      pathChanged = true;
     }
   }
-  updateSelection();
+  scheduleDraw();
 }
 
 function endDrag() {
+  if (dragFrame) cancelAnimationFrame(dragFrame);
+  dragFrame = 0;
+  dragRect = null;
+  pathChanged = false;
   dragging = false;
   dragPointer = null;
   path = [];
