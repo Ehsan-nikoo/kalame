@@ -339,7 +339,7 @@ function wordNote(date) {
   const w = wordOfDay(date);
   if (!w) return null;
   const meaning = w.meaning.length > 70 ? w.meaning.slice(0, 68) + "…" : w.meaning;
-  return { title: `کلمه‌ی روز: ${w.word}`, body: `${meaning} · گردونه‌ی امروزت هم منتظره 🎡` };
+  return { title: `کلمه‌ی امروز: «${w.word}» 📖`, body: `یعنی ${meaning}. راستی گردونه‌ت هم منتظره 🎡` };
 }
 
 const wordSheet = makeSheet("wordSheet", `
