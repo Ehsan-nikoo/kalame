@@ -480,15 +480,16 @@ function chainBreak() {
 // ۵. گردونه‌ی شانس روزانه
 // ---------------------------------------------------------------------------
 
+// w: وزن شانس؛ جمع وزن‌ها ۶٫۲۵ است، پس وزن ۱ یعنی ۱۶٪، ۰٫۵ یعنی ۸٪ و ۰٫۲۵ یعنی ۴٪
 const WHEEL = [
-  { kind: "coins", n: 10, label: "۱۰" },
-  { kind: "hint", n: 2, label: "۲ راهنما" },
-  { kind: "coins", n: 30, label: "۳۰" },
-  { kind: "trial", label: "یه روز ظاهر" },
-  { kind: "coins", n: 20, label: "۲۰" },
-  { kind: "coins", n: 50, label: "۵۰" },
-  { kind: "hint", n: 1, label: "۱ راهنما" },
-  { kind: "coins", n: 15, label: "۱۵" },
+  { kind: "coins", n: 10, label: "۱۰", w: 1 },
+  { kind: "hint", n: 2, label: "۲ راهنما", w: 1 },
+  { kind: "coins", n: 30, label: "۳۰", w: 0.5 },
+  { kind: "trial", label: "یه روز ظاهر", w: 0.5 },
+  { kind: "coins", n: 20, label: "۲۰", w: 1 },
+  { kind: "coins", n: 50, label: "۵۰", w: 0.25 },
+  { kind: "hint", n: 1, label: "۱ راهنما", w: 1 },
+  { kind: "coins", n: 15, label: "۱۵", w: 1 },
 ];
 
 // روزی یک بار (اعلانش در daily.js، ساعت WHEEL_HOUR)
@@ -537,8 +538,8 @@ function spinWheel() {
   if (spinning || !wheelReady()) return;
   spinning = true;
   $("wheelGo").disabled = true;
-  // امتحان ظاهر پولی شانس کمتری دارد (نصف بقیه)
-  const weights = WHEEL.map((seg) => (seg.kind === "trial" ? 0.5 : 1));
+  // جایزه‌های بزرگ‌تر شانس کمتری دارند (وزن w)
+  const weights = WHEEL.map((seg) => seg.w);
   let r = Math.random() * weights.reduce((a, b) => a + b, 0);
   let pick = 0;
   while (r >= weights[pick]) r -= weights[pick++];
