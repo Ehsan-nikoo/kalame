@@ -15,6 +15,7 @@
 <body>
   <!-- صفحه‌ی بارگذاری: هر بار یکی از تصویرهای پوشه‌ی loading (نه همانی که دفعه‌ی قبل دیده شد) -->
   <div class="loading" id="loading" aria-label="در حال بارگذاری">
+    <img class="loading-bg" id="loadingBg" alt="">
     <img class="loading-img" id="loadingImg" alt="">
     <div class="loading-track" id="loadingTrack" dir="ltr">
       <div class="loading-bar"><span id="loadingFill"></span></div>
@@ -27,7 +28,7 @@
       try { last = parseInt(localStorage.getItem("kalame-loading"), 10) || 0; } catch (e) {}
       do { pick = 1 + Math.floor(Math.random() * count); } while (pick === last && count > 1);
       try { localStorage.setItem("kalame-loading", String(pick)); } catch (e) {}
-      document.getElementById("loadingImg").src = "loading/" + pick + ".webp";
+      document.getElementById("loadingImg").src = document.getElementById("loadingBg").src = "loading/" + pick + ".webp";
       var letters = "کلمهابپتسشرزدنومیعفقگح";
       document.getElementById("loadingLetter").textContent = letters.charAt(Math.floor(Math.random() * letters.length));
       window.loadingStart = Date.now();
