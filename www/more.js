@@ -68,14 +68,18 @@ function rateState() {
   return X().rate;
 }
 
-function maybeAskRate() {
+// کارت دیگری (مثل مصراع پایان فصل یا صندوق) باز است؟
+const sheetOpen = () => !!document.querySelector(".x-sheet:not(.hidden), #chestSheet:not(.hidden)");
+
+function maybeAskRate(level) {
   const r = rateState();
-  if (!nativeStore || r.done || r.asked >= RATE_TIMES || save.unlocked < r.next) return false;
+  // پایان فصل کارت مصراع و کارت‌پستال دارد؛ آن موقع نمی‌پرسیم
+  if (!nativeStore || r.done || r.asked >= RATE_TIMES || save.unlocked < r.next || endsChapter(level)) return false;
   r.asked++;
   r.next = save.unlocked + RATE_AGAIN;
   persist();
   setTimeout(() => {
-    if (screenNow !== "play") return;
+    if (screenNow !== "play" || sheetOpen()) return;
     $("rateText").textContent = `اگه دوستش داری، با یه امتیاز و نظر توی ${storeLabel()} کمک کن بیشتر دیده بشه. 🙏`;
     rateSheet.classList.remove("hidden");
   }, 1600);
@@ -202,12 +206,12 @@ function openStarter() {
   starterSheet.classList.remove("hidden");
 }
 
-function maybeOfferStarter() {
-  if (!starterOpen() || X().starterShown || save.unlocked < STARTER_AT) return false;
+function maybeOfferStarter(level) {
+  if (!starterOpen() || X().starterShown || save.unlocked < STARTER_AT || endsChapter(level)) return false;
   X().starterShown = true;
   persist();
   setTimeout(() => {
-    if (screenNow === "play" && starterOpen()) openStarter();
+    if (screenNow === "play" && starterOpen() && !sheetOpen()) openStarter();
   }, 1600);
   return true;
 }
@@ -870,7 +874,7 @@ gameHooks.push((name, d) => {
       if (d.first && endsChapter(d.level)) {
         setTimeout(() => toast(`کارت‌پستال «${chapterInfo(chapterOf(d.level)).name}» به آلبومت اضافه شد 🏞️`, "gold"), 1200);
       }
-      if (d.first) maybeAskRate() || maybeOfferStarter();
+      if (d.first) maybeAskRate(d.level) || maybeOfferStarter(d.level);
       break;
     case "shop": {
       if (!store) break;
@@ -886,4 +890,14 @@ gameHooks.push((name, d) => {
       updateAlbumBadge();
       break;
   }
+});
+
+// کلمه‌ها کمی بعد از باز شدن منو خوانده می‌شوند؛ کلمه‌ی روز بعد از آن دوباره نشان داده می‌شود
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    if (screenNow === "home") {
+      renderWordDay();
+      renderModeBtns();
+    }
+  }, 2500);
 });
