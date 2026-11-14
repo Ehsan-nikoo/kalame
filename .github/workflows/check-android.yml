@@ -23,6 +23,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: بررسی کلیدهای عمومی بازار و مایکت
+        env:
+          BAZAAR_RSA_KEY: ${{ secrets.BAZAAR_RSA_KEY }}
+          MYKET_RSA_KEY: ${{ secrets.MYKET_RSA_KEY }}
+        run: bash tools/check-store-keys.sh
       - run: npm ci
       - run: npx cap sync android
       - name: ساخت نسخه‌ی آزمایشی بازار و مایکت

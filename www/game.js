@@ -6,8 +6,8 @@
 
 const COINS_START = 50;        // هدیه‌ی شروع بازی
 const COINS_PER_LEVEL = 10;    // فقط بار اولی که یک مرحله تمام می‌شود
-const COST_HINT_LETTER = 10;   // باز کردن یک خانه
-const COST_HINT_WORD = 25;     // باز کردن یک کلمه‌ی کامل
+const COST_HINT_LETTER = 15;   // باز کردن یک خانه
+const COST_HINT_WORD = 30;     // باز کردن یک کلمه‌ی کامل
 // صندوق کلمه‌ها: هر کلمه‌ی درستی که در جدول نیست به صندوق می‌رود؛ هر بار که صندوق پر شود، باز می‌شود و سکه می‌دهد
 const CHEST_SIZE = 10;
 const CHEST_REWARD = 15;
@@ -15,7 +15,7 @@ const CHEST_REWARD = 15;
 const ACH_REWARDS = [10, 20, 30, 40, 50, 75, 100];
 // جایزه‌ی روزانه: روز اول تا هفتمِ آمدن پشت سر هم به بازی؛ بعد از روز هفتم دوباره از روز اول.
 // اگر یک روز نیاید، از روز اول شروع می‌شود. میانگین هفته حدود ۱۷ سکه در روز است،
-// یعنی کمی بیشتر از یک راهنمای «یک حرف» (۱۰ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
+// یعنی بیشتر از یک راهنمای «یک حرف» (۱۵ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
 const DAILY_REWARDS = [10, 10, 15, 15, 20, 20, 30];
 // بسته‌های فروشگاه سکه. id باید دقیقاً همان «شناسه‌ی محصول» باشد که در پنل کافه‌بازار و مایکت
 // (از نوع «مصرف‌شدنی») ساخته‌اید. قیمت را خود فروشگاه می‌دهد و اینجا نوشته نمی‌شود.
@@ -83,6 +83,8 @@ function readExtras(data) {
     events: objOr(data.events),
     // ظاهرهای پولی خریده‌شده (شناسه‌ی ظاهر)؛ از روی خریدهای فروشگاه هم دوباره ساخته می‌شود
     owned: strings(data.owned),
+    // بخش‌های extras.js: مأموریت‌ها، گردونه، دفتر واژه‌ها، لقب، مصراع فصل، ...
+    x: objOr(data.x),
   };
 }
 
@@ -140,7 +142,11 @@ function defineTheme(id, def) {
 // ظاهر رایگان است یا خریده شده؟
 function themeOwned(id) {
   const t = THEMES.find((x) => x.id === id);
-  return !!t && (!t.product || save.owned.includes(id));
+  if (!t) return false;
+  // امتحانِ یک‌روزه از گردونه‌ی شانس (extras.js)
+  const trial = save.x && save.x.trial;
+  if (trial && trial.id === id && trial.until > Date.now()) return true;
+  return !t.product || save.owned.includes(id);
 }
 
 function applyTheme(id) {
@@ -153,8 +159,14 @@ function applyTheme(id) {
   if (def && def.setup) themeTeardown = def.setup() || null;
 }
 
+// فایل‌های دیگر (مثل extras.js) می‌توانند به رویدادهای بازی گوش کنند
+const gameHooks = [];
+
 function emit(name, detail) {
   feel(name, detail || {}); // صدا، لرزش، آموزش و یادآوری راهنما (feel.js)
+  for (const hook of gameHooks) {
+    try { hook(name, detail || {}); } catch (e) { console.error(e); }
+  }
   const def = themeDefs[activeTheme];
   if (def && def.on && def.on[name]) def.on[name](detail);
 }
@@ -177,6 +189,7 @@ const previewEl = $("preview");
 let handmade = [];      // مرحله‌های ۱ تا ۱۰ از levels.txt
 let dict = new Map();   // کلمه -> معنی، از words.txt
 let extraDict = new Map(); // کلمه‌های بیشتر از extra-words.txt: فقط برای صندوق، نه برای جدول
+let wordLevels = new Map(); // کلمه -> ۱ (رایج) یا ۲ (کمتر رایج)
 let generator = null;   // سازنده‌ی مرحله‌های ۱۱ به بعد
 const levelCache = new Map();
 let save = loadSave();
@@ -249,6 +262,7 @@ function rewardDue() {
 }
 
 function showDailyReward() {
+  if (typeof offerStreakSave === "function" && offerStreakSave()) return; // محافظ رکورد (more.js)
   const day = todayRewardDay();
   const list = $("rewardDays");
   list.innerHTML = "";
@@ -436,7 +450,7 @@ function renderWheel() {
 function slotCenter(slot) {
   const n = letterEls.length;
   const angle = -Math.PI / 2 + (slot * 2 * Math.PI) / n;
-  return { x: 50 + 34 * Math.cos(angle), y: 50 + 34 * Math.sin(angle) };
+  return { x: 50 + 30 * Math.cos(angle), y: 50 + 30 * Math.sin(angle) };
 }
 
 function letterCenter(index) {
@@ -466,7 +480,7 @@ function shuffle() {
 
 // تبدیل مختصات صفحه به درصد داخل دایره
 function toWheel(e) {
-  const rect = wheelEl.getBoundingClientRect();
+  const rect = dragRect || wheelEl.getBoundingClientRect();
   return {
     x: ((e.clientX - rect.left) / rect.width) * 100,
     y: ((e.clientY - rect.top) / rect.height) * 100,
@@ -481,18 +495,38 @@ function letterAt(p) {
   return -1;
 }
 
+// خط بین حروف: یک polyline ثابت که فقط نقطه‌هایش عوض می‌شود (نه ساختن دوباره‌ی SVG)
+let linePoly = null;
 function drawLines() {
+  if (!linePoly || !linesEl.contains(linePoly)) {
+    linesEl.setAttribute("viewBox", "0 0 100 100");
+    linesEl.innerHTML =
+      `<polyline points="" fill="none" stroke="var(--line)" stroke-width="3.5" ` +
+      `stroke-linecap="round" stroke-linejoin="round"/>`;
+    linePoly = linesEl.firstChild;
+  }
   if (path.length === 0) {
-    linesEl.innerHTML = "";
+    linePoly.setAttribute("points", "");
     return;
   }
   const points = path.map(letterCenter);
   if (pointer) points.push(pointer);
-  const pts = points.map((p) => `${p.x},${p.y}`).join(" ");
-  linesEl.setAttribute("viewBox", "0 0 100 100");
-  linesEl.innerHTML =
-    `<polyline points="${pts}" fill="none" stroke="var(--line)" stroke-width="3.5" ` +
-    `stroke-linecap="round" stroke-linejoin="round"/>`;
+  linePoly.setAttribute("points", points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" "));
+}
+
+// کشیدن انگشت: همه‌ی حرکت‌ها جمع می‌شوند و در هر فریم فقط یک بار صفحه به‌روز می‌شود
+let dragFrame = 0;
+let dragRect = null;     // جای دایره، یک بار در شروع کشیدن خوانده می‌شود
+let pathChanged = false;
+function scheduleDraw() {
+  if (dragFrame) return;
+  dragFrame = requestAnimationFrame(() => {
+    dragFrame = 0;
+    if (pathChanged) {
+      pathChanged = false;
+      updateSelection();
+    } else drawLines();
+  });
 }
 
 function currentWord() {
@@ -503,8 +537,9 @@ function updateSelection() {
   letterEls.forEach((el, i) => el.classList.toggle("active", path.includes(i)));
   const word = currentWord();
   clearTimeout(previewTimer);
-  previewEl.className = "preview" + (word ? " show" : "");
-  previewEl.textContent = word;
+  const cls = "preview" + (word ? " show" : "");
+  if (previewEl.className !== cls) previewEl.className = cls;
+  if (previewEl.textContent !== word) previewEl.textContent = word;
   drawLines();
 }
 
@@ -522,6 +557,7 @@ function onPointerDown(e) {
   const i = letterAt(p);
   if (i < 0) return;
   e.preventDefault();
+  dragRect = wheelEl.getBoundingClientRect();
   dragging = true;
   dragPointer = e.pointerId;
   path = [i];
@@ -532,19 +568,29 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
   if (!dragging || e.pointerId !== dragPointer) return;
-  pointer = toWheel(e);
-  const i = letterAt(pointer);
-  if (i >= 0) {
-    if (i === path[path.length - 2]) path.pop();   // برگشتن انگشت = پاک کردن آخرین حرف
-    else if (!path.includes(i)) {
+  // حرکت‌های ریزی که مرورگر بین دو رویداد جمع کرده هم بررسی می‌شوند تا حرفی جا نماند
+  const list = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+  for (const ev of list.length ? list : [e]) {
+    pointer = toWheel(ev);
+    const i = letterAt(pointer);
+    if (i < 0) continue;
+    if (i === path[path.length - 2]) {             // برگشتن انگشت = پاک کردن آخرین حرف
+      path.pop();
+      pathChanged = true;
+    } else if (!path.includes(i)) {
       path.push(i);
       pickLetter(i);
+      pathChanged = true;
     }
   }
-  updateSelection();
+  scheduleDraw();
 }
 
 function endDrag() {
+  if (dragFrame) cancelAnimationFrame(dragFrame);
+  dragFrame = 0;
+  dragRect = null;
+  pathChanged = false;
   dragging = false;
   dragPointer = null;
   path = [];
@@ -891,6 +937,7 @@ function updateCoins() {
   for (const el of document.querySelectorAll(".coin-count")) el.textContent = faDigits(save.coins);
   $("hintLetterBtn").classList.toggle("poor", save.coins < COST_HINT_LETTER);
   $("hintWordBtn").classList.toggle("poor", save.coins < COST_HINT_WORD);
+  if (typeof refreshFreeHints === "function") refreshFreeHints(); // extras.js
 }
 
 function bumpCoins() {
@@ -902,6 +949,13 @@ function bumpCoins() {
 }
 
 function spend(cost) {
+  // راهنمای رایگان (از گردونه‌ی شانس) پیش از سکه خرج می‌شود
+  if (save.x.freeHints > 0) {
+    save.x.freeHints--;
+    persist();
+    updateCoins();
+    return true;
+  }
   if (save.coins < cost) {
     showPreview("سکه‌ی کافی نداری", "wrong note", 1400);
     if (store && store.ready) setTimeout(() => { if (screenNow === "play") openShop(); }, 900);
@@ -956,6 +1010,7 @@ function hidePreview() {
 function finishLevel() {
   const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
   if (isDaily()) return finishDaily(hinted); // daily.js
+  if (typeof finishMode === "function" && finishMode(hinted)) return; // حالت سرعتی و چالش (more.js)
   locked = true;
   const first = current === save.unlocked;
   // پایان هر فصل (۲۰ مرحله) سکه‌ی بیشتری دارد (chapters.js)
@@ -1105,6 +1160,7 @@ const nativeStore = window.Capacitor && window.Capacitor.isNativePlatform && win
 let store = null;         // { ready, storeName, reason } وقتی پلاگین هست
 let shopPrices = {};      // id ← قیمت از فروشگاه
 let shopBusy = false;
+const moreProducts = [];  // محصول‌های more.js (قلک، بسته‌ی شروع)
 
 function initStore() {
   if (!nativeStore) return;
@@ -1113,7 +1169,7 @@ function initStore() {
     $("shopBtn").classList.remove("hidden");
     for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
     if (!info.ready) return;
-    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product)];
+    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product), ...moreProducts];
     nativeStore.products({ ids }).then((res) => {
       for (const p of res.products || []) shopPrices[p.id] = p.price;
       if (screenNow === "shop") renderShop();
@@ -1131,6 +1187,7 @@ function deliverPending() {
 }
 
 function deliver(purchase, fromEl) {
+  if (typeof deliverMore === "function" && deliverMore(purchase, fromEl)) return; // قلک و بسته‌ی شروع (more.js)
   const look = THEMES.find((t) => t.product && t.product === purchase.id);
   if (look) return deliverTheme(look);
   const pack = COIN_PACKS.find((p) => p.id === purchase.id);
@@ -1194,6 +1251,7 @@ function renderShop() {
     btn.addEventListener("click", () => buyPack(pack, item));
     list.appendChild(item);
   }
+  emit("shop", { list });
 }
 
 function buyPack(pack, item) {
@@ -1225,7 +1283,7 @@ function showErrors(title, errors) {
 // ---------------------------------------------------------------------------
 // منو صفحه‌ی اصلی است؛ بقیه با # در آدرس باز می‌شوند تا دکمه‌ی «برگشت» اندروید هم کار کند.
 
-const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), settings: $("screenSettings"), shop: $("screenShop"), play: $("app") };
+const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), settings: $("screenSettings"), shop: $("screenShop"), book: $("screenBook"), play: $("app") };
 
 function route() {
   let name = location.hash.slice(1);
@@ -1251,6 +1309,7 @@ function route() {
   if (name === "settings") renderSettings();
   if (name !== "play") stopNudge();
   if (name === "shop") renderShop();
+  if (name === "book") renderBook(); // extras.js
   if (name === "play") sizeBoard();
   updateCoins();
 }
@@ -1647,6 +1706,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((text) => {
         const result = parseWords(text);
         dict = result.dict;
+        wordLevels = result.levels;
         if (result.errors.length) showErrors("اشکال در فایل words.txt:", result.errors);
         generator = createGenerator(dict, result.levels);
       })

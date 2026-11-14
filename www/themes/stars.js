@@ -329,6 +329,8 @@
     const lite = !!document.documentElement.dataset.lite;
     const idle = lite ? 400 : IDLE_MS;
     if (!busy && time - lastDraw < idle) return;
+    // وقتی فقط جرقه‌های پشت انگشت در حرکت‌اند، ۳۰ فریم در ثانیه بس است و فرصت بیشتری به کشیدن انگشت می‌ماند
+    if (busy && !meteorSky && time >= busyUntil && dragging && time - lastDraw < 32) return;
     lastDraw = time;
     const dt = Math.min(time - lastTime, 50);
     lastTime = time;
@@ -403,8 +405,12 @@
     }
   }
 
+  // ردِ جرقه پشت انگشت: حداکثر ۲۰ بار در ثانیه، تا کشیدن انگشت کند نشود
+  let lastTrail = 0;
   function trail(e) {
-    if (document.querySelector(".letter.active")) burst(e.clientX, e.clientY, 2, 0.04);
+    if (!dragging || e.timeStamp - lastTrail < 50) return;
+    lastTrail = e.timeStamp;
+    burst(e.clientX, e.clientY, 3, 0.04);
   }
 
   function centerOf(el) {

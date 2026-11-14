@@ -51,6 +51,8 @@ const EVENTS = [
     note: "مرحله‌ی روزانه با کلمه‌های هفت‌سین",
     gift: 100,
     giftName: "عیدی",
+    // اعلان شبِ قبل از شروع مناسبت
+    eve: { title: "فردا نوروزه! 🌱", body: "از فردا مرحله‌های نوروزی و ۱۰۰ سکه عیدی توی «کلمه» منتظرته" },
     words: ["نوروز", "سبزه", "سمنو", "سنجد", "سیب", "سیر", "سرکه", "سکه", "ماهی", "عید", "عیدی", "بهار", "سفره", "شکوفه", "سال", "نو", "تنگ"],
     // ۱ تا ۱۳ فروردین
     when: (p) => p.m === 1 && p.d <= 13,
@@ -62,6 +64,7 @@ const EVENTS = [
     note: "مرحله‌ی روزانه با کلمه‌های شب یلدا",
     gift: 50,
     giftName: "هدیه‌ی یلدا",
+    eve: { title: "یلدا نزدیکه 🍉", body: "از فردا مرحله‌های یلدایی و ۵۰ سکه هدیه توی «کلمه» منتظرته" },
     words: ["یلدا", "انار", "هندوانه", "آجیل", "حافظ", "فال", "کرسی", "پسته", "برف", "زمستان", "قصه", "شب", "بلند", "چله"],
     // ۲۷ آذر تا ۱ دی
     when: (p) => (p.m === 9 && p.d >= 27) || (p.m === 10 && p.d === 1),
@@ -73,6 +76,7 @@ const EVENTS = [
     note: "مرحله‌ی روزانه با کلمه‌های این روزها",
     gift: 0,
     quiet: true,
+    eve: { title: "ماه محرم", body: "از فردا مرحله‌ی روزانه با کلمه‌های این روزها" },
     words: ["محرم", "عاشورا", "تاسوعا", "کربلا", "نذری", "نذر", "روضه", "عزا", "شمع", "حلیم", "سقا", "آب", "صبر", "علم", "پرچم", "سینه", "دسته"],
     // ۱ تا ۱۲ محرم (تقویم قمری؛ ممکن است با تقویم ایران یک روز فرق کند)
     when: (p, h) => h.m === 1 && h.d <= 12,
@@ -302,6 +306,39 @@ async function shareMore(text) {
 // امروز فقط اگر هنوز جایزه یا مرحله‌ی روزانه مانده باشد، و برای سه روز بعد.
 
 const REMIND_IDS = [701, 702, 703, 704];
+const EVE_IDS = { nowruz: 711, yalda: 712, muharram: 713 };
+const WHEEL_IDS = [721, 722, 723, 724];
+const WHEEL_HOUR = 13; // اعلان گردونه‌ی شانس روزانه (ظهر، جدا از یادآوری عصر)
+const WHEEL_LINES = [
+  { title: "گردونه‌ی شانس امروزت آماده‌ست 🎡", body: "یه بار بچرخون؛ شاید سکه، شاید راهنمای رایگان!" },
+  { title: "🎡 نوبت چرخوندن گردونه‌ست", body: "جایزه‌ی امروزت توی «کلمه» منتظرته" },
+  { title: "امروز شانست رو امتحان کردی؟ 🎡", body: "گردونه‌ی شانس «کلمه» روزی یک بار می‌چرخه" },
+];
+
+// روز شروعِ بعدیِ هر مناسبت (بعد از امروز، تا حدود یک سال جلوتر)
+function nextEventStarts(now) {
+  const found = {};
+  const day = (k) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, 12);
+  let before = eventOn(day(0));
+  for (let k = 1; k <= 400 && Object.keys(found).length < EVENTS.length; k++) {
+    const ev = eventOn(day(k));
+    if (ev && ev !== before && !found[ev.id]) found[ev.id] = day(k);
+    before = ev;
+  }
+  return found;
+}
+
+// شبِ قبل از شروع هر مناسبت، ساعت REMIND_HOUR
+function eveNotes(now) {
+  const list = [];
+  for (const [id, start] of Object.entries(nextEventStarts(now))) {
+    const ev = EVENTS.find((e) => e.id === id);
+    const at = new Date(start.getFullYear(), start.getMonth(), start.getDate() - 1, REMIND_HOUR, 0, 0);
+    if (!ev.eve || at <= now) continue;
+    list.push({ id: EVE_IDS[id], title: ev.eve.title, body: ev.eve.body, schedule: { at, allowWhileIdle: true } });
+  }
+  return list;
+}
 const notes = () => native() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
 
 function reminderText(date, k) {
@@ -324,17 +361,28 @@ async function planReminders() {
   const plugin = notes();
   if (!plugin) return;
   try {
-    await plugin.cancel({ notifications: REMIND_IDS.map((id) => ({ id })) });
+    await plugin.cancel({ notifications: [...REMIND_IDS, ...Object.values(EVE_IDS), ...WHEEL_IDS].map((id) => ({ id })) });
     if (!settings.reminders) return;
     const perm = await plugin.checkPermissions();
     if (perm.display !== "granted") return;
     const now = nowDate();
-    const list = [];
+    const list = eveNotes(now);
+    const eveDays = list.map((n) => dateKey(n.schedule.at));
     for (let k = 0; k < REMIND_IDS.length; k++) {
       const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, REMIND_HOUR, 0, 0);
       if (at <= now) continue;
+      if (eveDays.includes(dateKey(at))) continue; // آن شب اعلان مناسبت فرستاده می‌شود
       if (k === 0 && !rewardDue() && dailySolved()) continue; // امروز کاری نمانده
       list.push({ id: REMIND_IDS[k], ...reminderText(at, k), schedule: { at, allowWhileIdle: true } });
+    }
+    // گردونه‌ی شانس و کلمه‌ی روز: هر روز ظهر، مگر امروز که چرخانده شده باشد (extras.js)
+    for (let k = 0; k < WHEEL_IDS.length; k++) {
+      const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, WHEEL_HOUR, 0, 0);
+      if (at <= now) continue;
+      if (k === 0 && typeof wheelReady === "function" && !wheelReady()) continue;
+      // متن: کلمه‌ی روز (more.js)، و اگر کلمه‌ها هنوز خوانده نشده‌اند یکی از جمله‌های گردونه
+      const text = (typeof wordNote === "function" && wordNote(at)) || WHEEL_LINES[(dayNumber(at) + k) % WHEEL_LINES.length];
+      list.push({ id: WHEEL_IDS[k], ...text, schedule: { at, allowWhileIdle: true } });
     }
     if (list.length) await plugin.schedule({ notifications: list });
   } catch {
