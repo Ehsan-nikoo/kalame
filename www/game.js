@@ -83,6 +83,8 @@ function readExtras(data) {
     events: objOr(data.events),
     // ظاهرهای پولی خریده‌شده (شناسه‌ی ظاهر)؛ از روی خریدهای فروشگاه هم دوباره ساخته می‌شود
     owned: strings(data.owned),
+    // بخش‌های extras.js: مأموریت‌ها، گردونه، دفتر واژه‌ها، لقب، مصراع فصل، ...
+    x: objOr(data.x),
   };
 }
 
@@ -140,7 +142,11 @@ function defineTheme(id, def) {
 // ظاهر رایگان است یا خریده شده؟
 function themeOwned(id) {
   const t = THEMES.find((x) => x.id === id);
-  return !!t && (!t.product || save.owned.includes(id));
+  if (!t) return false;
+  // امتحانِ یک‌روزه از گردونه‌ی شانس (extras.js)
+  const trial = save.x && save.x.trial;
+  if (trial && trial.id === id && trial.until > Date.now()) return true;
+  return !t.product || save.owned.includes(id);
 }
 
 function applyTheme(id) {
@@ -153,8 +159,14 @@ function applyTheme(id) {
   if (def && def.setup) themeTeardown = def.setup() || null;
 }
 
+// فایل‌های دیگر (مثل extras.js) می‌توانند به رویدادهای بازی گوش کنند
+const gameHooks = [];
+
 function emit(name, detail) {
   feel(name, detail || {}); // صدا، لرزش، آموزش و یادآوری راهنما (feel.js)
+  for (const hook of gameHooks) {
+    try { hook(name, detail || {}); } catch (e) { console.error(e); }
+  }
   const def = themeDefs[activeTheme];
   if (def && def.on && def.on[name]) def.on[name](detail);
 }
@@ -177,6 +189,7 @@ const previewEl = $("preview");
 let handmade = [];      // مرحله‌های ۱ تا ۱۰ از levels.txt
 let dict = new Map();   // کلمه -> معنی، از words.txt
 let extraDict = new Map(); // کلمه‌های بیشتر از extra-words.txt: فقط برای صندوق، نه برای جدول
+let wordLevels = new Map(); // کلمه -> ۱ (رایج) یا ۲ (کمتر رایج)
 let generator = null;   // سازنده‌ی مرحله‌های ۱۱ به بعد
 const levelCache = new Map();
 let save = loadSave();
@@ -923,6 +936,7 @@ function updateCoins() {
   for (const el of document.querySelectorAll(".coin-count")) el.textContent = faDigits(save.coins);
   $("hintLetterBtn").classList.toggle("poor", save.coins < COST_HINT_LETTER);
   $("hintWordBtn").classList.toggle("poor", save.coins < COST_HINT_WORD);
+  if (typeof refreshFreeHints === "function") refreshFreeHints(); // extras.js
 }
 
 function bumpCoins() {
@@ -934,6 +948,13 @@ function bumpCoins() {
 }
 
 function spend(cost) {
+  // راهنمای رایگان (از گردونه‌ی شانس) پیش از سکه خرج می‌شود
+  if (save.x.freeHints > 0) {
+    save.x.freeHints--;
+    persist();
+    updateCoins();
+    return true;
+  }
   if (save.coins < cost) {
     showPreview("سکه‌ی کافی نداری", "wrong note", 1400);
     if (store && store.ready) setTimeout(() => { if (screenNow === "play") openShop(); }, 900);
@@ -1257,7 +1278,7 @@ function showErrors(title, errors) {
 // ---------------------------------------------------------------------------
 // منو صفحه‌ی اصلی است؛ بقیه با # در آدرس باز می‌شوند تا دکمه‌ی «برگشت» اندروید هم کار کند.
 
-const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), settings: $("screenSettings"), shop: $("screenShop"), play: $("app") };
+const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("screenLevels"), achievements: $("screenAchievements"), settings: $("screenSettings"), shop: $("screenShop"), book: $("screenBook"), play: $("app") };
 
 function route() {
   let name = location.hash.slice(1);
@@ -1283,6 +1304,7 @@ function route() {
   if (name === "settings") renderSettings();
   if (name !== "play") stopNudge();
   if (name === "shop") renderShop();
+  if (name === "book") renderBook(); // extras.js
   if (name === "play") sizeBoard();
   updateCoins();
 }
@@ -1679,6 +1701,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((text) => {
         const result = parseWords(text);
         dict = result.dict;
+        wordLevels = result.levels;
         if (result.errors.length) showErrors("اشکال در فایل words.txt:", result.errors);
         generator = createGenerator(dict, result.levels);
       })

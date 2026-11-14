@@ -1406,3 +1406,324 @@ button { font-family: inherit; cursor: pointer; }
   from { transform: translate(0, 0) scale(1); opacity: 1; }
   to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
 }
+
+/* =========================================================================
+   extras.js: مأموریت‌ها، مصراع فصل، کلمه‌ی طلایی، زنجیره، گردونه، دفتر واژه‌ها، لقب، شروع فصل، پرواز حروف
+   ========================================================================= */
+
+/* دکمه‌های کوچک بالای منو */
+.home-tools { display: flex; gap: 8px; margin-inline-start: 8px; margin-inline-end: auto; }
+.home-tools .icon-btn { position: relative; }
+.icon-btn .badge {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d9483b;
+  color: #fff;
+  font: 700 12px/19px "Vazirmatn", sans-serif;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  animation: bump 0.5s ease;
+}
+.icon-btn .badge.dot { min-width: 12px; width: 12px; height: 12px; padding: 0; top: -2px; left: -2px; }
+
+/* لقب زیر لوگو */
+.rank-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 6px auto 0;
+  padding: 4px 14px 5px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--ink);
+  font-family: "Vazirmatn", sans-serif;
+}
+.rank-chip small { font-size: 12px; color: var(--muted); }
+.rank-badge { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.rank-badge b { font-size: 15px; font-weight: 700; }
+.rank-badge i { display: block; width: 110px; height: 5px; border-radius: 999px; background: var(--cell-empty); overflow: hidden; }
+.rank-badge i span { display: block; height: 100%; background: var(--coin); border-radius: inherit; }
+@media (max-height: 700px) { .rank-chip { margin-top: 2px; padding: 2px 10px; } .rank-chip small { display: none; } }
+
+/* پیام کوتاه */
+.toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: 50%;
+  z-index: 60;
+  max-width: calc(100% - 32px);
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(28, 24, 40, 0.88);
+  color: #fff;
+  font: 700 15px/1.5 "Vazirmatn", sans-serif;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  translate: -50% -140%;
+  opacity: 0;
+  transition: translate 0.35s cubic-bezier(.2, .9, .3, 1.2), opacity 0.25s;
+  pointer-events: none;
+}
+.toast.show { translate: -50% 0; opacity: 1; }
+.toast.gold { background: linear-gradient(180deg, #f6d36b, #d99a1e); color: #3a2606; }
+.toast.good { background: rgba(46, 125, 90, 0.95); }
+
+/* مأموریت‌ها */
+.mission-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; text-align: right; }
+.mission {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.08));
+  background: var(--accent-soft);
+}
+.mission.claimed { opacity: 0.6; }
+.mission-body { flex: 1; min-width: 0; }
+.mission-text { font-size: 15px; font-weight: 700; color: var(--ink); }
+.mission-bar { position: relative; margin-top: 6px; height: 18px; border-radius: 999px; background: rgba(0, 0, 0, 0.08); overflow: hidden; }
+.mission-bar span { position: absolute; inset: 0 0 0 auto; background: var(--coin); border-radius: inherit; transition: width 0.4s ease; }
+.mission-bar b { position: relative; display: block; text-align: center; font-size: 11.5px; line-height: 18px; color: var(--ink); }
+.mission-btn { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.mission-btn .coin-icon { width: 14px; height: 14px; }
+.mission-btn:disabled { opacity: 0.5; }
+.mission.done .mission-btn { animation: bump 0.9s ease infinite; }
+.mission-next { margin-top: 4px; text-align: center; }
+
+/* مصراع فصل */
+.verse {
+  margin-top: 16px;
+  font-family: var(--display);
+  font-size: 22px;
+  line-height: 2;
+  text-align: center;
+  color: var(--ink);
+}
+.verse-blank { color: var(--accent); letter-spacing: 2px; padding: 0 4px; border-bottom: 2px dashed currentColor; }
+.verse-blank.solved { letter-spacing: 0; border-bottom-style: solid; animation: pop 0.5s ease; }
+.verse-poet { text-align: center; color: var(--muted); font-size: 14px; margin-top: 2px; }
+.verse-slots { display: flex; justify-content: center; gap: 6px; margin-top: 16px; direction: rtl; }
+.verse-slot {
+  width: 40px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--cell-empty);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.verse-slot.full { background: var(--accent-soft); animation: pop 0.25s ease; }
+.verse-slots.shake { animation: shake 0.4s ease; }
+.verse-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.verse-tile {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--edge, transparent);
+  background: var(--accent);
+  color: var(--accent-ink, #fff);
+  font: 700 24px/1 "Vazirmatn", sans-serif;
+  box-shadow: 0 3px 0 var(--lip-primary, rgba(0, 0, 0, 0.2));
+  transition: transform 0.15s, opacity 0.15s;
+}
+.verse-tile:active { transform: scale(0.92); }
+.verse-tile.used { opacity: 0.25; transform: scale(0.85); }
+.verse-offer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--coin);
+  background: rgba(226, 176, 74, 0.14);
+  color: var(--ink);
+  font: 700 16px/1.6 "Vazirmatn", sans-serif;
+  animation: gift-glow 1.6s ease infinite;
+}
+.verse-offer small { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.verse-offer .coin-icon { width: 12px; height: 12px; }
+
+/* کلمه‌ی طلایی */
+.cell.golden {
+  position: relative;
+  box-shadow: inset 0 0 0 3px #e9b23a, 0 0 12px 2px rgba(242, 182, 48, 0.7) !important;
+}
+.cell.golden::after {
+  content: "★";
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  font-size: 13px;
+  line-height: 1;
+  color: #f2b630;
+  text-shadow: 0 0 3px #fff, 0 1px 2px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+.cell.golden::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 236, 160, 0.75) 50%, transparent 65%) 0 0 / 300% 100%;
+  animation: golden-shine 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes golden-shine { 0% { background-position: 100% 0; } 60%, 100% { background-position: -50% 0; } }
+
+/* زنجیره */
+.chain {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 3;
+}
+.chain.show { opacity: 1; }
+.chain i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.55); transition: background 0.2s; }
+.chain i.on { background: var(--coin); box-shadow: 0 0 6px var(--coin); }
+.chain i.pop { animation: bump 0.35s ease; }
+.chain.full i { animation: bump 0.4s ease; }
+.chain.broke { animation: shake 0.35s ease; }
+
+/* گردونه */
+.luck { position: relative; width: min(260px, 70vw); aspect-ratio: 1; margin: 14px auto 0; }
+.luck-spin { width: 100%; height: 100%; will-change: transform; }
+.wheel-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25)); }
+.w-seg.w0 { fill: var(--conf-0); }
+.w-seg.w1 { fill: var(--conf-1); }
+.w-seg.w2 { fill: var(--conf-2); }
+.w-seg.w3 { fill: var(--conf-3); }
+.w-seg { stroke: rgba(255, 255, 255, 0.8); stroke-width: 0.6; }
+.w-rim { fill: none; stroke: #fff; stroke-width: 1.6; }
+.w-hub { fill: #fff; stroke: var(--coin); stroke-width: 1.5; }
+.w-coin { fill: var(--coin); stroke: #fff; stroke-width: 0.6; }
+.w-text { font: 700 7.5px "Vazirmatn", sans-serif; fill: #2b1d0e; text-anchor: middle; paint-order: stroke; stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.4px; }
+.w-text.small { font-size: 5.2px; }
+.luck-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  translate: -50% 0;
+  border: 12px solid transparent;
+  border-top: 20px solid #d9483b;
+  border-bottom: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+}
+.wheel-result { min-height: 1.6em; margin-top: 10px; font-weight: 700; }
+.wheel-result .card-link { display: block; margin: 4px auto 0; }
+
+/* راهنمای رایگان */
+.tool { position: relative; }
+.tool.free .cost { display: none; }
+.free-tag {
+  font-size: 12px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #2e7d5a;
+  color: #fff;
+}
+
+/* دفتر واژه‌ها */
+#screenBook { display: flex; flex-direction: column; }
+#screenBook.hidden { display: none; }
+.book-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+.book-stats { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 14px; }
+.book-stats .rank-badge { align-items: flex-start; color: var(--ink); }
+.book-search {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.1));
+  background: var(--surface);
+  color: var(--ink);
+  font: 16px "Vazirmatn", sans-serif;
+}
+.book-list { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
+.book-letter { margin: 12px 2px 6px; font-family: var(--display); font-size: 22px; color: var(--accent); }
+.book-words { display: flex; flex-wrap: wrap; gap: 6px; }
+.book-word {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.08));
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 15px/1.5 "Vazirmatn", sans-serif;
+}
+.book-word.rare { background: rgba(226, 176, 74, 0.18); border-color: var(--coin); }
+.book-word.rare::after { content: " ★"; color: #c58a12; }
+.book-empty { margin-top: 30px; text-align: center; color: var(--muted); line-height: 1.8; }
+
+/* صفحه‌ی شروع فصل */
+.chapter-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(40, 32, 60, 0.82), rgba(10, 8, 20, 0.94));
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.chapter-intro .chapter-scene {
+  width: min(86vw, 440px);
+  height: auto;
+  aspect-ratio: 320 / 120;
+  border-radius: 22px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 20px 50px rgba(0, 0, 0, 0.5);
+  scale: 0.9;
+  transition: scale 0.8s cubic-bezier(.2, .9, .3, 1.15);
+}
+.chapter-intro.in { opacity: 1; }
+.chapter-intro.in .chapter-scene { scale: 1; }
+.chapter-intro.out { opacity: 0; }
+.chapter-intro-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  translate: 0 20px;
+  opacity: 0;
+  transition: translate 0.7s 0.25s ease, opacity 0.7s 0.25s ease;
+}
+.chapter-intro.in .chapter-intro-text { translate: 0 0; opacity: 1; }
+.chapter-intro-text small { font: 700 17px "Vazirmatn", sans-serif; opacity: 0.9; }
+.chapter-intro-text b { font-family: var(--display); font-weight: 400; font-size: 52px; line-height: 1.5; }
+
+/* حروفی که از دایره به جدول پرواز می‌کنند */
+.fly-letter {
+  position: fixed;
+  z-index: 40;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform, opacity;
+}

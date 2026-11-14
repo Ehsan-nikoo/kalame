@@ -51,11 +51,25 @@
       <button class="icon-btn" id="settingsBtn" type="button" aria-label="تنظیمات">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.4 7.4 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 2.6-1.5l2.4 1 2-3.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
       </button>
+      <div class="home-tools">
+        <button class="icon-btn" id="missionsBtn" type="button" aria-label="مأموریت‌های امروز">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8M9 4V3h6v1M6 5h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z M8.5 11l1.6 1.6L13 9.7M8.5 16.5h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="badge hidden" id="missionsBadge"></span>
+        </button>
+        <button class="icon-btn" id="wheelBtn" type="button" aria-label="گردونه‌ی شانس">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg>
+          <span class="badge dot hidden" id="wheelBadge"></span>
+        </button>
+        <button class="icon-btn" id="bookBtn" type="button" aria-label="دفتر واژه‌ها">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5Zm0 15A1.5 1.5 0 0 0 6.5 21H19M9 7.5h6M9 10.5h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </div>
     <div class="home-scene" id="homeScene"></div>
     <h1 class="logo">کلمه</h1>
     <p class="home-sub" id="homeSub"></p>
+    <button class="rank-chip" id="rankChip" type="button"></button>
     <button class="event-banner hidden" id="eventBanner" type="button"></button>
     <nav class="home-menu">
       <button class="menu-btn primary" id="continueBtn" type="button">ادامه<small id="continueSub"></small></button>
@@ -80,6 +94,22 @@
       <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
     </header>
     <div class="level-map" id="levelMap"></div>
+  </section>
+
+  <!-- دفتر واژه‌ها: همه‌ی کلمه‌هایی که بازیکن پیدا کرده -->
+  <section class="screen hidden" id="screenBook">
+    <header class="screen-top">
+      <button class="icon-btn" type="button" data-back aria-label="بازگشت">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="screen-title">دفتر واژه‌ها</h1>
+      <div class="coins"><span class="coin-icon"></span><span class="coin-count">۰</span></div>
+    </header>
+    <div class="book-head">
+      <div class="book-stats" id="bookStats"></div>
+      <input class="book-search" id="bookSearch" type="search" placeholder="جستجوی کلمه" autocomplete="off">
+    </div>
+    <div class="book-list" id="bookList"></div>
   </section>
 
   <!-- دستاوردها -->
@@ -281,6 +311,7 @@
   <script src="feel.js"></script>
   <script src="chapters.js"></script>
   <script src="daily.js"></script>
+  <script src="extras.js"></script>
   <script src="themes/stars.js"></script>
   <script src="themes/carpet.js"></script>
   <script src="themes/caravan-scenes.js"></script>
