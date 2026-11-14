@@ -2,11 +2,8 @@
 
 // بخش‌های تازه‌ی بازی، بعد از extras.js بارگذاری می‌شود:
 // ۱. درخواست امتیاز در کافه‌بازار یا مایکت  ۲. قلک سکه  ۳. بسته‌ی شروع  ۴. محافظ رکورد روزانه
-// ۵. کلمه‌ی روز  ۶. کارت‌پستال فصل‌ها  ۷. حالت سرعتی  ۸. چالش با دوست
+// ۵. کلمه‌ی روز  ۶. کارت‌پستال فصل‌ها  ۷. حالت سرعتی
 // داده‌ها در save.x ذخیره می‌شوند (مثل extras.js).
-
-// فقط رقم‌های لاتین (کد چالش ممکن است با رقم فارسی یا عربی تایپ شود)
-const latinDigits = (s) => String(s).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
 // «۱:۲۴»
 function clock(secs) {
@@ -357,13 +354,17 @@ const wordBtn = document.createElement("button");
 wordBtn.type = "button";
 wordBtn.className = "word-day hidden";
 wordBtn.id = "wordDayBtn";
-$("rankChip").after(wordBtn);
+// لقب و کلمه‌ی روز در یک ردیف
+const homeChips = document.createElement("div");
+homeChips.className = "home-chips";
+$("rankChip").before(homeChips);
+homeChips.append($("rankChip"), wordBtn);
 
 function renderWordDay() {
   const w = wordOfDay(nowDate());
   wordBtn.classList.toggle("hidden", !w);
   if (!w) return;
-  wordBtn.innerHTML = `<span>کلمه‌ی روز:</span> <b></b>` + (X().wordDay === todayKey() ? "" : `<i class="dot"></i>`);
+  wordBtn.innerHTML = `<span>کلمه‌ی روز</span> <b></b>` + (X().wordDay === todayKey() ? "" : `<i class="dot"></i>`);
   wordBtn.querySelector("b").textContent = w.word;
 }
 
@@ -536,28 +537,23 @@ albumBtn.onclick = openAlbum;
 $("postcardShare").onclick = sharePostcard;
 
 // ---------------------------------------------------------------------------
-// ۷ و ۸. حالت سرعتی و چالش با دوست
+// ۷. حالت سرعتی
 // ---------------------------------------------------------------------------
-// هر دو از همان صفحه‌ی بازی استفاده می‌کنند، با playKey جدا (s: و c:)، و پیشرفت مرحله‌ها را عوض نمی‌کنند.
+// از همان صفحه‌ی بازی استفاده می‌کند، با playKey جدا (s:)، و پیشرفت مرحله‌ها را عوض نمی‌کند.
 
 const SPEED_PREFIX = "s:";
-const CHALLENGE_PREFIX = "c:";
 const isSpeed = () => typeof playKey === "string" && playKey.startsWith(SPEED_PREFIX);
-const isChallenge = () => typeof playKey === "string" && playKey.startsWith(CHALLENGE_PREFIX);
 function isMode() {
-  return isSpeed() || isChallenge();
+  return isSpeed();
 }
 
 const SPEED_TIME = 60;        // ثانیه
 const SPEED_BONUS_TIME = 10;  // ثانیه‌ی اضافه برای کامل کردن هر جدول
 const SPEED_BASE = 3000;      // مرحله‌های حالت سرعتی از اینجا به بعد ساخته می‌شوند (۷ حرفی)
 const SPEED_MAX_COINS = 30;   // جایزه‌ی بار اول هر روز
-const CHALLENGE_COINS = 15;   // جایزه‌ی بردن هر چالش (یک بار برای هر کد)
 
 let speed = null;     // { score, words, end, round, seed }
-let challenge = null; // { level, target, start, code }
 let modeTimer = 0;
-let levelStart = 0;   // شروع مرحله‌ی معمولی، برای ساختن چالش
 
 // نوار زمان و امتیاز بالای جدول
 const modeBar = document.createElement("div");
@@ -567,7 +563,7 @@ document.querySelector(".board-area").appendChild(modeBar);
 
 function clearModeSaves() {
   for (const k of Object.keys(save.partial)) {
-    if (k.startsWith(SPEED_PREFIX) || k.startsWith(CHALLENGE_PREFIX)) delete save.partial[k];
+    if (k.startsWith(SPEED_PREFIX) || k.startsWith("c:")) delete save.partial[k]; // c: چالش‌های نسخه‌ی قبل
   }
 }
 
@@ -575,9 +571,8 @@ function stopModes() {
   clearInterval(modeTimer);
   modeTimer = 0;
   speed = null;
-  challenge = null;
   modeBar.classList.add("hidden");
-  $("app").classList.remove("mode-speed", "mode-challenge");
+  $("app").classList.remove("mode-speed");
   clearModeSaves();
 }
 
@@ -590,21 +585,14 @@ function startTicker() {
 function tickMode() {
   // بازیکن از صفحه‌ی بازی بیرون رفت: حالت تمام می‌شود
   // (location.hash، چون route بعد از تغییر hash و کمی دیرتر صدا زده می‌شود)
-  if (location.hash !== "#play" || !isMode() || (!speed && !challenge)) return stopModes();
+  if (location.hash !== "#play" || !isSpeed() || !speed) return stopModes();
   if (locked) return;
   const now = Date.now();
-  if (speed) {
-    const left = (speed.end - now) / 1000;
-    modeBar.querySelector(".mode-time").textContent = "⏱ " + clock(Math.ceil(left));
-    modeBar.querySelector(".mode-score").textContent = `امتیاز ${faDigits(speed.score)}`;
-    modeBar.classList.toggle("hurry", left <= 10);
-    if (left <= 0) endSpeed();
-  } else {
-    const t = (now - challenge.start) / 1000;
-    modeBar.querySelector(".mode-time").textContent = "⏱ " + clock(Math.floor(t));
-    modeBar.querySelector(".mode-score").textContent = `رقیب ${clock(challenge.target)}`;
-    modeBar.classList.toggle("hurry", t > challenge.target);
-  }
+  const left = (speed.end - now) / 1000;
+  modeBar.querySelector(".mode-time").textContent = "⏱ " + clock(Math.ceil(left));
+  modeBar.querySelector(".mode-score").textContent = `امتیاز ${faDigits(speed.score)}`;
+  modeBar.classList.toggle("hurry", left <= 10);
+  if (left <= 0) endSpeed();
 }
 
 // ---------- حالت سرعتی ----------
@@ -702,146 +690,27 @@ $("speedShare").onclick = () => {
   shareMore(`«کلمه» · حالت سرعتی ⏱\nتوی ${faDigits(SPEED_TIME)} ثانیه ${score} امتیاز گرفتم! تو چند می‌گیری؟`);
 };
 
-// ---------- چالش با دوست ----------
-// کد چالش: «شماره‌ی مرحله - ثانیه - رقم کنترل»، مثلاً 23-84-7
-
-function challengeCode(level, secs) {
-  return `${level + 1}-${secs}-${(level * 7 + secs * 3 + 5) % 10}`;
-}
-
-function readChallenge(text) {
-  const m = latinDigits(text).match(/(\d{1,4})\D+(\d{1,4})\D+(\d)/);
-  if (!m) return null;
-  const level = +m[1] - 1, secs = +m[2], check = +m[3];
-  if (level < 0 || secs < 1 || secs > 5999 || (level * 7 + secs * 3 + 5) % 10 !== check) return null;
-  return { level, secs, code: challengeCode(level, secs) };
-}
-
-function shareChallenge(level, secs) {
-  const code = challengeCode(level, secs);
-  shareMore(`«کلمه» · چالش! ⚔️\nمرحله‌ی ${faDigits(level + 1)} رو در ${clock(secs)} حل کردم. تو سریع‌تری؟\n\nکد چالش: ${code}\n(توی بازی: منو ← چالش با دوست)`);
-}
-
-// دکمه‌ی «چالش با دوست» روی کارت پایان مرحله
-function challengeOffer(level) {
-  if (!levelStart) return;
-  const secs = Math.max(1, Math.min(5999, Math.round((Date.now() - levelStart) / 1000)));
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "extra challenge-offer";
-  btn.innerHTML = `<span>⚔️</span> دوستت رو به چالش بکش · ${clock(secs)}`;
-  btn.onclick = () => shareChallenge(level, secs);
-  $("overlayBtn").before(btn);
-}
-
-const challengeSheet = makeSheet("challengeSheet", `
-  <div class="card-title">چالش با دوست</div>
-  <div class="card-text">کد چالشی که دوستت فرستاده رو بنویس. همون مرحله رو حل کن و ببین کی سریع‌تره!</div>
-  <input class="challenge-input" id="challengeInput" type="text" inputmode="numeric" dir="ltr" placeholder="23-84-7" autocomplete="off">
-  <div class="card-text challenge-error" id="challengeError"></div>
-  <button class="card-btn" type="button" id="challengeGo">شروع چالش</button>
-  <div class="card-text challenge-tip">برای ساختن چالش، یه مرحله رو تموم کن و «دوستت رو به چالش بکش» رو بزن.</div>
-  <button class="card-link" type="button" data-close>بستن</button>`);
-challengeSheet.querySelector("[data-close]").onclick = () => challengeSheet.classList.add("hidden");
-
-function openChallenge() {
-  $("challengeError").textContent = "";
-  challengeSheet.classList.remove("hidden");
-}
-
-function startChallenge() {
-  const c = readChallenge($("challengeInput").value);
-  if (!c) {
-    $("challengeError").textContent = "این کد درست نیست. دوباره نگاهش کن.";
-    return;
-  }
-  if (!hasLevel(c.level) || !levelAt(c.level)) {
-    $("challengeError").textContent = "این مرحله هنوز آماده نیست. چند لحظه بعد دوباره بزن.";
-    return;
-  }
-  challengeSheet.classList.add("hidden");
-  stopModes();
-  clearModeSaves();
-  challenge = { level: c.level, target: c.secs, code: c.code, start: 0 };
-  startPuzzle(levelAt(c.level), c.level, CHALLENGE_PREFIX + c.level);
-  open("play");
-  challenge.start = Date.now();
-  modeBar.classList.remove("hidden");
-  startTicker();
-}
-
-const challengeDone = makeSheet("challengeDone", `
-  <div class="card-title" id="chTitle"></div>
-  <div class="ch-vs"><div><small>تو</small><b id="chMine"></b></div><div><small>دوستت</small><b id="chTheirs"></b></div></div>
-  <div class="card-text" id="chText"></div>
-  <button class="card-btn" type="button" id="chReply">جوابش رو بفرست</button>
-  <button class="card-link" type="button" id="chHome">منو</button>`);
-
-function endChallenge(hinted) {
-  locked = true;
-  clearInterval(modeTimer);
-  modeTimer = 0;
-  const { level, target, code } = challenge;
-  const secs = Math.max(1, Math.round((Date.now() - challenge.start) / 1000));
-  const won = secs < target;
-  X().chWon = X().chWon || {};
-  const reward = won && !X().chWon[code] ? CHALLENGE_COINS : 0;
-  if (reward) X().chWon[code] = 1;
-  delete save.partial[playKey];
-  persist();
-  sound(won ? "reward" : "complete");
-  $("chTitle").textContent = won ? "بردی! 🎉" : secs === target ? "مساوی!" : "این بار نشد";
-  $("chMine").textContent = clock(secs);
-  $("chTheirs").textContent = clock(target);
-  $("chText").textContent = (hinted ? "با راهنما · " : "") + (reward ? `+${faDigits(reward)} سکه` : won ? "این چالش رو قبلاً برده بودی" : "یه بار دیگه امتحان کن یا جواب بده");
-  $("chReply").onclick = () => shareChallenge(level, secs);
-  setTimeout(() => {
-    if (screenNow !== "play") return;
-    challengeDone.classList.remove("hidden");
-    if (won) {
-      const c = centerOfEl($("chMine"));
-      sparkle(c.x, c.y, 18);
-    }
-    if (reward) setTimeout(() => giveCoins(reward, $("chText")), 400);
-  }, 700);
-}
-
-$("chHome").onclick = () => {
-  challengeDone.classList.add("hidden");
-  stopModes();
-  goHome();
-};
-$("challengeGo").onclick = startChallenge;
-$("challengeInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") startChallenge();
-});
-
 // از finishLevel در game.js صدا زده می‌شود؛ true یعنی پایان مرحله را این فایل گرفت
 function finishMode(hinted) {
   if (isSpeed() && speed) {
     speedNext();
     return true;
   }
-  if (isChallenge() && challenge) {
-    endChallenge(hinted);
-    return true;
-  }
   return false;
 }
 
 // دکمه‌های منو
-const modeRow = document.createElement("div");
-modeRow.className = "mode-row";
-modeRow.innerHTML = `
-  <button class="menu-btn" id="speedBtn" type="button">حالت سرعتی<small id="speedSub"></small></button>
-  <button class="menu-btn" id="challengeBtn" type="button">چالش با دوست<small>با کد</small></button>`;
-$("dailyBtn").after(...modeRow.children);
-$("speedBtn").onclick = startSpeed;
-$("challengeBtn").onclick = openChallenge;
+// «حالت سرعتی» کنار «مرحله‌ها»
+const speedBtn = document.createElement("button");
+speedBtn.className = "menu-btn";
+speedBtn.id = "speedBtn";
+speedBtn.type = "button";
+speedBtn.innerHTML = `حالت سرعتی<small id="speedSub"></small>`;
+$("levelsBtn").after(speedBtn);
+speedBtn.onclick = startSpeed;
 
 function renderModeBtns() {
   $("speedBtn").disabled = !generator;
-  $("challengeBtn").disabled = !generator;
   const best = X().speedBest || 0;
   $("speedSub").textContent = best ? `رکورد ${faDigits(best)}` : `${faDigits(SPEED_TIME)} ثانیه`;
 }
@@ -854,13 +723,8 @@ gameHooks.push((name, d) => {
   switch (name) {
     case "level":
       $("app").classList.toggle("mode-speed", isSpeed());
-      $("app").classList.toggle("mode-challenge", isChallenge());
       if (isSpeed()) $("levelLabel").textContent = "حالت سرعتی" + (speed && speed.round ? ` · جدول ${faDigits(speed.round + 1)}` : "");
-      else if (isChallenge()) $("levelLabel").textContent = `چالش · مرحله‌ی ${faDigits(d.level + 1)}`;
-      else {
-        if (speed || challenge) stopModes();
-        levelStart = Date.now();
-      }
+      else if (speed) stopModes();
       break;
     case "found":
     case "bonus":
@@ -870,7 +734,6 @@ gameHooks.push((name, d) => {
       if (d.daily) break;
       if (d.first) piggyAdd();
       if (d.first) piggyNote();
-      challengeOffer(d.level);
       if (d.first && endsChapter(d.level)) {
         setTimeout(() => toast(`کارت‌پستال «${chapterInfo(chapterOf(d.level)).name}» به آلبومت اضافه شد 🏞️`, "gold"), 1200);
       }
@@ -901,3 +764,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 2500);
 });
+
+// ---------------------------------------------------------------------------
+// دکمه‌ی «برگشت» گوشی (MainActivity.java صدا می‌زند)
+// ---------------------------------------------------------------------------
+// از هر جای بازی یک‌راست به منوی اصلی برمی‌گردد. در منوی اصلی اول کارت باز را می‌بندد؛
+// اگر چیزی باز نبود "home" برمی‌گرداند تا اندروید با دو بار زدن از بازی بیرون برود.
+
+function closeAllSheets() {
+  let closed = false;
+  for (const el of document.querySelectorAll(".sheet:not(.hidden)")) {
+    el.classList.add("hidden");
+    closed = true;
+  }
+  return closed;
+}
+
+window.kalamehBack = () => {
+  const atHome = screenNow === "home" || (screenNow === "themes" && !save.theme);
+  if (atHome) return closeAllSheets() ? "closed" : "home";
+  closeAllSheets();
+  hideMeanings();
+  hideLevelSheet();
+  hideChest();
+  hideThemeSheet();
+  if (save.theme) {
+    history.replaceState(null, "", location.pathname + location.search);
+    route();
+  }
+  return "back";
+};

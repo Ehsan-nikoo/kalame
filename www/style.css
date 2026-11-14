@@ -513,7 +513,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 16px 16px calc(env(safe-area-inset-bottom) + 24px);
   background: rgba(0, 0, 0, 0.35);
 }
-.sheet-card { max-width: 420px; text-align: right; padding: 22px 22px 16px; }
+.sheet-card { max-width: 420px; text-align: center; padding: 22px 22px 16px; }
 .meaning + .meaning { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--edge, rgba(0, 0, 0, 0.1)); }
 .meaning-word { font-family: var(--display); font-size: 32px; line-height: 1.5; color: var(--accent); }
 .meaning-text { margin-top: 2px; font-size: 17px; line-height: 1.8; color: var(--ink); }
@@ -1104,7 +1104,6 @@ button { font-family: inherit; cursor: pointer; }
 .home-menu .menu-btn.primary { grid-column: span 2; padding: 13px; font-size: 25px; }
 .home-menu .daily-btn { grid-column: span 2; }
 /* بدون فروشگاه (در مرورگر)، دکمه‌ی ظاهر همه‌ی ردیف را می‌گیرد */
-.home-menu:not(:has(#shopBtn:not(.hidden))) #themesBtn { grid-column: span 2; }
 .daily-btn {
   flex-direction: row;
   justify-content: center;
@@ -1728,7 +1727,7 @@ button { font-family: inherit; cursor: pointer; }
   will-change: transform, opacity;
 }
 
-/* ---------- more.js: امتیاز، قلک، بسته‌ی شروع، محافظ رکورد، کلمه‌ی روز، آلبوم، حالت سرعتی، چالش ---------- */
+/* ---------- more.js: امتیاز، قلک، بسته‌ی شروع، محافظ رکورد، کلمه‌ی روز، آلبوم، حالت سرعتی ---------- */
 .rate-stars { text-align: center; font-size: 30px; letter-spacing: 4px; color: var(--coin); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.12); }
 
 .piggy-icon { width: 40px; height: 34px; display: block; }
@@ -1818,19 +1817,16 @@ button { font-family: inherit; cursor: pointer; }
 .mode-speed #hintWordBtn, .mode-speed #hintLetterBtn { visibility: hidden; }
 
 .speed-score { text-align: center; font-family: var(--display); font-size: 64px; line-height: 1.3; color: var(--accent); }
-.speed-reward, .challenge-tip { text-align: center; color: var(--muted); font-size: 13px; }
+.speed-reward { text-align: center; color: var(--muted); font-size: 13px; }
 
-.challenge-offer {
-  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
-  margin: 10px 0 0; padding: 8px 10px; border: 1.5px dashed var(--edge); border-radius: 14px;
-  background: none; color: var(--ink); font: 600 14px "Vazirmatn", sans-serif;
-}
-.challenge-input {
-  display: block; width: 100%; margin: 14px 0 4px; padding: 12px; border: 1.5px solid var(--edge); border-radius: 14px;
-  background: var(--surface); color: var(--ink); text-align: center; font: 700 22px "Vazirmatn", sans-serif; letter-spacing: 2px;
-}
-.challenge-error { color: #d9483b; text-align: center; min-height: 1.4em; margin: 0; font-size: 13px; }
-.ch-vs { display: flex; justify-content: center; gap: 24px; margin: 12px 0 4px; }
-.ch-vs div { display: flex; flex-direction: column; align-items: center; }
-.ch-vs small { color: var(--muted); }
-.ch-vs b { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.3; }
+
+/* ---------- منوی اصلی خلوت‌تر ---------- */
+#screenHome { overflow-y: auto; overscroll-behavior: contain; }
+#screenHome .home-sub { display: none; } /* نام ظاهر؛ در «ظاهر بازی» دیده می‌شود */
+.home-chips { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 6px; }
+.home-chips .rank-chip { margin: 0; padding: 4px 12px; border: 1.5px solid var(--edge); border-radius: 999px; }
+.home-chips .rank-chip small, .home-chips .rank-badge i { display: none; }
+.home-chips .rank-badge b { font-size: 13px; font-weight: 600; }
+.home-chips .word-day { margin: 0; }
+.card-text, .card-title { text-align: center; }
+.home-menu .menu-btn { justify-content: center; }
