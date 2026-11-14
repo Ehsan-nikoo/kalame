@@ -1,7 +1,7 @@
 "use strict";
 
 // چیزهایی که بازی را جذاب‌تر می‌کنند و به رویدادهای بازی (gameHooks در game.js) گوش می‌دهند:
-// ۱. مأموریت‌های روزانه  ۲. مصراع فصل  ۳. کلمه‌ی طلایی  ۴. زنجیره‌ی کلمه  ۵. گردونه‌ی شانس هفتگی
+// ۱. مأموریت‌های روزانه  ۲. مصراع فصل  ۳. کلمه‌ی طلایی  ۴. زنجیره‌ی کلمه  ۵. گردونه‌ی شانس روزانه
 // ۶. دفتر واژه‌ها  ۷. لقب  ۸. صفحه‌ی شروع فصل  ۹. پرواز حروف از دایره به جدول
 // همه‌ی داده‌ها در save.x ذخیره می‌شوند. این فایل بعد از game.js، feel.js، chapters.js و daily.js بارگذاری می‌شود.
 
@@ -89,7 +89,6 @@ window.addEventListener("hashchange", () => {
   for (const el of document.querySelectorAll(".x-sheet")) el.classList.add("hidden");
 });
 
-const weekNumber = (date) => Math.floor((dayNumber(date) + 3) / 7); // هفته از شنبه شروع می‌شود
 
 // ---------------------------------------------------------------------------
 // ۱. مأموریت‌های روزانه
@@ -478,7 +477,7 @@ function chainBreak() {
 }
 
 // ---------------------------------------------------------------------------
-// ۵. گردونه‌ی شانس هفتگی
+// ۵. گردونه‌ی شانس روزانه
 // ---------------------------------------------------------------------------
 
 const WHEEL = [
@@ -492,7 +491,8 @@ const WHEEL = [
   { kind: "coins", n: 15, label: "۱۵" },
 ];
 
-const wheelReady = () => X().wheelWeek !== weekNumber(nowDate());
+// روزی یک بار (اعلانش در daily.js، ساعت WHEEL_HOUR)
+const wheelReady = () => X().wheelDay !== todayKey();
 
 function wheelSVG() {
   const n = WHEEL.length;
@@ -526,10 +526,10 @@ function lockedThemes() {
 
 function openWheel() {
   const ready = wheelReady();
-  $("wheelText").textContent = ready ? "هفته‌ای یک بار بچرخون و جایزه بگیر" : "این هفته چرخوندی؛ هفته‌ی بعد دوباره بیا";
+  $("wheelText").textContent = ready ? "هر روز یک بار بچرخون و جایزه بگیر" : "امروز چرخوندی؛ فردا دوباره بیا";
   $("wheelResult").textContent = "";
   $("wheelGo").disabled = !ready;
-  $("wheelGo").textContent = ready ? "بچرخون" : "هفته‌ی بعد";
+  $("wheelGo").textContent = ready ? "بچرخون" : "فردا";
   wheelSheet.classList.remove("hidden");
 }
 
@@ -537,7 +537,11 @@ function spinWheel() {
   if (spinning || !wheelReady()) return;
   spinning = true;
   $("wheelGo").disabled = true;
-  const pick = Math.floor(Math.random() * WHEEL.length);
+  // امتحان ظاهر پولی شانس کمتری دارد (نصف بقیه)
+  const weights = WHEEL.map((seg) => (seg.kind === "trial" ? 0.5 : 1));
+  let r = Math.random() * weights.reduce((a, b) => a + b, 0);
+  let pick = 0;
+  while (r >= weights[pick]) r -= weights[pick++];
   // چند دور کامل و ایستادن روی بخش pick (بخش i در زاویه‌ی i*45 درجه است؛ نشانگر بالاست)
   const n = WHEEL.length;
   wheelTurn += 360 * 5 + ((360 - ((wheelTurn % 360) + (pick * 360) / n)) % 360) + (Math.random() - 0.5) * (300 / n);
@@ -550,7 +554,7 @@ function spinWheel() {
 
 function winWheel(seg) {
   spinning = false;
-  X().wheelWeek = weekNumber(nowDate());
+  X().wheelDay = todayKey();
   let text = "";
   const result = $("wheelResult");
   if (seg.kind === "trial" && lockedThemes().length) {
@@ -581,8 +585,9 @@ function winWheel(seg) {
   sound("reward");
   const c = centerOfEl($("luckSpin"));
   sparkle(c.x, c.y, 20);
-  $("wheelGo").textContent = "هفته‌ی بعد";
+  $("wheelGo").textContent = "فردا";
   updateWheelBadge();
+  planReminders(); // اعلان گردونه‌ی امروز دیگر لازم نیست
 }
 $("wheelGo").onclick = spinWheel;
 

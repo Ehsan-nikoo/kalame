@@ -307,6 +307,13 @@ async function shareMore(text) {
 
 const REMIND_IDS = [701, 702, 703, 704];
 const EVE_IDS = { nowruz: 711, yalda: 712, muharram: 713 };
+const WHEEL_IDS = [721, 722, 723, 724];
+const WHEEL_HOUR = 13; // اعلان گردونه‌ی شانس روزانه (ظهر، جدا از یادآوری عصر)
+const WHEEL_LINES = [
+  { title: "گردونه‌ی شانس امروزت آماده‌ست 🎡", body: "یه بار بچرخون؛ شاید سکه، شاید راهنمای رایگان!" },
+  { title: "🎡 نوبت چرخوندن گردونه‌ست", body: "جایزه‌ی امروزت توی «کلمه» منتظرته" },
+  { title: "امروز شانست رو امتحان کردی؟ 🎡", body: "گردونه‌ی شانس «کلمه» روزی یک بار می‌چرخه" },
+];
 
 // روز شروعِ بعدیِ هر مناسبت (بعد از امروز، تا حدود یک سال جلوتر)
 function nextEventStarts(now) {
@@ -354,7 +361,7 @@ async function planReminders() {
   const plugin = notes();
   if (!plugin) return;
   try {
-    await plugin.cancel({ notifications: [...REMIND_IDS, ...Object.values(EVE_IDS)].map((id) => ({ id })) });
+    await plugin.cancel({ notifications: [...REMIND_IDS, ...Object.values(EVE_IDS), ...WHEEL_IDS].map((id) => ({ id })) });
     if (!settings.reminders) return;
     const perm = await plugin.checkPermissions();
     if (perm.display !== "granted") return;
@@ -367,6 +374,13 @@ async function planReminders() {
       if (eveDays.includes(dateKey(at))) continue; // آن شب اعلان مناسبت فرستاده می‌شود
       if (k === 0 && !rewardDue() && dailySolved()) continue; // امروز کاری نمانده
       list.push({ id: REMIND_IDS[k], ...reminderText(at, k), schedule: { at, allowWhileIdle: true } });
+    }
+    // گردونه‌ی شانس: هر روز ظهر، مگر امروز که چرخانده شده باشد (extras.js)
+    for (let k = 0; k < WHEEL_IDS.length; k++) {
+      const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, WHEEL_HOUR, 0, 0);
+      if (at <= now) continue;
+      if (k === 0 && typeof wheelReady === "function" && !wheelReady()) continue;
+      list.push({ id: WHEEL_IDS[k], ...WHEEL_LINES[(dayNumber(at) + k) % WHEEL_LINES.length], schedule: { at, allowWhileIdle: true } });
     }
     if (list.length) await plugin.schedule({ notifications: list });
   } catch {
