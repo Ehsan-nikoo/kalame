@@ -1801,7 +1801,6 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 6px; color: #fff; font-family: var(--display); font-size: 16px; rotate: -8deg; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.mode-row { display: contents; }
 .mode-bar {
   position: absolute; top: 0; left: 50%; translate: -50% 0; z-index: 3;
   display: flex; gap: 12px; align-items: center; padding: 3px 14px; border-radius: 999px;
@@ -1817,7 +1816,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 @keyframes mode-pop { from { opacity: 1; translate: -50% 0; } to { opacity: 0; translate: -50% -26px; } }
 .mode-speed #hintWordBtn, .mode-speed #hintLetterBtn { visibility: hidden; }
-.mode-speed .chest-btn, .mode-challenge .chest-btn { visibility: hidden; }
 
 .speed-score { text-align: center; font-family: var(--display); font-size: 64px; line-height: 1.3; color: var(--accent); }
 .speed-reward, .challenge-tip { text-align: center; color: var(--muted); font-size: 13px; }
