@@ -1166,7 +1166,6 @@ function initStore() {
   if (!nativeStore) return;
   nativeStore.init().then((info) => {
     store = info;
-    $("shopBtn").classList.remove("hidden");
     for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
     if (!info.ready) return;
     const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product), ...moreProducts];
@@ -1605,7 +1604,6 @@ $("themeTry").addEventListener("click", () => {
   hideThemeSheet();
   chooseTheme(t.id);
 });
-$("shopBtn").addEventListener("click", openShop);
 for (const el of document.querySelectorAll(".coins")) {
   el.addEventListener("click", () => {
     if (store && screenNow !== "shop") openShop();
