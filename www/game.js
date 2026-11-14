@@ -449,7 +449,7 @@ function renderWheel() {
 function slotCenter(slot) {
   const n = letterEls.length;
   const angle = -Math.PI / 2 + (slot * 2 * Math.PI) / n;
-  return { x: 50 + 34 * Math.cos(angle), y: 50 + 34 * Math.sin(angle) };
+  return { x: 50 + 30 * Math.cos(angle), y: 50 + 30 * Math.sin(angle) };
 }
 
 function letterCenter(index) {
