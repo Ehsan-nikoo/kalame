@@ -2,10 +2,12 @@ package com.kalameh.game;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -127,6 +129,32 @@ public class CoinStorePlugin extends Plugin {
     }
 
     // ---------- متدهای قابل صدا زدن از بازی ----------
+
+    /** صفحه‌ی امتیاز و نظر همین بازی در کافه‌بازار یا مایکت؛ اگر فروشگاه نصب نبود، صفحه‌ی وبش */
+    @PluginMethod
+    public void rate(PluginCall call) {
+        String pkg = getContext().getPackageName();
+        boolean bazaar = "bazaar".equals(BuildConfig.STORE_ID);
+        Intent intent = bazaar
+            ? new Intent(Intent.ACTION_EDIT, Uri.parse("bazaar://details?id=" + pkg))
+            : new Intent(Intent.ACTION_VIEW, Uri.parse("myket://comment?id=" + pkg));
+        intent.setPackage(BuildConfig.STORE_PACKAGE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            getActivity().startActivity(intent);
+            call.resolve();
+            return;
+        } catch (ActivityNotFoundException e) {
+            // فروشگاه نصب نیست
+        }
+        String web = bazaar ? "https://cafebazaar.ir/app/" + pkg : "https://myket.ir/app/" + pkg;
+        try {
+            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(web)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            call.resolve();
+        } catch (ActivityNotFoundException e) {
+            rejectNoStore(call);
+        }
+    }
 
     /** آیا خرید ممکن است؟ */
     @PluginMethod

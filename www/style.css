@@ -1727,3 +1727,112 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
   will-change: transform, opacity;
 }
+
+/* ---------- more.js: امتیاز، قلک، بسته‌ی شروع، محافظ رکورد، کلمه‌ی روز، آلبوم، حالت سرعتی، چالش ---------- */
+.rate-stars { text-align: center; font-size: 30px; letter-spacing: 4px; color: var(--coin); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.12); }
+
+.piggy-icon { width: 40px; height: 34px; display: block; }
+.piggy-note {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 8px auto 0; padding: 4px 12px; border: 0; border-radius: 999px;
+  background: rgba(242, 160, 180, 0.22); color: var(--ink);
+  font: 600 13px "Vazirmatn", sans-serif;
+}
+.piggy-note .piggy-icon { width: 24px; height: 20px; }
+.piggy-note.full { background: var(--coin); color: #3a2606; animation: bump 0.5s ease 2; }
+.piggy-pack .ach-icon .piggy-icon { width: 46px; height: 38px; }
+.piggy-pack .ach-bar span { background: #e57f9b; opacity: 1; }
+.piggy-pack.full .ach-icon { animation: bump 1.2s ease infinite; }
+
+.starter-pack { outline: 2px solid var(--coin); outline-offset: -2px; }
+.starter-pack .ach-icon { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.starter-look {
+  display: inline-block; width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 60%, #7fb08a 0 30%, #9ccbd8 32% 62%, #d8b26a 64%);
+  box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.starter-ribbon {
+  align-self: center; margin: -6px auto 4px; padding: 2px 12px; border-radius: 999px;
+  background: #d9483b; color: #fff; font: 700 12px "Vazirmatn", sans-serif;
+}
+.starter-list { display: flex; flex-direction: column; gap: 10px; margin: 14px auto 2px; text-align: right; }
+.starter-list div { display: flex; align-items: center; gap: 10px; font-size: 17px; }
+.starter-list svg { width: 26px; height: 26px; color: var(--coin); }
+.starter-list .coin-icon { width: 26px; height: 26px; }
+
+.streak-fire { text-align: center; font-size: 46px; line-height: 1.1; animation: bump 1s ease infinite; }
+.card-btn .coin-icon { width: 18px; height: 18px; vertical-align: -3px; }
+
+.word-day {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 4px auto 0; padding: 4px 14px; border: 1.5px dashed var(--edge); border-radius: 999px;
+  background: none; color: var(--ink); font: 13px "Vazirmatn", sans-serif;
+}
+.word-day span { color: var(--muted); }
+.word-day b { font-size: 15px; color: var(--accent); }
+.word-day .dot { position: absolute; top: -3px; left: -3px; width: 10px; height: 10px; border-radius: 50%; background: #d9483b; }
+.word-day-head { text-align: center; margin: 0; }
+.word-day-word { text-align: center; font-family: var(--display); font-size: 46px; line-height: 1.4; color: var(--accent); }
+.word-day-meaning { text-align: center; font-size: 17px; }
+.word-day-reward { text-align: center; color: var(--muted); font-size: 13px; }
+
+.album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; overflow-y: auto; min-height: 0; padding: 2px; }
+.album-card {
+  display: flex; flex-direction: column; gap: 4px; padding: 5px 5px 6px; border: 0; border-radius: 12px;
+  background: #fffaf0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14); color: #3b3326;
+  font: 600 13px "Vazirmatn", sans-serif; rotate: -1.2deg;
+}
+.album-card:nth-child(even) { rotate: 1.2deg; }
+.album-card .chapter-scene { height: auto; aspect-ratio: 320 / 120; border-radius: 8px; }
+.album-card.locked { background: rgba(0, 0, 0, 0.06); box-shadow: none; color: var(--muted); rotate: 0deg; }
+.album-lock { aspect-ratio: 320 / 120; display: grid; place-items: center; border-radius: 8px; background: rgba(0, 0, 0, 0.06); }
+.album-lock svg { width: 20px; height: 20px; opacity: 0.45; }
+
+.postcard {
+  position: relative; padding: 10px 10px 14px; border-radius: 14px; background: #fbf6ec; color: #3b3326;
+  outline: 2px dashed #d9c9a8; outline-offset: -6px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.postcard .chapter-scene { height: auto; aspect-ratio: 320 / 120; border-radius: 10px; }
+.postcard-text { display: flex; flex-direction: column; align-items: center; margin-top: 8px; }
+.postcard-text small { color: #8a7a5c; font-size: 13px; }
+.postcard-text b { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.4; }
+.postcard-stamp {
+  position: absolute; top: 18px; left: 18px; padding: 3px 8px; border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 6px; color: #fff; font-family: var(--display); font-size: 16px; rotate: -8deg; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.mode-row { display: contents; }
+.mode-bar {
+  position: absolute; top: 0; left: 50%; translate: -50% 0; z-index: 3;
+  display: flex; gap: 12px; align-items: center; padding: 3px 14px; border-radius: 999px;
+  background: var(--surface); color: var(--ink); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  font: 700 15px "Vazirmatn", sans-serif; white-space: nowrap;
+}
+.mode-bar.hidden { display: none; }
+.mode-bar.hurry .mode-time { color: #d9483b; animation: bump 1s ease infinite; }
+.mode-score { color: var(--muted); font-weight: 600; }
+.mode-pop {
+  position: absolute; top: 100%; left: 50%; color: var(--accent); font-weight: 800; font-size: 18px;
+  pointer-events: none; animation: mode-pop 0.9s ease-out forwards;
+}
+@keyframes mode-pop { from { opacity: 1; translate: -50% 0; } to { opacity: 0; translate: -50% -26px; } }
+.mode-speed #hintWordBtn, .mode-speed #hintLetterBtn { visibility: hidden; }
+.mode-speed .chest-btn, .mode-challenge .chest-btn { visibility: hidden; }
+
+.speed-score { text-align: center; font-family: var(--display); font-size: 64px; line-height: 1.3; color: var(--accent); }
+.speed-reward, .challenge-tip { text-align: center; color: var(--muted); font-size: 13px; }
+
+.challenge-offer {
+  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  margin: 10px 0 0; padding: 8px 10px; border: 1.5px dashed var(--edge); border-radius: 14px;
+  background: none; color: var(--ink); font: 600 14px "Vazirmatn", sans-serif;
+}
+.challenge-input {
+  display: block; width: 100%; margin: 14px 0 4px; padding: 12px; border: 1.5px solid var(--edge); border-radius: 14px;
+  background: var(--surface); color: var(--ink); text-align: center; font: 700 22px "Vazirmatn", sans-serif; letter-spacing: 2px;
+}
+.challenge-error { color: #d9483b; text-align: center; min-height: 1.4em; margin: 0; font-size: 13px; }
+.ch-vs { display: flex; justify-content: center; gap: 24px; margin: 12px 0 4px; }
+.ch-vs div { display: flex; flex-direction: column; align-items: center; }
+.ch-vs small { color: var(--muted); }
+.ch-vs b { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.3; }

@@ -395,7 +395,7 @@ let goldenWord = null;
 function pickGolden(level) {
   goldenWord = null;
   // فقط بار اول هر مرحله، و از مرحله‌ی ۳ به بعد، تقریباً یک مرحله در میان
-  if (isDaily() || level < 2 || level !== save.unlocked || level % 2 === 1) return;
+  if (isDaily() || isMode() || level < 2 || level !== save.unlocked || level % 2 === 1) return;
   const words = puzzle.words.filter((w) => w.length >= 3 && !found.includes(w));
   if (!words.length) return;
   goldenWord = words[(level * 7 + 3) % words.length];
@@ -758,7 +758,7 @@ function checkRank() {
 // ---------------------------------------------------------------------------
 
 function chapterIntro(level) {
-  if (isDaily() || level === 0 || level % CHAPTER_SIZE || level !== save.unlocked) return;
+  if (isDaily() || isMode() || level === 0 || level % CHAPTER_SIZE || level !== save.unlocked) return;
   const c = chapterOf(level);
   X().intro = X().intro || {};
   if (X().intro[c]) return;

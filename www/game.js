@@ -262,6 +262,7 @@ function rewardDue() {
 }
 
 function showDailyReward() {
+  if (typeof offerStreakSave === "function" && offerStreakSave()) return; // محافظ رکورد (more.js)
   const day = todayRewardDay();
   const list = $("rewardDays");
   list.innerHTML = "";
@@ -1009,6 +1010,7 @@ function hidePreview() {
 function finishLevel() {
   const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
   if (isDaily()) return finishDaily(hinted); // daily.js
+  if (typeof finishMode === "function" && finishMode(hinted)) return; // حالت سرعتی و چالش (more.js)
   locked = true;
   const first = current === save.unlocked;
   // پایان هر فصل (۲۰ مرحله) سکه‌ی بیشتری دارد (chapters.js)
@@ -1158,6 +1160,7 @@ const nativeStore = window.Capacitor && window.Capacitor.isNativePlatform && win
 let store = null;         // { ready, storeName, reason } وقتی پلاگین هست
 let shopPrices = {};      // id ← قیمت از فروشگاه
 let shopBusy = false;
+const moreProducts = [];  // محصول‌های more.js (قلک، بسته‌ی شروع)
 
 function initStore() {
   if (!nativeStore) return;
@@ -1166,7 +1169,7 @@ function initStore() {
     $("shopBtn").classList.remove("hidden");
     for (const el of document.querySelectorAll(".coins")) el.classList.add("can-buy");
     if (!info.ready) return;
-    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product)];
+    const ids = [...COIN_PACKS.map((p) => p.id), ...THEMES.filter((t) => t.product).map((t) => t.product), ...moreProducts];
     nativeStore.products({ ids }).then((res) => {
       for (const p of res.products || []) shopPrices[p.id] = p.price;
       if (screenNow === "shop") renderShop();
@@ -1184,6 +1187,7 @@ function deliverPending() {
 }
 
 function deliver(purchase, fromEl) {
+  if (typeof deliverMore === "function" && deliverMore(purchase, fromEl)) return; // قلک و بسته‌ی شروع (more.js)
   const look = THEMES.find((t) => t.product && t.product === purchase.id);
   if (look) return deliverTheme(look);
   const pack = COIN_PACKS.find((p) => p.id === purchase.id);
@@ -1247,6 +1251,7 @@ function renderShop() {
     btn.addEventListener("click", () => buyPack(pack, item));
     list.appendChild(item);
   }
+  emit("shop", { list });
 }
 
 function buyPack(pack, item) {

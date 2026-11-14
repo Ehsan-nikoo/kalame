@@ -14,11 +14,11 @@ const www = path.join(__dirname, "..", "www");
 // فایل‌های بازی در مرورگر کنار هم اجرا می‌شوند؛ اسم یکسان در دو فایل، یکی را بی‌صدا خراب می‌کند
 const topNames = (file) => new Set([...fs.readFileSync(path.join(www, file), "utf8")
   .matchAll(/^(?:function|const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]));
-const scriptNames = ["engine.js", "game.js", "feel.js", "chapters.js", "daily.js", "extras.js"].map(topNames);
+const scriptNames = ["engine.js", "game.js", "feel.js", "chapters.js", "daily.js", "extras.js", "more.js"].map(topNames);
 for (let i = 0; i < scriptNames.length; i++) {
   for (let j = i + 1; j < scriptNames.length; j++) {
     const clash = [...scriptNames[i]].filter((n) => scriptNames[j].has(n));
-    assert.deepStrictEqual(clash, [], "اسم‌های یکسان در فایل‌های بازی (engine.js، game.js، feel.js، chapters.js، daily.js، extras.js)");
+    assert.deepStrictEqual(clash, [], "اسم‌های یکسان در فایل‌های بازی (engine.js، game.js، feel.js، chapters.js، daily.js، extras.js، more.js)");
   }
 }
 const { dict, levels, errors: wordErrors } = E.parseWords(fs.readFileSync(path.join(www, "words.txt"), "utf8"));

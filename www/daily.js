@@ -375,12 +375,14 @@ async function planReminders() {
       if (k === 0 && !rewardDue() && dailySolved()) continue; // امروز کاری نمانده
       list.push({ id: REMIND_IDS[k], ...reminderText(at, k), schedule: { at, allowWhileIdle: true } });
     }
-    // گردونه‌ی شانس: هر روز ظهر، مگر امروز که چرخانده شده باشد (extras.js)
+    // گردونه‌ی شانس و کلمه‌ی روز: هر روز ظهر، مگر امروز که چرخانده شده باشد (extras.js)
     for (let k = 0; k < WHEEL_IDS.length; k++) {
       const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, WHEEL_HOUR, 0, 0);
       if (at <= now) continue;
       if (k === 0 && typeof wheelReady === "function" && !wheelReady()) continue;
-      list.push({ id: WHEEL_IDS[k], ...WHEEL_LINES[(dayNumber(at) + k) % WHEEL_LINES.length], schedule: { at, allowWhileIdle: true } });
+      // متن: کلمه‌ی روز (more.js)، و اگر کلمه‌ها هنوز خوانده نشده‌اند یکی از جمله‌های گردونه
+      const text = (typeof wordNote === "function" && wordNote(at)) || WHEEL_LINES[(dayNumber(at) + k) % WHEEL_LINES.length];
+      list.push({ id: WHEEL_IDS[k], ...text, schedule: { at, allowWhileIdle: true } });
     }
     if (list.length) await plugin.schedule({ notifications: list });
   } catch {
