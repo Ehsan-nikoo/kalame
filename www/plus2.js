@@ -633,22 +633,51 @@ document.querySelector("#modesSheet .modes-list").appendChild(duelPick);
 duelPick.onclick = openDuelSetup;
 
 // ---------------------------------------------------------------------------
-// ۵. فال حافظ روزانه (بعد از حل کردن مرحله‌ی روزانه؛ فهرست در hafez.js)
+// ۵. فال حافظ روزانه (بعد از حل کردن مرحله‌ی روزانه؛ کل دیوان در divan.js)
 // ---------------------------------------------------------------------------
 
-// ترتیب درهم ولی ثابت؛ هر روز بیت بعدی، تا همه‌ی بیت‌ها نیامده‌اند هیچ‌کدام تکرار نمی‌شود
-let falOrder = null;
-function falOfDay(date = nowDate()) {
-  if (!falOrder) {
-    const rnd = seededRandom(1404);
-    falOrder = HAFEZ.map((_, i) => i);
-    for (let i = falOrder.length - 1; i > 0; i--) {
-      const j = Math.floor(rnd() * (i + 1));
-      [falOrder[i], falOrder[j]] = [falOrder[j], falOrder[i]];
-    }
+// کل دیوان در divan.js است و فقط وقتی فال باز می‌شود بارگذاری می‌شود؛
+// اگر به هر دلیلی بار نشد، از بیت‌های hafez.js استفاده می‌شود.
+let divanLoad = null;
+function loadDivan() {
+  if (typeof HAFEZ_DIVAN !== "undefined") return Promise.resolve(true);
+  if (!divanLoad) {
+    divanLoad = new Promise((resolve) => {
+      const s = document.createElement("script");
+      s.src = "divan.js";
+      s.onload = () => resolve(typeof HAFEZ_DIVAN !== "undefined");
+      s.onerror = () => { divanLoad = null; resolve(false); };
+      document.head.appendChild(s);
+    });
   }
-  const n = falOrder.length;
-  return HAFEZ[falOrder[((dayNumber(date) % n) + n) % n]];
+  return divanLoad;
+}
+
+// ترتیب درهم ولی ثابت؛ هر روز غزل بعدی، تا همه‌ی ۴۹۵ غزل نیامده‌اند هیچ‌کدام تکرار نمی‌شود
+const falOrders = {};
+function shuffledOrder(n, seed) {
+  if (!falOrders[n]) {
+    const rnd = seededRandom(seed);
+    const order = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    falOrders[n] = order;
+  }
+  return falOrders[n];
+}
+// خروجی: { num, lines: [مصراع‌ها], meaning }
+function falOfDay(date = nowDate()) {
+  const day = dayNumber(date);
+  if (typeof HAFEZ_DIVAN !== "undefined") {
+    const n = HAFEZ_DIVAN.length;
+    const [num, text, meaning] = HAFEZ_DIVAN[shuffledOrder(n, 1404)[((day % n) + n) % n]];
+    return { num, lines: text.split("/"), meaning };
+  }
+  const n = HAFEZ.length;
+  const [m1, m2, meaning] = HAFEZ[shuffledOrder(n, 1404)[((day % n) + n) % n]];
+  return { num: 0, lines: [m1, m2], meaning };
 }
 
 const falSheet = makeSheet("falSheet", `
@@ -658,18 +687,37 @@ const falSheet = makeSheet("falSheet", `
     <button class="fal-book" type="button" id="falOpen" aria-label="باز کردن دیوان">📖</button>
   </div>
   <div class="fal-body hidden" id="falBody">
-    <div class="fal-verse"><span id="falM1"></span><span id="falM2"></span></div>
+    <div class="fal-num" id="falNum"></div>
+    <div class="fal-poem" id="falPoem"></div>
     <div class="fal-meaning" id="falMeaning"></div>
     <button class="card-link" type="button" id="falShare">فرستادن فال</button>
   </div>
   <button class="card-link" type="button" data-close>بستن</button>`);
 falSheet.querySelector("[data-close]").onclick = () => falSheet.classList.add("hidden");
 
-function openFal() {
-  const [m1, m2, meaning] = falOfDay();
-  $("falM1").textContent = m1;
-  $("falM2").textContent = m2;
-  $("falMeaning").textContent = meaning;
+function fillFal() {
+  const f = falOfDay();
+  $("falNum").textContent = f.num ? `غزل ${f.num.toLocaleString("fa-IR")}` : "";
+  const poem = $("falPoem");
+  poem.innerHTML = "";
+  for (let i = 0; i < f.lines.length; i += 2) {
+    const bayt = document.createElement("div");
+    bayt.className = "fal-bayt";
+    for (const m of f.lines.slice(i, i + 2)) {
+      const span = document.createElement("span");
+      span.textContent = m;
+      bayt.appendChild(span);
+    }
+    poem.appendChild(bayt);
+  }
+  poem.scrollTop = 0;
+  $("falMeaning").textContent = f.meaning;
+  $("falMeaning").classList.toggle("hidden", !f.meaning);
+}
+
+async function openFal() {
+  await loadDivan();
+  fillFal();
   const seen = X().falDay === todayKey();
   $("falIntent").classList.toggle("hidden", seen);
   $("falBody").classList.toggle("hidden", !seen);
@@ -682,18 +730,18 @@ $("falOpen").onclick = () => {
     $("falOpen").classList.remove("open");
     $("falIntent").classList.add("hidden");
     $("falBody").classList.remove("hidden");
+    $("falPoem").scrollTop = 0;
     X().falDay = todayKey();
     persist();
     renderFalChip();
   }, 650);
 };
 $("falShare").onclick = () => {
-  const [m1, m2, meaning] = falOfDay();
-  shareMore(`📜 فال حافظ امروزم توی «کلمه»:
-${m1}
-${m2}
-
-${meaning}`);
+  const f = falOfDay();
+  shareMore(`📜 فال حافظ امروزم توی «کلمه»${f.num ? ` (غزل ${f.num.toLocaleString("fa-IR")})` : ""}:
+${f.lines[0]}
+${f.lines[1]}
+${f.meaning ? `\n${f.meaning}` : ""}`);
 };
 
 // در منو، بعد از حل شدن مرحله‌ی روزانه
