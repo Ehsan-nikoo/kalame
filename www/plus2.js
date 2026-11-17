@@ -5,6 +5,7 @@
 // ۲. پشتیبان‌گیری از پیشرفت با یک کد (بدون سرور)
 // ۳. آمار من، با کارت تصویری برای فرستادن
 // ۴. بازی دونفره روی یک گوشی
+// ۵. فال حافظ روزانه
 // (جمعه‌ی ویژه در daily.js است)
 
 // پنجره‌ای که با زدن بیرونش بسته نمی‌شود (برای کارت‌هایی که وسط بازی می‌آیند)
@@ -632,6 +633,81 @@ document.querySelector("#modesSheet .modes-list").appendChild(duelPick);
 duelPick.onclick = openDuelSetup;
 
 // ---------------------------------------------------------------------------
+// ۵. فال حافظ روزانه (بعد از حل کردن مرحله‌ی روزانه؛ فهرست در hafez.js)
+// ---------------------------------------------------------------------------
+
+const falOfDay = (date = nowDate()) => HAFEZ[Math.floor(seededRandom(dayNumber(date) * 53 + 11)() * HAFEZ.length)];
+
+const falSheet = makeSheet("falSheet", `
+  <div class="card-title">📜 فال حافظ امروز</div>
+  <div class="fal-intent" id="falIntent">
+    <div class="card-text">چشم‌هات رو ببند، یه نیت کن و بعد بزن روی دیوان.</div>
+    <button class="fal-book" type="button" id="falOpen" aria-label="باز کردن دیوان">📖</button>
+  </div>
+  <div class="fal-body hidden" id="falBody">
+    <div class="fal-verse"><span id="falM1"></span><span id="falM2"></span></div>
+    <div class="fal-meaning" id="falMeaning"></div>
+    <button class="card-link" type="button" id="falShare">فرستادن فال</button>
+  </div>
+  <button class="card-link" type="button" data-close>بستن</button>`);
+falSheet.querySelector("[data-close]").onclick = () => falSheet.classList.add("hidden");
+
+function openFal() {
+  const [m1, m2, meaning] = falOfDay();
+  $("falM1").textContent = m1;
+  $("falM2").textContent = m2;
+  $("falMeaning").textContent = meaning;
+  const seen = X().falDay === todayKey();
+  $("falIntent").classList.toggle("hidden", seen);
+  $("falBody").classList.toggle("hidden", !seen);
+  falSheet.classList.remove("hidden");
+}
+$("falOpen").onclick = () => {
+  $("falOpen").classList.add("open");
+  sound("reward");
+  setTimeout(() => {
+    $("falOpen").classList.remove("open");
+    $("falIntent").classList.add("hidden");
+    $("falBody").classList.remove("hidden");
+    X().falDay = todayKey();
+    persist();
+    renderFalChip();
+  }, 650);
+};
+$("falShare").onclick = () => {
+  const [m1, m2, meaning] = falOfDay();
+  shareMore(`📜 فال حافظ امروزم توی «کلمه»:
+${m1}
+${m2}
+
+${meaning}`);
+};
+
+// در منو، بعد از حل شدن مرحله‌ی روزانه
+const falChip = document.createElement("button");
+falChip.type = "button";
+falChip.className = "word-day fal-chip hidden";
+falChip.id = "falChip";
+document.querySelector(".home-chips").appendChild(falChip);
+falChip.onclick = openFal;
+
+function renderFalChip() {
+  const solved = save.dailyPuzzle && save.dailyPuzzle.last === todayKey();
+  falChip.classList.toggle("hidden", !solved);
+  falChip.innerHTML = `<span>📜</span> <b>فال حافظ</b>` + (X().falDay === todayKey() ? "" : `<i class="dot"></i>`);
+}
+
+// در کارت پایان مرحله‌ی روزانه
+function offerFal() {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "extra verse-offer fal-offer";
+  btn.innerHTML = `<span>📜 فال حافظ امروز</span><small>حالا که مرحله‌ی روزانه رو حل کردی، یه نیت کن</small>`;
+  btn.onclick = openFal;
+  $("overlayBtn").before(btn);
+}
+
+// ---------------------------------------------------------------------------
 // اتصال به رویدادهای بازی
 // ---------------------------------------------------------------------------
 
@@ -657,6 +733,7 @@ gameHooks.push((name, d) => {
       refreshClueBtn();
       break;
     case "complete":
+      if (d.daily) offerFal();
       if (!d.daily && d.first && levelStart) {
         const secs = Math.round((Date.now() - levelStart) / 1000);
         const f = X().fastest;
@@ -669,6 +746,7 @@ gameHooks.push((name, d) => {
       break;
     case "home":
       if (duel) stopDuel();
+      renderFalChip();
       break;
   }
 });
