@@ -1830,3 +1830,66 @@ button { font-family: inherit; cursor: pointer; }
 .home-chips .word-day { margin: 0; }
 .card-text, .card-title { text-align: center; }
 .home-menu .menu-btn { justify-content: center; }
+
+/* ---------- plus.js: کمک‌های «نشونه» و «موشک» ---------- */
+.tools.five { gap: 7px; }
+.tools.five .tool { flex-direction: column; gap: 2px; padding: 7px 12px 6px; border-radius: 16px; font-size: 13px; min-width: 54px; }
+.tools.five .tool svg { width: 20px; height: 20px; }
+.tools.five .tool .cost .coin-icon { width: 12px; height: 12px; }
+.tools.five .tool.shuffle { padding: 12px; border-radius: 50%; min-width: 0; }
+.tool.on { background: var(--accent); color: var(--accent-ink); }
+.mode-speed #hintTargetBtn, .mode-speed #hintRocketBtn { visibility: hidden; }
+.board.aiming .cell.slot { cursor: pointer; outline: 2px dashed var(--accent); outline-offset: -3px; animation: aim 1.1s ease-in-out infinite; }
+@keyframes aim { 50% { outline-color: transparent; } }
+
+/* ---------- plus.js: ضرب‌المثل فصل ---------- */
+.proverb { margin: 12px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); text-align: center; }
+.proverb-head { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.proverb-line { margin-top: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 6px; font-weight: 800; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.proverb-line .hole { min-width: 2.2em; border-radius: 6px; background: rgba(0, 0, 0, 0.12); color: transparent; }
+.proverb-line .fresh { color: var(--accent); animation: pop 0.5s ease 0.6s both; }
+.proverb.whole .proverb-line { color: var(--accent); }
+.proverb-meaning { margin-top: 4px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ---------- plus.js: سرگرمی‌ها و اسم فامیل ---------- */
+.modes-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.mode-pick {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px;
+  border: 1.5px solid var(--edge); background: var(--accent-soft); color: var(--ink); text-align: right; font: inherit;
+}
+.mode-pick:disabled { opacity: 0.5; }
+.mode-pick .mode-icon { font-size: 26px; }
+.mode-pick b { display: block; font-size: 17px; }
+.mode-pick small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+.ef-sheet { align-items: flex-start; overflow-y: auto; padding-top: calc(env(safe-area-inset-top) + 16px); }
+.ef-sheet .ef-card { max-height: none; width: min(420px, 100%); margin: auto 0; }
+.ef-top { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 6px 0 4px; }
+.ef-letter {
+  width: 74px; height: 74px; border-radius: 20px; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-size: 46px; line-height: 1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.ef-letter.spin { animation: ef-spin 0.17s linear infinite; }
+@keyframes ef-spin { 50% { transform: scale(0.88) rotate(-6deg); } }
+.ef-time { font: 800 22px "Vazirmatn", sans-serif; color: var(--ink); min-width: 4.5em; }
+.ef-time.hurry { color: #d9483b; animation: bump 1s ease infinite; }
+.ef-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.ef-row { display: grid; grid-template-columns: 3.9em 1fr 1.2em; align-items: center; gap: 6px; text-align: right; }
+.ef-label { font-weight: 700; font-size: 14px; color: var(--muted); }
+.ef-row input {
+  width: 100%; min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--accent-soft);
+  background: var(--surface); color: var(--ink); font: 700 17px "Vazirmatn", sans-serif; text-align: right; outline: none;
+}
+.ef-row input:focus { border-color: var(--accent); }
+.ef-row input:disabled { opacity: 0.85; }
+.ef-mark { font-style: normal; font-weight: 800; font-size: 18px; }
+.ef-row.right .ef-mark { color: #3c9a5f; }
+.ef-row.right input { border-color: #3c9a5f; }
+.ef-row.wrong .ef-mark { color: #d9483b; }
+.ef-row.wrong input { border-color: #e7a59f; }
+.ef-example { grid-column: 2 / 4; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.ef-score { margin-top: 12px; text-align: center; }
+.ef-score b { display: block; font-family: var(--display); font-size: 52px; line-height: 1.3; color: var(--accent); }
+.ef-score span { font-size: 13.5px; color: var(--muted); }
+.ef-reward { text-align: center; color: var(--muted); font-size: 13px; }

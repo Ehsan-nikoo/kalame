@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- پس‌زمینه‌ی ویجت: آسمان شب بازی با گوشه‌های گرد -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="270" android:startColor="#2B2560" android:endColor="#16123A" />
+    <corners android:radius="22dp" />
+    <stroke android:width="1dp" android:color="#3DFFD36B" />
+</shape>

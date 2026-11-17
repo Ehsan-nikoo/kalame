@@ -386,7 +386,7 @@ function offerVerse(level) {
 }
 
 // ---------------------------------------------------------------------------
-// ۳. کلمه‌ی طلایی: در بعضی مرحله‌ها یکی از کلمه‌ها سکه‌ی بیشتری دارد
+// ۳. کلمه‌ی طلایی: هر ۵ مرحله یک بار یکی از کلمه‌ها سکه‌ی بیشتری دارد
 // ---------------------------------------------------------------------------
 
 const GOLDEN_REWARD = 15;
@@ -394,8 +394,8 @@ let goldenWord = null;
 
 function pickGolden(level) {
   goldenWord = null;
-  // فقط بار اول هر مرحله، و از مرحله‌ی ۳ به بعد، تقریباً یک مرحله در میان
-  if (isDaily() || isMode() || level < 2 || level !== save.unlocked || level % 2 === 1) return;
+  // فقط بار اول هر مرحله، هر ۵ مرحله یک بار (مرحله‌ی ۵، ۱۰، ۱۵ و …)
+  if (isDaily() || isMode() || level !== save.unlocked || (level + 1) % 5 !== 0) return;
   const words = puzzle.words.filter((w) => w.length >= 3 && !found.includes(w));
   if (!words.length) return;
   goldenWord = words[(level * 7 + 3) % words.length];
