@@ -117,32 +117,7 @@ rocketBtn.addEventListener("click", hintRocket);
 
 const PROVERB_REWARD = 10;
 
-const PROVERBS = [
-  ["قطره قطره جمع گردد، وانگهی دریا شود", "کم‌کم جمع کردن، آخرش چیز بزرگی می‌سازه."],
-  ["از تو حرکت، از خدا برکت", "تو تلاشت رو بکن، نتیجه‌ش می‌رسه."],
-  ["کار نیکو کردن از پر کردن است", "هر کاری رو زیاد تمرین کنی، استادش میشی."],
-  ["گر صبر کنی ز غوره حلوا سازی", "با صبر، از چیز ترش و نارس هم میشه شیرینی ساخت."],
-  ["یک دست صدا ندارد", "کار بزرگ با همکاری پیش میره."],
-  ["هر گردی گردو نیست", "به ظاهر چیزها نباید اعتماد کرد."],
-  ["جوجه را آخر پاییز می‌شمارند", "نتیجه رو آخر کار ببین، نه وسطش."],
-  ["تا تنور گرم است باید نان را چسباند", "فرصت رو تا هست از دست نده."],
-  ["از این ستون به آن ستون فرج است", "صبر کنی، گره کار باز میشه."],
-  ["شاهنامه آخرش خوش است", "باید صبر کرد و پایان کار رو دید."],
-  ["مرغ همسایه غاز است", "مال دیگرون همیشه بهتر به چشم میاد."],
-  ["کوه به کوه نمی‌رسد، آدم به آدم می‌رسد", "آدم‌ها یه روزی دوباره همدیگه رو می‌بینن."],
-  ["آهسته برو، همیشه برو", "آروم ولی پیوسته رفتن بهتر از تند رفتن و وایسادنه."],
-  ["ماهی را هر وقت از آب بگیری تازه است", "برای شروع یه کار خوب، هیچ‌وقت دیر نیست."],
-  ["عاقبت جوینده یابنده بود", "کسی که دنبال چیزی بگرده، آخرش پیداش می‌کنه."],
-  ["سحرخیز باش تا کامروا باشی", "کسی که زود شروع کنه، به آرزوش می‌رسه."],
-  ["پرسیدن عیب نیست، ندانستن عیب است", "سؤال کردن خجالت نداره."],
-  ["دوری و دوستی", "گاهی کمی فاصله، دوستی رو بیشتر می‌کنه."],
-  ["هر که بامش بیش، برفش بیشتر", "هر کی بیشتر داره، دردسرش هم بیشتره."],
-  ["آب که از سر گذشت، چه یک وجب چه صد وجب", "وقتی کار از کار گذشت، دیگه فرقی نمی‌کنه."],
-  ["خواستن توانستن است", "اگه واقعاً بخوای، می‌تونی."],
-  ["دست بالای دست بسیار است", "همیشه یکی هست که از تو تواناتره؛ مغرور نشو."],
-  ["کبوتر با کبوتر، باز با باز", "هر کسی با هم‌جنس خودش جور میشه."],
-  ["هر چه کنی به خود کنی، گر همه نیک و بد کنی", "خوبی و بدی آدم، آخرش به خودش برمی‌گرده."],
-];
+// فهرست ضرب‌المثل‌ها در proverbs.js
 
 const proverbOf = (c) => PROVERBS[c % PROVERBS.length];
 
@@ -195,8 +170,78 @@ function showProverb(level) {
       list.push(chapterOf(level));
       persist();
       setTimeout(() => giveCoins(PROVERB_REWARD, strip), 900);
+      setTimeout(() => toast("ضرب‌المثل به کلکسیونت اضافه شد 🧩", "gold"), 1800);
     }
   }
+}
+
+// ---------- کلکسیون ضرب‌المثل‌ها (از دفتر واژه‌ها) ----------
+
+// شماره‌ی ضرب‌المثل‌هایی که بازیکن کامل کرده (فصل‌های تمام‌شده)، به ترتیب
+function collectedProverbs() {
+  const out = [];
+  const chapters = Math.floor(save.unlocked / CHAPTER_SIZE);
+  for (let c = 0; c < chapters; c++) {
+    const i = c % PROVERBS.length;
+    if (!out.includes(i)) out.push(i);
+  }
+  return out;
+}
+
+const proverbSheet = makeSheet("proverbSheet", `
+  <div class="card-title">کلکسیون ضرب‌المثل‌ها 🧩</div>
+  <div class="card-text" id="proverbCount"></div>
+  <div class="proverb-book" id="proverbBook"></div>
+  <button class="card-link" type="button" data-close>بستن</button>`);
+proverbSheet.querySelector("[data-close]").onclick = () => proverbSheet.classList.add("hidden");
+
+function openProverbs() {
+  const have = collectedProverbs();
+  $("proverbCount").textContent = `${faDigits(have.length)} از ${faDigits(PROVERBS.length)} · هر فصل که تموم کنی، یکی‌ش مال تو میشه`;
+  const list = $("proverbBook");
+  list.replaceChildren();
+  // ضرب‌المثلی که الان در حال جمع شدن است
+  if (save.unlocked % CHAPTER_SIZE > 0 && have.length < PROVERBS.length) {
+    const now = proverbStrip(save.unlocked - 1);
+    now.classList.remove("extra");
+    now.classList.add("now");
+    for (const f of now.querySelectorAll(".fresh")) f.classList.remove("fresh");
+    now.querySelector(".proverb-head").textContent = `فصل «${chapterInfo(chapterOf(save.unlocked)).name}» · در حال جمع شدن`;
+    list.appendChild(now);
+  }
+  for (const i of [...have].reverse()) {
+    const [text, meaning] = PROVERBS[i];
+    const item = document.createElement("div");
+    item.className = "proverb-item";
+    item.innerHTML = `<b></b><span></span>`;
+    item.querySelector("b").textContent = text;
+    item.querySelector("span").textContent = meaning;
+    list.appendChild(item);
+  }
+  const locked = PROVERBS.length - have.length - (list.querySelector(".now") ? 1 : 0);
+  if (locked > 0) {
+    const more = document.createElement("div");
+    more.className = "proverb-locked";
+    more.textContent = `🔒 ${faDigits(locked)} ضرب‌المثل دیگه منتظرته`;
+    list.appendChild(more);
+  }
+  if (!have.length && !list.querySelector(".now")) {
+    list.insertAdjacentHTML("afterbegin", `<div class="book-empty">هنوز ضرب‌المثلی جمع نکردی. هر مرحله یه تیکه‌ش رو باز می‌کنه.</div>`);
+  }
+  proverbSheet.classList.remove("hidden");
+}
+
+const proverbBtn = document.createElement("button");
+proverbBtn.className = "proverb-open";
+proverbBtn.type = "button";
+proverbBtn.id = "proverbBtn";
+document.querySelector(".book-head").appendChild(proverbBtn);
+proverbBtn.onclick = openProverbs;
+$("bookBtn").addEventListener("click", () => renderProverbBtn());
+$("rankChip").addEventListener("click", () => renderProverbBtn());
+
+function renderProverbBtn() {
+  proverbBtn.textContent = `🧩 ضرب‌المثل‌ها · ${faDigits(collectedProverbs().length)} از ${faDigits(PROVERBS.length)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -518,6 +563,7 @@ gameHooks.push((name, d) => {
       break;
     case "home":
       stopAiming();
+      renderProverbBtn();
       renderModesBtn();
       syncWidget();
       break;
@@ -532,6 +578,7 @@ updateCoins = function () {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  renderProverbBtn();
   setTimeout(() => {
     renderModesBtn();
     syncWidget();

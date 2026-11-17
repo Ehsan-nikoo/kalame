@@ -1893,3 +1893,16 @@ button { font-family: inherit; cursor: pointer; }
 .ef-score b { display: block; font-family: var(--display); font-size: 52px; line-height: 1.3; color: var(--accent); }
 .ef-score span { font-size: 13.5px; color: var(--muted); }
 .ef-reward { text-align: center; color: var(--muted); font-size: 13px; }
+
+/* ---------- plus.js: کلکسیون ضرب‌المثل‌ها ---------- */
+.proverb-open {
+  display: block; width: 100%; padding: 10px 14px; border-radius: 14px;
+  border: 1.5px solid var(--edge); background: var(--accent-soft); color: var(--accent); font: 700 15px "Vazirmatn", sans-serif;
+}
+.proverb-book { overflow-y: auto; min-height: 0; flex: 1 1 auto; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.proverb-book .proverb { margin: 0; }
+.proverb-book .proverb.now { border: 1.5px dashed var(--accent); }
+.proverb-item { padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); }
+.proverb-item b { display: block; color: var(--accent); font-size: 16px; line-height: 1.7; }
+.proverb-item span { display: block; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.proverb-locked { padding: 10px; color: var(--muted); font-size: 13.5px; }
