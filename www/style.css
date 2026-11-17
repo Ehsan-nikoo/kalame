@@ -28,6 +28,8 @@
   --accent: #5f8a7a;
   --accent-ink: #ffffff;
   --accent-soft: #dfe9e3;
+  /* پس‌زمینه‌ی روشن کادرهای کوچک (مأموریت‌ها، فال، آمار و ...)؛ ظاهرهایی که accent-soft تیره دارند آن را جدا تعریف می‌کنند */
+  --tint: var(--accent-soft);
   --edge: transparent;
   --cell-empty: #e9e4da;
   --wrong: #c97b6b;
@@ -1482,7 +1484,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 10px 12px;
   border-radius: 14px;
   border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.08));
-  background: var(--accent-soft);
+  background: var(--tint);
 }
 .mission.claimed { opacity: 0.6; }
 .mission-body { flex: 1; min-width: 0; }
@@ -1521,7 +1523,7 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 700;
   color: var(--ink);
 }
-.verse-slot.full { background: var(--accent-soft); animation: pop 0.25s ease; }
+.verse-slot.full { background: var(--tint); animation: pop 0.25s ease; }
 .verse-slots.shake { animation: shake 0.4s ease; }
 .verse-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
 .verse-tile {
@@ -1828,6 +1830,9 @@ button { font-family: inherit; cursor: pointer; }
 .home-chips .rank-chip small, .home-chips .rank-badge i { display: none; }
 .home-chips .rank-badge b { font-size: 13px; font-weight: 600; }
 .home-chips .word-day { margin: 0; }
+/* روی صحنه‌های شلوغ (باغ، کاروان) نوشته‌ی دکمه‌های کوچک خوانا بماند */
+.home-chips { position: relative; z-index: 2; }
+.home-chips .rank-chip, .home-chips .word-day { background: var(--surface); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .card-text, .card-title { text-align: center; }
 .home-menu .menu-btn { justify-content: center; }
 
@@ -1837,13 +1842,14 @@ button { font-family: inherit; cursor: pointer; }
 .tools.five .tool svg { width: 20px; height: 20px; }
 .tools.five .tool .cost .coin-icon { width: 12px; height: 12px; }
 .tools.five .tool.shuffle { padding: 12px; border-radius: 50%; min-width: 0; }
-.tool.on { background: var(--accent); color: var(--accent-ink); }
+/* حالت نشانه‌گیری؛ با «html» از استایل دکمه‌ها در ظاهرهای پولی جلو می‌زند */
+html .tools .tool.on { background: var(--coin); color: #2b1d08; box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--coin), 0 6px 14px rgba(0, 0, 0, 0.25) !important; transform: translateY(-3px); }
 .mode-speed #hintTargetBtn, .mode-speed #hintRocketBtn { visibility: hidden; }
-.board.aiming .cell.slot { cursor: pointer; outline: 2px dashed var(--accent); outline-offset: -3px; animation: aim 1.1s ease-in-out infinite; }
-@keyframes aim { 50% { outline-color: transparent; } }
+html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coin); outline-offset: -3px; animation: aim 1.1s ease-in-out infinite; }
+@keyframes aim { 50% { outline-color: var(--accent); } }
 
 /* ---------- plus.js: ضرب‌المثل فصل ---------- */
-.proverb { margin: 12px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); text-align: center; }
+.proverb { margin: 12px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--tint); text-align: center; }
 .proverb-head { font-size: 12.5px; font-weight: 700; color: var(--muted); }
 .proverb-line { margin-top: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 6px; font-weight: 800; font-size: 16px; line-height: 1.6; color: var(--ink); }
 .proverb-line .hole { min-width: 2.2em; border-radius: 6px; background: rgba(0, 0, 0, 0.12); color: transparent; }
@@ -1855,7 +1861,7 @@ button { font-family: inherit; cursor: pointer; }
 .modes-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .mode-pick {
   display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px;
-  border: 1.5px solid var(--edge); background: var(--accent-soft); color: var(--ink); text-align: right; font: inherit;
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--ink); text-align: right; font: inherit;
 }
 .mode-pick:disabled { opacity: 0.5; }
 .mode-pick .mode-icon { font-size: 26px; }
@@ -1878,7 +1884,7 @@ button { font-family: inherit; cursor: pointer; }
 .ef-row { display: grid; grid-template-columns: 3.9em 1fr 1.2em; align-items: center; gap: 6px; text-align: right; }
 .ef-label { font-weight: 700; font-size: 14px; color: var(--muted); }
 .ef-row input {
-  width: 100%; min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--accent-soft);
+  width: 100%; min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--tint);
   background: var(--surface); color: var(--ink); font: 700 17px "Vazirmatn", sans-serif; text-align: right; outline: none;
 }
 .ef-row input:focus { border-color: var(--accent); }
@@ -1897,12 +1903,12 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- plus.js: کلکسیون ضرب‌المثل‌ها ---------- */
 .proverb-open {
   display: block; width: 100%; padding: 10px 14px; border-radius: 14px;
-  border: 1.5px solid var(--edge); background: var(--accent-soft); color: var(--accent); font: 700 15px "Vazirmatn", sans-serif;
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--accent); font: 700 15px "Vazirmatn", sans-serif;
 }
 .proverb-book { overflow-y: auto; min-height: 0; flex: 1 1 auto; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
 .proverb-book .proverb { margin: 0; }
 .proverb-book .proverb.now { border: 1.5px dashed var(--accent); }
-.proverb-item { padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); }
+.proverb-item { padding: 10px 12px; border-radius: 14px; background: var(--tint); }
 .proverb-item b { display: block; color: var(--accent); font-size: 16px; line-height: 1.7; }
 .proverb-item span { display: block; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .proverb-locked { padding: 10px; color: var(--muted); font-size: 13.5px; }
@@ -1913,7 +1919,7 @@ button { font-family: inherit; cursor: pointer; }
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); pointer-events: none;
 }
 .crown-note { margin-top: 10px; font-size: 13.5px; }
-.crown-done { margin: 10px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); color: var(--ink); font-size: 14px; font-weight: 700; text-align: center; }
+.crown-done { margin: 10px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--tint); color: var(--ink); font-size: 14px; font-weight: 700; text-align: center; }
 .crown-done b { display: block; font-size: 34px; line-height: 1.2; }
 
 /* ---------- plus2.js: راهنمای «معنی» ---------- */
@@ -1921,14 +1927,14 @@ button { font-family: inherit; cursor: pointer; }
 .clue-btn {
   position: absolute; top: 2px; left: 0; z-index: 3;
   display: flex; flex-direction: column; align-items: center; gap: 0; padding: 4px 10px; border-radius: 16px; line-height: 1.35;
-  border: 1.5px solid var(--edge); background: var(--accent-soft); color: var(--accent);
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--accent);
   font: 700 13px "Vazirmatn", sans-serif; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 .clue-btn .cost { display: flex; align-items: center; gap: 3px; }
 .clue-btn .coin-icon { width: 12px; height: 12px; }
 .clue-btn.poor { opacity: 0.45; }
 .mode-speed .clue-btn { display: none; }
-.clue-meaning { margin-top: 10px; padding: 14px; border-radius: 14px; background: var(--accent-soft); color: var(--ink); font-size: 18px; font-weight: 700; line-height: 1.8; text-align: center; }
+.clue-meaning { margin-top: 10px; padding: 14px; border-radius: 14px; background: var(--tint); color: var(--ink); font-size: 18px; font-weight: 700; line-height: 1.8; text-align: center; }
 .clue-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; direction: rtl; }
 .clue-dots span { width: 30px; height: 30px; border-radius: 8px; background: var(--cell-empty, rgba(0, 0, 0, 0.1)); display: grid; place-items: center; font-weight: 800; }
 .clue-dots span.on { background: var(--accent); color: #fff; }
@@ -1936,14 +1942,14 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- plus2.js: پشتیبان‌گیری ---------- */
 .backup-code {
   width: 100%; min-height: 110px; margin-top: 10px; padding: 10px; border-radius: 12px; resize: none;
-  border: 1.5px solid var(--accent-soft); background: var(--surface); color: var(--ink);
+  border: 1.5px solid var(--tint); background: var(--surface); color: var(--ink);
   font: 12px/1.5 ui-monospace, monospace; word-break: break-all; text-align: left;
 }
 .backup-msg { min-height: 1.4em; font-weight: 700; color: var(--accent); }
 
 /* ---------- plus2.js: آمار من ---------- */
 .stats-list { overflow-y: auto; min-height: 0; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-.stats-row { display: grid; grid-template-columns: 1.8em 1fr auto; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 12px; background: var(--accent-soft); text-align: right; }
+.stats-row { display: grid; grid-template-columns: 1.8em 1fr auto; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 12px; background: var(--tint); text-align: right; }
 .stats-icon { font-size: 18px; }
 .stats-name { font-size: 14px; color: var(--muted); font-weight: 600; }
 .stats-row b { color: var(--accent); font-size: 15px; }
@@ -1953,7 +1959,7 @@ button { font-family: inherit; cursor: pointer; }
 .duel-names label { display: grid; grid-template-columns: 4.5em 1fr; align-items: center; gap: 8px; text-align: right; }
 .duel-names span { color: var(--muted); font-weight: 700; font-size: 14px; }
 .duel-names input {
-  min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--accent-soft);
+  min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--tint);
   background: var(--surface); color: var(--ink); font: 700 16px "Vazirmatn", sans-serif; outline: none;
 }
 .duel-names input:focus { border-color: var(--accent); }
@@ -1964,7 +1970,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .duel-avatar.p1 { background: #d9774b; }
 .duel-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.duel-score { padding: 12px 8px; border-radius: 16px; background: var(--accent-soft); display: flex; flex-direction: column; align-items: center; gap: 2px; border: 2px solid transparent; }
+.duel-score { padding: 12px 8px; border-radius: 16px; background: var(--tint); display: flex; flex-direction: column; align-items: center; gap: 2px; border: 2px solid transparent; }
 .duel-score span { font-weight: 700; color: var(--ink); }
 .duel-score b { font-family: var(--display); font-size: 42px; line-height: 1.3; color: var(--accent); }
 .duel-score small { color: var(--muted); font-size: 12px; }
@@ -1974,7 +1980,7 @@ button { font-family: inherit; cursor: pointer; }
 .fal-intent { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 6px; }
 .fal-book {
   width: 96px; height: 96px; border-radius: 24px; border: 1.5px solid var(--edge);
-  background: var(--accent-soft); font-size: 52px; line-height: 1; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  background: var(--tint); font-size: 52px; line-height: 1; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   animation: fal-breathe 2.2s ease-in-out infinite;
 }
 .fal-book.open { animation: fal-open 0.65s ease forwards; }
@@ -1984,7 +1990,7 @@ button { font-family: inherit; cursor: pointer; }
 .fal-num { font-size: 12.5px; color: var(--muted); text-align: center; margin-bottom: 6px; }
 .fal-poem {
   max-height: 42vh; overflow-y: auto; overscroll-behavior: contain; padding: 8px 10px; border-radius: 16px;
-  background: var(--accent-soft); font-family: "Nastaliq", var(--display), serif; font-size: 15px; line-height: 2.2; color: var(--ink); text-align: center;
+  background: var(--tint); font-family: "Nastaliq", var(--display), serif; font-size: 15px; line-height: 2.2; color: var(--ink); text-align: center;
 }
 .fal-bayt { display: flex; flex-direction: column; padding: 6px 0; }
 .fal-bayt + .fal-bayt { border-top: 1px dashed color-mix(in srgb, var(--ink) 14%, transparent); }

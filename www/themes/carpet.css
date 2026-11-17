@@ -8,6 +8,7 @@
   --accent: #8e2424;       /* روناس */
   --accent-ink: #f8eedb;
   --accent-soft: #1e2a4a;  /* نیل */
+  --tint: #f1e3c8;          /* کادرهای روشن کوچک */
   --edge: #c9a35a;
   --wrong: #a8321f;
   --line: #b8322a;
@@ -404,3 +405,7 @@
 [data-theme="carpet"] .level-words .meaning + .meaning { border-top: 1.5px dashed rgba(142, 36, 36, 0.3); }
 [data-theme="carpet"] .level-words { border-color: rgba(166, 120, 58, 0.5); }
 [data-theme="carpet"] { --chest-wood: #8e2424; --chest-wood-2: #5b1513; --chest-band: #d9a441; }
+
+/* تاج مرحله‌های تاج‌دار: لوزی‌ها با clip-path بریده می‌شوند، پس تاج داخل لوزی می‌نشیند */
+[data-theme="carpet"] .lv.crowned::before { top: 9%; font-size: 13px; }
+[data-theme="carpet"] .lv.crowned { padding-top: 10px; }
