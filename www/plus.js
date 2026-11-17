@@ -593,7 +593,7 @@ showLevelSheet = function (i) {
     btn.before(note);
   }
   note.textContent = has
-    ? "تاج این مرحله مال توئه. هر بار کلمه‌های تازه میاد."
+    ? "تاج این مرحله مال توئه. هر بار کلمه‌های تازه میاد، ولی دیگه سکه نداره."
     : `با کلمه‌های تازه دوباره بازی کن؛ بدون راهنما تمومش کنی، تاج 👑 و ${faDigits(CROWN_REWARD)} سکه می‌گیری.`;
 };
 
@@ -606,6 +606,33 @@ renderLevels = function () {
   [...$("levelMap").querySelectorAll(".lv")].forEach((btn, i) => {
     if (have.has(i)) btn.classList.add("crowned");
   });
+};
+
+// مرحله‌ای که تاجش را گرفته: دوباره بازی کردنش دیگر هیچ سکه‌ای نمی‌دهد
+// (نه زنجیره، نه پر شدن صندوق، نه پیشرفت مأموریت‌ها)
+let replayNoCoins = false;
+
+const baseGiveCoins = giveCoins;
+giveCoins = function (amount, from) {
+  if (replayNoCoins && screenNow === "play") return;
+  return baseGiveCoins(amount, from);
+};
+const baseMissionProgress = missionProgress;
+missionProgress = function (ev, n) {
+  if (replayNoCoins) return;
+  return baseMissionProgress(ev, n);
+};
+const baseChainUp = chainUp;
+chainUp = function () {
+  if (replayNoCoins) return;
+  return baseChainUp();
+};
+const baseAddToChest = addToChest;
+addToChest = function (word) {
+  if (!replayNoCoins) return baseAddToChest(word);
+  // کلمه در صندوق می‌ماند (برای دفتر واژه‌ها)، ولی صندوق را پر نمی‌کند
+  save.chest.words.push(word);
+  persist();
 };
 
 function variantDone() {
@@ -627,7 +654,7 @@ function variantDone() {
       sparkle(c.x, c.y, 18);
     }, 500);
   } else {
-    note.textContent = "آفرین! باز هم بدون راهنما 👑";
+    note.textContent = "آفرین! باز هم بدون راهنما 👑 (تاجش رو قبلاً گرفتی، سکه نداره)";
   }
   persist();
   $("overlayText").after(note);
@@ -653,6 +680,7 @@ gameHooks.push((name, d) => {
     case "level":
       stopAiming();
       refreshNewTools();
+      replayNoCoins = isVariant() && crowns().includes(current);
       if (isVariant()) $("levelLabel").textContent = `👑 مرحله‌ی ${faDigits(current + 1)}`;
       break;
     case "hint":
@@ -666,6 +694,7 @@ gameHooks.push((name, d) => {
       if (d.daily) syncWidget();
       break;
     case "home":
+      replayNoCoins = false;
       stopAiming();
       renderProverbBtn();
       renderModesBtn();
