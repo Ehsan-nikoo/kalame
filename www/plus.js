@@ -5,6 +5,7 @@
 // ۲. ضرب‌المثل فصل: هر مرحله یک تکه‌اش را باز می‌کند
 // ۳. حالت «اسم فامیل» (فهرست کلمه‌ها در esmfamil.js) و کارت انتخاب سرگرمی‌ها
 // ۴. فرستادن کلمه‌ی روز و رکورد روزانه به ویجت صفحه‌ی اصلی گوشی
+// ۵. چالش تاج: مرحله‌های تمام‌شده با کلمه‌های تازه
 // داده‌ها در save.x ذخیره می‌شوند (مثل extras.js).
 
 // ---------------------------------------------------------------------------
@@ -543,6 +544,107 @@ function syncWidget() {
 }
 
 // ---------------------------------------------------------------------------
+// ۵. چالش تاج: مرحله‌ی تمام‌شده دوباره بازی شود، با کلمه‌های تازه
+// ---------------------------------------------------------------------------
+// هر بار که بازیکن به یک مرحله‌ی تمام‌شده برمی‌گردد، جدول تازه‌ای با همان سختی می‌گیرد.
+// اگر آن را بدون راهنما تمام کند، تاج 👑 آن مرحله را روی نقشه می‌گیرد (بار اول با سکه).
+
+const VARIANT_PREFIX = "v:";
+const CROWN_REWARD = 15;
+const isVariant = () => typeof playKey === "string" && playKey.startsWith(VARIANT_PREFIX);
+
+function crowns() {
+  if (!Array.isArray(X().crowns)) X().crowns = [];
+  return X().crowns;
+}
+function variantTurns() {
+  if (!X().vturn || typeof X().vturn !== "object") X().vturn = {};
+  return X().vturn;
+}
+
+function playVariant(i) {
+  if (!generator) return play(i);
+  const orig = levelAt(i);
+  const n = (variantTurns()[i] || 0) + 1;
+  const avoid = orig ? orig.seed || [...orig.words].sort((a, b) => b.length - a.length)[0] : "";
+  const level = generator.variant(i, n, avoid);
+  if (!level) return play(i);
+  // نسخه‌ی نیمه‌کاره‌ی قبلی همین مرحله پاک می‌شود؛ هر بار جدول تازه
+  for (const k of Object.keys(save.partial)) if (k.startsWith(VARIANT_PREFIX)) delete save.partial[k];
+  startPuzzle(level, i, `${VARIANT_PREFIX}${i}:${n}`);
+  open("play");
+}
+
+// کارت مرحله‌ی تمام‌شده: دکمه‌ی اصلی حالا «چالش تاج» است
+const baseShowLevelSheet = showLevelSheet;
+showLevelSheet = function (i) {
+  baseShowLevelSheet(i);
+  const has = crowns().includes(i);
+  const btn = $("levelReplay");
+  btn.textContent = has ? "👑 یه جدول تازه" : "👑 چالش تاج";
+  btn.onclick = () => {
+    hideLevelSheet();
+    playVariant(i);
+  };
+  let note = $("levelSheet").querySelector(".crown-note");
+  if (!note) {
+    note = document.createElement("div");
+    note.className = "card-text crown-note";
+    btn.before(note);
+  }
+  note.textContent = has
+    ? "تاج این مرحله مال توئه. هر بار کلمه‌های تازه میاد."
+    : `با کلمه‌های تازه دوباره بازی کن؛ بدون راهنما تمومش کنی، تاج 👑 و ${faDigits(CROWN_REWARD)} سکه می‌گیری.`;
+};
+
+// تاج‌ها روی نقشه‌ی مرحله‌ها
+const baseRenderLevels = renderLevels;
+renderLevels = function () {
+  baseRenderLevels();
+  const have = new Set(crowns());
+  if (!have.size) return;
+  [...$("levelMap").querySelectorAll(".lv")].forEach((btn, i) => {
+    if (have.has(i)) btn.classList.add("crowned");
+  });
+};
+
+function variantDone() {
+  const i = current;
+  variantTurns()[i] = (variantTurns()[i] || 0) + 1;
+  const hinted = Object.values(cellEls).some((el) => el.classList.contains("hinted"));
+  const card = document.querySelector("#overlay .card");
+  const note = document.createElement("div");
+  note.className = "extra crown-done";
+  const list = crowns();
+  if (hinted) {
+    note.textContent = "این بار با راهنما بود؛ بدون راهنما تمومش کن تا تاج بگیری 👑";
+  } else if (!list.includes(i)) {
+    list.push(i);
+    note.innerHTML = `<b>👑</b><span>تاج مرحله‌ی ${faDigits(i + 1)} مال تو شد!</span>`;
+    setTimeout(() => {
+      giveCoins(CROWN_REWARD, note);
+      const c = centerOfEl(note);
+      sparkle(c.x, c.y, 18);
+    }, 500);
+  } else {
+    note.textContent = "آفرین! باز هم بدون راهنما 👑";
+  }
+  persist();
+  $("overlayText").after(note);
+  $("overlayTitle").textContent = hinted ? "تموم شد!" : "آفرین!";
+  $("overlayText").textContent = `چالش تاج مرحله‌ی ${faDigits(i + 1)}`;
+  // دکمه‌ی اصلی: یه جدول تازه از همین مرحله؛ «منو» به نقشه‌ی مرحله‌ها
+  const btn = $("overlayBtn");
+  btn.textContent = "یه جدول تازه";
+  btn.onclick = () => {
+    $("overlay").classList.add("hidden");
+    playVariant(i);
+  };
+  $("overlayMenu").classList.remove("hidden");
+  void card;
+}
+
+// ---------------------------------------------------------------------------
 // اتصال به رویدادهای بازی
 // ---------------------------------------------------------------------------
 
@@ -551,6 +653,7 @@ gameHooks.push((name, d) => {
     case "level":
       stopAiming();
       refreshNewTools();
+      if (isVariant()) $("levelLabel").textContent = `👑 مرحله‌ی ${faDigits(current + 1)}`;
       break;
     case "hint":
     case "found":
@@ -558,6 +661,7 @@ gameHooks.push((name, d) => {
       break;
     case "complete":
       stopAiming();
+      if (isVariant()) variantDone();
       if (!d.daily && d.first) showProverb(d.level);
       if (d.daily) syncWidget();
       break;

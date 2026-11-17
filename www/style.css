@@ -1906,3 +1906,12 @@ button { font-family: inherit; cursor: pointer; }
 .proverb-item b { display: block; color: var(--accent); font-size: 16px; line-height: 1.7; }
 .proverb-item span { display: block; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .proverb-locked { padding: 10px; color: var(--muted); font-size: 13.5px; }
+
+/* ---------- plus.js: چالش تاج ---------- */
+.lv.crowned::before {
+  content: "👑"; position: absolute; top: -17px; left: 50%; translate: -50% 0; font-size: 18px; line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); pointer-events: none;
+}
+.crown-note { margin-top: 10px; font-size: 13.5px; }
+.crown-done { margin: 10px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--accent-soft); color: var(--ink); font-size: 14px; font-weight: 700; text-align: center; }
+.crown-done b { display: block; font-size: 34px; line-height: 1.2; }
