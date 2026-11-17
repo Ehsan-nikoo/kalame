@@ -636,7 +636,20 @@ duelPick.onclick = openDuelSetup;
 // ۵. فال حافظ روزانه (بعد از حل کردن مرحله‌ی روزانه؛ فهرست در hafez.js)
 // ---------------------------------------------------------------------------
 
-const falOfDay = (date = nowDate()) => HAFEZ[Math.floor(seededRandom(dayNumber(date) * 53 + 11)() * HAFEZ.length)];
+// ترتیب درهم ولی ثابت؛ هر روز بیت بعدی، تا همه‌ی بیت‌ها نیامده‌اند هیچ‌کدام تکرار نمی‌شود
+let falOrder = null;
+function falOfDay(date = nowDate()) {
+  if (!falOrder) {
+    const rnd = seededRandom(1404);
+    falOrder = HAFEZ.map((_, i) => i);
+    for (let i = falOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [falOrder[i], falOrder[j]] = [falOrder[j], falOrder[i]];
+    }
+  }
+  const n = falOrder.length;
+  return HAFEZ[falOrder[((dayNumber(date) % n) + n) % n]];
+}
 
 const falSheet = makeSheet("falSheet", `
   <div class="card-title">📜 فال حافظ امروز</div>
