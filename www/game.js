@@ -395,8 +395,12 @@ function sizeBoard() {
   if (!layout || screenNow !== "play") return;
   const area = boardEl.parentElement;
   const gap = 5;
-  const w = (area.clientWidth - gap * (layout.cols - 1)) / layout.cols;
-  const h = (area.clientHeight - 32 - gap * (layout.rows - 1)) / layout.rows;
+  // ظاهرهایی که دور جدول قاب یا پنل دارند، اندازه‌ی آن را با --board-chrome-x/y می‌گویند
+  const css = getComputedStyle(area);
+  const cx = parseFloat(css.getPropertyValue("--board-chrome-x")) || 0;
+  const cy = parseFloat(css.getPropertyValue("--board-chrome-y")) || 0;
+  const w = (area.clientWidth - cx - gap * (layout.cols - 1)) / layout.cols;
+  const h = (area.clientHeight - 32 - cy - gap * (layout.rows - 1)) / layout.rows;
   const size = Math.max(22, Math.min(56, w, h));
   boardEl.style.setProperty("--cell", size + "px");
 }
