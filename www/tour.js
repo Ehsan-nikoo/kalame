@@ -1,14 +1,16 @@
-// آموزش کوتاه با «کلمی»: نور روی هر بخش می‌افتد و کلمی در یک جمله می‌گوید به چه دردی می‌خورد.
+// آموزش کوتاه با یک راهنمای بامزه: نور روی هر بخش می‌افتد و راهنما در یک جمله می‌گوید به چه دردی می‌خورد.
+// هر ظاهر راهنما و رنگ خودش را دارد (TOUR_THEMES پایین همین فایل و .tour-card در css همان ظاهر).
+// ظاهر تازه که ساخته می‌شود، باید اینجا راهنمای خودش را بگیرد.
 // سه آموزش جدا، هر کدام فقط یک بار: صفحه‌ی بازی، منوی اصلی، سرگرمی‌ها.
 // از «تنظیمات ← آموزش» دوباره دیده می‌شوند.
 
 const TOUR_STEPS = {
   play: [
-    { at: "#board", text: "آفرین! 🎉 من کلمی‌ام. هر کلمه که بسازی توی جدول می‌شینه؛ روش بزنی، معنیش رو می‌بینی." },
+    { at: "#board", text: "{hi} هر کلمه که بسازی توی جدول می‌شینه؛ روش بزنی، معنیش رو می‌بینی." },
     { at: ".tools", text: "گیر کردی؟ 💡 یه حرف، 📖 یه کلمه، 🎯 هر خونه که بخوای، 🚀 چند خونه با هم. بُر زدن 🔀 هم مجانیه!" },
     { at: "#chestBtn", text: "کلمه‌ی درستی که توی جدول نیست می‌ره توی صندوق. صندوق پر بشه، سکه می‌گیری 💰" },
     { at: "#app .coins", text: "سکه‌هات اینجاست. با هر مرحله، مأموریت و جایزه‌ی روزانه بیشتر می‌شه." },
-    { at: "#wheel", text: "حالا نوبت توئه! بقیه‌ی کلمه‌ها رو پیدا کن 💪", last: "بزن بریم!" },
+    { at: "#wheel", text: "حالا نوبت توئه! بقیه‌ی کلمه‌ها رو پیدا کن 💪", last: "{go}" },
   ],
   home: [
     { at: "#continueBtn", text: "سلام دوباره! 👋 از اینجا مرحله‌ی بعدی رو بازی کن." },
@@ -26,22 +28,82 @@ const TOUR_STEPS = {
 };
 
 const tourSeen = () => X().tour || (X().tour = {});
-// کلمی: یک لکه‌ی جوهر مهربان با چشم‌های براق
-const TOUR_MASCOT = `<svg class="tour-kalami" viewBox="0 0 64 64" aria-hidden="true">
-  <path class="tk-body" d="M32 5c9 9 22 17 22 32a22 22 0 0 1-44 0C10 22 23 14 32 5Z"/>
-  <ellipse cx="24.5" cy="38" rx="4.2" ry="5" fill="#fff"/><ellipse cx="39.5" cy="38" rx="4.2" ry="5" fill="#fff"/>
-  <g class="tk-eyes"><circle cx="25.5" cy="39" r="2.4" fill="#1d1d26"/><circle cx="40.5" cy="39" r="2.4" fill="#1d1d26"/>
-  <circle cx="26.3" cy="38" r=".8" fill="#fff"/><circle cx="41.3" cy="38" r=".8" fill="#fff"/></g>
-  <path d="M27 47c3 2.6 7 2.6 10 0" fill="none" stroke="#1d1d26" stroke-width="2.2" stroke-linecap="round"/>
-  <circle cx="19" cy="45" r="3" fill="#ff8a8a" opacity=".55"/><circle cx="45" cy="45" r="3" fill="#ff8a8a" opacity=".55"/>
-  <path d="M22 16c2-3 5-5 7-6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".45"/>
-</svg>`;
+// چشم‌ها (tk-eyes) پلک می‌زنند و کل راهنما آرام بالا و پایین می‌رود
+const TK_EYES = (y = 38, gap = 7.5, cx = 32) => `
+  <ellipse cx="${cx - gap}" cy="${y}" rx="4.2" ry="5" fill="#fff"/><ellipse cx="${cx + gap}" cy="${y}" rx="4.2" ry="5" fill="#fff"/>
+  <g class="tk-eyes" style="transform-origin:${cx}px ${y + 1}px"><circle cx="${cx - gap + 1}" cy="${y + 1}" r="2.4" fill="#1d1d26"/><circle cx="${cx + gap + 1}" cy="${y + 1}" r="2.4" fill="#1d1d26"/>
+  <circle cx="${cx - gap + 1.8}" cy="${y}" r=".8" fill="#fff"/><circle cx="${cx + gap + 1.8}" cy="${y}" r=".8" fill="#fff"/></g>`;
+const TK_SMILE = (y = 47, cx = 32) => `<path d="M${cx - 5} ${y}c3 2.6 7 2.6 10 0" fill="none" stroke="#1d1d26" stroke-width="2.2" stroke-linecap="round"/>`;
+const TK_CHEEKS = (y = 45, gap = 13, cx = 32) => `<circle cx="${cx - gap}" cy="${y}" r="3" fill="#ff8a8a" opacity=".55"/><circle cx="${cx + gap}" cy="${y}" r="3" fill="#ff8a8a" opacity=".55"/>`;
+
+const TOUR_THEMES = {
+  // ساده: «کلمی»، یک قطره‌ی جوهر آبی
+  plain: {
+    hi: "آفرین! 🎉 من کلمی‌ام.",
+    go: "بزن بریم!",
+    svg: `<path d="M32 5c9 9 22 17 22 32a22 22 0 0 1-44 0C10 22 23 14 32 5Z" fill="#5b6cff"/>
+      ${TK_EYES()}${TK_SMILE()}${TK_CHEEKS()}
+      <path d="M22 16c2-3 5-5 7-6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".45"/>`,
+  },
+  // صورت فلکی: «سهیل»، ستاره‌ی طلایی
+  stars: {
+    hi: "آفرین! ✨ من سهیلم، ستاره‌ی راهنمات توی این آسمون.",
+    go: "بریم سراغ ستاره‌ها!",
+    svg: `<path d="M32 3l8.2 17.6 19.3 2.3-14.3 13.2 3.8 19.1L32 45.6 15 55.2l3.8-19.1L4.5 22.9l19.3-2.3Z" fill="#ffd34d" stroke="#f0a91e" stroke-width="2" stroke-linejoin="round"/>
+      ${TK_EYES(30, 6.5)}${TK_SMILE(39)}${TK_CHEEKS(37, 11)}
+      <circle cx="54" cy="8" r="2" fill="#fff6c8"/><circle cx="9" cy="10" r="1.4" fill="#fff6c8"/>`,
+  },
+  // قالی‌باف: «گلی»، گلوله‌ی نخ روناسی
+  carpet: {
+    hi: "آفرین! 🧶 من گلی‌ام، گلوله‌ی نخ این دار قالی.",
+    go: "بافتن رو شروع کن!",
+    svg: `<circle cx="32" cy="36" r="22" fill="#b0302a"/>
+      <path d="M14 26c10 6 26 6 36-2M11 38c12 6 30 6 42-2M16 50c10 3 22 3 32-2M24 15c-4 12-4 30 2 42M40 15c5 12 5 30-1 42" fill="none" stroke="#e7a28f" stroke-width="1.6" opacity=".8"/>
+      ${TK_EYES(36)}${TK_SMILE(45)}${TK_CHEEKS(43)}
+      <path d="M52 47c5 4 6 9 2 12" fill="none" stroke="#b0302a" stroke-width="2.6" stroke-linecap="round"/>`,
+  },
+  // کاروان: «ساربون»، شتر کوچولو
+  caravan: {
+    hi: "آفرین! 🐪 من ساربونم، همسفرت توی این کاروان.",
+    go: "حرکت!",
+    svg: `<ellipse cx="18" cy="16" rx="4" ry="6" fill="#b07a45" transform="rotate(-25 18 16)"/><ellipse cx="46" cy="16" rx="4" ry="6" fill="#b07a45" transform="rotate(25 46 16)"/>
+      <ellipse cx="32" cy="32" rx="19" ry="20" fill="#d6a36a"/>
+      <ellipse cx="32" cy="48" rx="13" ry="9" fill="#ecc896"/>
+      <circle cx="28" cy="48" r="1.4" fill="#6d4523"/><circle cx="36" cy="48" r="1.4" fill="#6d4523"/>
+      ${TK_EYES(31)}<path d="M28 54c2.6 1.6 5.4 1.6 8 0" fill="none" stroke="#6d4523" stroke-width="2" stroke-linecap="round"/>
+      <path d="M22 13c4-5 16-5 20 0" fill="none" stroke="#1d4e89" stroke-width="3" stroke-linecap="round"/>`,
+  },
+  // حوض و باغ: «بلبل»، با یک گل سرخ
+  garden: {
+    hi: "آفرین! 🌹 من بلبلم، از باغ اومدم کمکت.",
+    go: "بریم توی باغ!",
+    svg: `<ellipse cx="32" cy="38" rx="21" ry="19" fill="#9c6b45"/>
+      <ellipse cx="32" cy="44" rx="13" ry="11" fill="#f1d9b5"/>
+      <path d="M12 36c-6 2-8 8-6 12 5-1 9-4 10-8Z" fill="#7d5233"/>
+      <path d="M29 41l3 4 3-4Z" fill="#f2a13a"/>
+      ${TK_EYES(34, 8)}${TK_CHEEKS(42, 14)}
+      <g transform="translate(42 12)"><circle r="6" fill="#e0475f"/><path d="M-3-1c2-3 5-3 6 0M-4 2c3 2 6 2 8 0" fill="none" stroke="#a52238" stroke-width="1.3"/><path d="M-1 6c-2 3-5 4-8 4" fill="none" stroke="#3f8a5a" stroke-width="2"/></g>`,
+  },
+  // قلم و مرکب: «دوات» با قلم نی
+  ink: {
+    hi: "آفرین! 🖋 من دواتم؛ با هم یه صفحه‌ی تازه می‌نویسیم.",
+    go: "قلم رو بردار!",
+    svg: `<path d="M44 2l6 3-12 28-4-2Z" fill="#c9a14a" stroke="#8a6a24" stroke-width="1"/>
+      <rect x="20" y="20" width="24" height="7" rx="2" fill="#1f3b73"/>
+      <path d="M14 34c0-6 6-8 18-8s18 2 18 8v14c0 7-8 11-18 11s-18-4-18-11Z" fill="#1d1b2c"/>
+      <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
+      ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
+  },
+};
+
+const tourTheme = () => TOUR_THEMES[activeTheme] || TOUR_THEMES.plain;
+const tourWords = (text) => text.replace("{hi}", tourTheme().hi).replace("{go}", tourTheme().go);
 
 const tourEl = document.createElement("div");
 tourEl.className = "tour hidden";
 tourEl.innerHTML = `<div class="tour-hole"></div>
   <div class="tour-card" role="dialog" aria-live="polite">
-    ${TOUR_MASCOT}
+    <svg class="tour-kalami" viewBox="0 0 64 64" aria-hidden="true"></svg>
     <div class="tour-text"></div>
     <div class="tour-foot">
       <button class="tour-skip" type="button">رد کردن</button>
@@ -77,6 +139,7 @@ function tourStart(name) {
   const steps = TOUR_STEPS[name].filter((s) => tourEls(s).length);
   if (!steps.length) return;
   tourNow = { name, steps, i: 0 };
+  tourEl.querySelector(".tour-kalami").innerHTML = tourTheme().svg;
   tourEl.classList.remove("hidden");
   tourEl.querySelector(".tour-dots").innerHTML = steps.map(() => "<i></i>").join("");
   tourShow();
@@ -110,8 +173,8 @@ function tourShow() {
   tourCard.style.top = below ? Math.min(r.bottom + pad + 14, innerHeight - 200) + "px" : "";
   tourCard.style.bottom = below ? "" : Math.min(innerHeight - r.top + pad + 14, innerHeight - 200) + "px";
   tourCard.classList.toggle("below", below);
-  tourEl.querySelector(".tour-text").textContent = step.text;
-  tourEl.querySelector(".tour-next").textContent = i === steps.length - 1 ? step.last || "تموم!" : "بعدی";
+  tourEl.querySelector(".tour-text").textContent = tourWords(step.text);
+  tourEl.querySelector(".tour-next").textContent = i === steps.length - 1 ? tourWords(step.last || "تموم!") : "بعدی";
   tourEl.querySelectorAll(".tour-dots i").forEach((d, k) => d.classList.toggle("on", k === i));
   tourCard.classList.remove("pop");
   void tourCard.offsetWidth;

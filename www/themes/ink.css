@@ -399,3 +399,11 @@
 [data-theme="ink"] .level-label .ll-name::before { content: none; }
 [data-theme="ink"] .map-label { max-width: 42%; white-space: normal; text-overflow: clip; line-height: 1.8; padding: 2px 12px; border-radius: 16px; text-align: center; }
 [data-theme="ink"] .meaning, [data-theme="ink"] .meaning-word, [data-theme="ink"] .meaning-text { text-align: center; }
+
+/* آموزش: «دوات» روی کاغذ دیوان */
+[data-theme="ink"] .tour-card { background: #f6ecd2; color: #1b130a; border: 2px solid #1f3b73; box-shadow: 0 0 0 3px #f6ecd2, 0 0 0 4.5px #c9a14a, 0 16px 40px rgba(0, 0, 0, 0.4); text-align: center; }
+[data-theme="ink"] .tour-next { background: linear-gradient(180deg, #2a4c8f, #1f3b73); box-shadow: 0 3px 0 #c9a14a; }
+[data-theme="ink"] .tour-skip { color: #6d5a3a; border-color: #d9c79c; background: #fbf4e2; }
+[data-theme="ink"] .tour-dots i { background: #e0d1aa; }
+[data-theme="ink"] .tour-dots i.on { background: #8b2b1a; }
+[data-theme="ink"] .tour-hole { box-shadow: 0 0 0 9999px rgba(27, 19, 10, 0.66), 0 0 0 2.5px #c9a14a, 0 0 22px 6px rgba(201, 161, 74, 0.55); }

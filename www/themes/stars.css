@@ -347,3 +347,11 @@
 [data-theme="stars"] .ach-btn:not(:disabled) { background: linear-gradient(#fff1c6, #f3c86e 45%, #d49a3c); border-color: #fff1c6; }
 [data-theme="stars"] .ach-btn { border-color: rgba(255, 217, 138, 0.3); }
 [data-theme="stars"] .screen-title { text-shadow: 0 0 14px rgba(255, 217, 138, 0.45); }
+
+/* آموزش: «سهیل» در آسمان شب */
+[data-theme="stars"] .tour-card { background: linear-gradient(180deg, #1c1f45, #12142f); color: #fff4dc; border: 1.5px solid rgba(255, 217, 138, 0.55); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 24px rgba(255, 217, 138, 0.18); }
+[data-theme="stars"] .tour-next { background: linear-gradient(180deg, #ffe7a6, #f3be4f); color: #2a1c05; box-shadow: 0 3px 0 #b8862a; }
+[data-theme="stars"] .tour-skip { background: transparent; color: #e9dcc0; border-color: rgba(255, 217, 138, 0.35); }
+[data-theme="stars"] .tour-dots i { background: rgba(255, 244, 220, 0.25); }
+[data-theme="stars"] .tour-dots i.on { background: #ffd98a; }
+[data-theme="stars"] .tour-hole { box-shadow: 0 0 0 9999px rgba(4, 5, 18, 0.72), 0 0 0 2px #ffd98a, 0 0 26px 8px rgba(255, 217, 138, 0.6); animation: none; }
