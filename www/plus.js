@@ -513,7 +513,7 @@ speedBtn.onclick = openModes;
 function renderModesBtn() {
   speedBtn.disabled = false;
   speedBtn.firstChild.textContent = "سرگرمی‌ها";
-  $("speedSub").textContent = "سرعتی · اسم فامیل";
+  $("speedSub").textContent = "سرعتی، مشاعره، جدول و …";
 }
 
 // ---------------------------------------------------------------------------
