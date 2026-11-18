@@ -1,7 +1,7 @@
 "use strict";
 
 // پنج بازی کوچک تازه در «سرگرمی‌ها» (بعد از plus2.js بارگذاری می‌شود):
-// ۱. مشاعره با بیت‌های حافظ
+// ۱. بیت رو کامل کن (بیت‌های حافظ)
 // ۲. مرور واژه‌ها: کلمه‌های دفتر واژه‌ها با فاصله‌ی بیشتر و بیشتر دوباره پرسیده می‌شوند
 // ۳. حالت کودک: کلمه‌های ساده با نقاشی، بدون وقت و بدون باخت
 // ۴. جدول متقاطع هفتگی با سرنخ (معنی کلمه‌ها)
@@ -57,9 +57,9 @@ lnSheet.addEventListener("click", (e) => {
 });
 
 // ---------------------------------------------------------------------------
-// ۱. مشاعره
+// ۱. بیت رو کامل کن
 // ---------------------------------------------------------------------------
-// هر بیت با حرف آخرِ بیت قبلی شروع می‌شود؛ بازیکن مصراع دوم آن را پیدا می‌کند.
+// «بیت رو کامل کن»: مصراع دوم بیت‌های حافظ را پیدا کن.
 
 const MS_TIME = 25;
 const LN_FIX = { "آ": "ا", "أ": "ا", "إ": "ا", "ئ": "ی", "ؤ": "و", "ة": "ه", "ي": "ی", "ى": "ی", "ك": "ک" };
@@ -93,53 +93,34 @@ function msPrepare() {
 let ms = null;
 
 async function openMoshaere() {
-  lnShow(`<div class="card-title">مشاعره 📜</div><div class="card-text">دیوان حافظ داره باز می‌شه…</div>`);
+  lnShow(`<div class="card-title">بیت رو کامل کن 📜</div><div class="card-text">دیوان حافظ داره باز می‌شه…</div>`);
   await loadDivan();
   msPrepare();
   if (!msBeyts.length) {
-    lnBody.innerHTML = `<div class="card-title">مشاعره 📜</div><div class="card-text">دیوان باز نشد. دوباره امتحان کن.</div>${lnFoot()}`;
+    lnBody.innerHTML = `<div class="card-title">بیت رو کامل کن 📜</div><div class="card-text">دیوان باز نشد. دوباره امتحان کن.</div>${lnFoot()}`;
     return;
   }
   const best = X().msBest || 0;
   lnBody.innerHTML = `
-    <div class="card-title">مشاعره 📜</div>
-    <div class="card-text">هر بیت با <b>حرف آخرِ</b> بیت قبلی شروع می‌شه. مصراع اولش رو می‌بینی و باید از سه گزینه‌ی هم‌قافیه، مصراع دوم درستش رو پیدا کنی.
+    <div class="card-title">بیت رو کامل کن 📜</div>
+    <div class="card-text">مصراع اول یه بیت حافظ رو می‌بینی. از سه گزینه، مصراع دومش رو پیدا کن.
     هر جواب درست یه سکه داره و سه بار می‌تونی اشتباه کنی.${best ? `<br>رکوردت: ${faDigits(best)} بیت پشت سر هم` : ""}</div>
     ${lnFoot(`<button class="card-btn" type="button" id="msGo">شروع</button>`)}`;
   $("msGo").onclick = msStart;
 }
 
 function msStart() {
-  ms = { cur: lnPick(msBeyts), chain: 0, lives: 3, used: new Set() };
+  ms = { chain: 0, lives: 3, used: new Set() };
   msRound();
 }
 
-function msBeytHtml(b, mark) {
-  let m2 = lnEsc(b.m2);
-  if (mark) {
-    // حرف آخر مصراع دوم پررنگ می‌شود
-    const chars = [...b.m2];
-    for (let i = chars.length - 1; i >= 0; i--) {
-      if ((LN_FIX[chars[i]] || chars[i]) === b.l) {
-        m2 = lnEsc(chars.slice(0, i).join("")) + `<mark>${lnEsc(chars[i])}</mark>` + lnEsc(chars.slice(i + 1).join(""));
-        break;
-      }
-    }
-  }
-  return `<div class="ms-beyt"><span>${lnEsc(b.m1)}</span><span>${m2}</span></div>`;
-}
-
-// بیت بعدی خودکار با حرف آخر بیت قبلی شروع می‌شود؛ بازیکن باید مصراع دومش را از میان سه گزینه
-// پیدا کند. گزینه‌های غلط هم‌قافیه‌اند: یکی از همان غزل و یکی از غزلی دیگر که به همان حرف تمام می‌شود.
+// مصراع اول یک بیت نشان داده می‌شود و بازیکن مصراع دومش را از میان سه گزینه پیدا می‌کند.
+// گزینه‌های غلط هم‌قافیه‌اند (یکی از همان غزل، یکی از غزلی که به همان حرف تمام می‌شود)
+// تا فقط با نگاه به آخر مصراع نشود حدس زد.
 function msRound() {
-  const need = ms.cur.l;
-  const good = (msByFirst[need] || []).filter((b) => !ms.used.has(b) && b !== ms.cur);
-  if (!good.length) {
-    // با این حرف بیتی نمانده؛ یک بیت تازه شروع می‌شود
-    ms.cur = lnPick(msBeyts);
-    return msRound();
-  }
-  const right = lnPick(good);
+  let right = lnPick(msBeyts);
+  for (let k = 0; k < 20 && ms.used.has(right); k++) right = lnPick(msBeyts);
+  ms.used.add(right);
   const wrong = [];
   const take = (list) => {
     const ok = list.filter((b) => b.m2 !== right.m2 && !wrong.some((w) => w.m2 === b.m2));
@@ -151,13 +132,11 @@ function msRound() {
   const options = lnMix([right, ...wrong]);
   let left = MS_TIME;
   lnBody.innerHTML = `
-    <div class="ln-top"><span>❤️ ${faDigits(ms.lives)}</span><b>مشاعره</b><span id="msClock">⏱ ${faDigits(left)}</span></div>
-    ${msBeytHtml(ms.cur, true)}
-    <div class="ln-ask">بیت بعدی، با «${need}»:</div>
-    <div class="ms-next">${lnEsc(right.m1)}</div>
+    <div class="ln-top"><span>❤️ ${faDigits(ms.lives)}</span><b>بیت رو کامل کن</b><span id="msClock">⏱ ${faDigits(left)}</span></div>
+    <div class="ms-beyt"><span>${lnEsc(right.m1)}</span><span class="ms-blank" id="msBlank">…</span></div>
     <div class="ln-ask">مصراع دومش کدومه؟</div>
     <div class="ln-options">${options.map((b, i) => `<button class="ln-opt ms-opt" type="button" data-i="${i}">${lnEsc(b.m2)}</button>`).join("")}</div>
-    <div class="ln-score">زنجیره: ${faDigits(ms.chain)} بیت</div>
+    <div class="ln-score">درست پشت سر هم: ${faDigits(ms.chain)}</div>
     ${lnFoot()}`;
   const buttons = [...lnBody.querySelectorAll(".ms-opt")];
   const answer = (btn) => {
@@ -165,8 +144,9 @@ function msRound() {
     buttons.forEach((b) => (b.disabled = true));
     const okBtn = buttons[options.indexOf(right)];
     okBtn.classList.add("right");
-    ms.used.add(right);
-    ms.cur = right;
+    const blank = $("msBlank");
+    blank.textContent = right.m2;
+    blank.classList.add("filled");
     if (btn === okBtn) {
       ms.chain++;
       lnGood(btn);
@@ -175,7 +155,7 @@ function msRound() {
       ms.lives--;
       lnBad();
     }
-    lnLater(() => (ms.lives > 0 ? msRound() : msEnd()), btn === okBtn ? 900 : 2000);
+    lnLater(() => (ms.lives > 0 ? msRound() : msEnd()), btn === okBtn ? 1100 : 2200);
   };
   buttons.forEach((b) => (b.onclick = () => answer(b)));
   lnTimer = setInterval(() => {
@@ -691,7 +671,7 @@ function spEnd() {
   head.className = "modes-head";
   head.textContent = "یاد بگیر و بازی کن";
   const picks = [
-    ["modeMs", "📜", "مشاعره", "بیت‌های حافظ رو کامل کن، زنجیره‌وار", openMoshaere],
+    ["modeMs", "📜", "بیت رو کامل کن", "مصراع دوم بیت‌های حافظ رو پیدا کن", openMoshaere],
     ["modeRv", "🧠", "مرور واژه‌ها", "معنی کلمه‌هایی که پیدا کردی یادت بمونه", openReview],
     ["modeCw", "✏️", "جدول هفتگی", "جدول متقاطع با سرنخ، هر شنبه یکی تازه", openCrossword],
     ["modeSp", "✍️", "غلط املایی", "روزی یه بار؛ از چهار کلمه، غلطش رو پیدا کن", openSpell],
@@ -724,5 +704,5 @@ function spEnd() {
   };
   if (typeof speedBtn !== "undefined") speedBtn.onclick = openModes;
   const sub = $("speedSub");
-  if (sub) sub.textContent = "سرعتی، مشاعره، جدول و …";
+  if (sub) sub.textContent = "سرعتی، بیت حافظ، جدول و …";
 })();

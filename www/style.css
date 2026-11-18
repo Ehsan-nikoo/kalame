@@ -2399,3 +2399,5 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .kids-slot { border-color: rgba(128, 128, 128, 0.5); }
 #modesSheet .level-card { max-height: none; }
 .ms-next { padding: 10px 14px; border-radius: 14px; border: 1.5px dashed var(--accent); font-size: 16px; line-height: 1.9; color: var(--accent); font-weight: 700; }
+.ms-blank { margin-top: 2px; padding: 2px 10px; border-bottom: 2px dashed var(--accent); color: var(--muted); min-height: 1.9em; }
+.ms-blank.filled { border-bottom-color: transparent; color: var(--accent); font-weight: 700; animation: pop 0.35s ease; }
