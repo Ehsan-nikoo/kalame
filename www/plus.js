@@ -400,7 +400,9 @@ function efTick() {
 
 function efCheck(cat, letter, word) {
   const w = efNorm(word);
-  return w.length >= 2 && w[0] === efNorm(letter) && cat.set.has(w);
+  if (w.length < 2 || w[0] !== efNorm(letter)) return false;
+  // شکل خودمانی هم قبول است: «بادمجون» به جای «بادمجان»، «تهرون» به جای «تهران» و برعکس
+  return cat.set.has(w) || cat.set.has(w.replace(/ون/g, "ان")) || cat.set.has(w.replace(/ان/g, "ون"));
 }
 
 // یک نمونه‌ی درست، برای جواب‌های خالی یا اشتباه
