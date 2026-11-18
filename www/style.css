@@ -2614,3 +2614,72 @@ button { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   .sheet:not(.hidden), .overlay:not(.hidden), .sheet:not(.hidden) > *, .screen:not(.hidden) { animation: none !important; }
 }
+
+/* ---------- آموزش کلمی (tour.js) ---------- */
+.tour { position: fixed; inset: 0; z-index: 960; font-family: "Vazirmatn", sans-serif; animation: ui-fade 0.25s ease-out both; }
+.tour-hole {
+  position: fixed;
+  border-radius: 18px;
+  box-shadow: 0 0 0 9999px rgba(12, 14, 24, 0.66), 0 0 0 3px rgba(255, 255, 255, 0.85), 0 0 22px 6px rgba(255, 214, 110, 0.55);
+  transition: left 0.38s cubic-bezier(0.3, 0.9, 0.3, 1), top 0.38s cubic-bezier(0.3, 0.9, 0.3, 1), width 0.38s cubic-bezier(0.3, 0.9, 0.3, 1), height 0.38s cubic-bezier(0.3, 0.9, 0.3, 1), border-radius 0.38s;
+  pointer-events: none;
+  animation: tour-glow 1.8s ease-in-out infinite;
+}
+@keyframes tour-glow { 50% { box-shadow: 0 0 0 9999px rgba(12, 14, 24, 0.66), 0 0 0 3px rgba(255, 255, 255, 0.95), 0 0 30px 10px rgba(255, 214, 110, 0.75); } }
+.tour-card {
+  position: fixed;
+  left: 50%;
+  width: min(340px, calc(100vw - 28px));
+  transform: translateX(-50%);
+  padding: 18px 16px 12px;
+  border-radius: 22px;
+  background: #fffdf7;
+  color: #2b2b38;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  text-align: right;
+  direction: rtl;
+}
+.tour-card.pop { animation: tour-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both; }
+@keyframes tour-pop { from { opacity: 0; transform: translateX(-50%) translateY(14px) scale(0.92); } }
+.tour-kalami {
+  position: absolute;
+  top: -36px;
+  right: 14px;
+  width: 62px;
+  height: 62px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+  animation: tour-bob 1.6s ease-in-out infinite;
+}
+.tour-kalami .tk-body { fill: #5b6cff; }
+.tour-kalami .tk-eyes { animation: tour-blink 4s infinite; transform-origin: 32px 39px; }
+@keyframes tour-bob { 50% { transform: translateY(-5px) rotate(-4deg); } }
+@keyframes tour-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+.tour-text { margin: 22px 0 12px; font-size: 16px; line-height: 1.9; font-weight: 600; }
+.tour-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tour-dots { display: flex; gap: 5px; }
+.tour-dots i { width: 7px; height: 7px; border-radius: 50%; background: #d8d4e8; transition: width 0.25s, background-color 0.25s; }
+.tour-dots i.on { width: 18px; border-radius: 4px; background: #5b6cff; }
+.tour-next {
+  min-width: 96px;
+  min-height: 42px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #6f7dff, #4b59e8);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  box-shadow: 0 3px 0 #3441b8;
+}
+.tour-next:active { transform: translateY(2px); box-shadow: 0 1px 0 #3441b8; }
+.tour-skip {
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1.5px solid #e0dced;
+  border-radius: 999px;
+  background: #fff;
+  color: #6b6880;
+  font: inherit;
+  font-size: 14px;
+}
+@media (prefers-reduced-motion: reduce) { .tour-hole, .tour-kalami, .tour-kalami .tk-eyes { animation: none; } }
