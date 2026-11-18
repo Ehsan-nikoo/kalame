@@ -346,66 +346,65 @@ function kwSpell() {
 }
 
 // ---------------------------------------------------------------------------
-// اسم فامیل کودک: یک حرف میاد؛ برای هر دسته از سه نقاشی، اونی که با این حرف شروع میشه
+// اسم فامیل کودک: یک حرف میاد و شش نقاشی بدون اسم؛ بچه باید اسم هر نقاشی رو تو ذهنش بگه
+// و همه‌ی اونایی که با این حرف شروع میشن رو پیدا کنه. اسم هر نقاشی بعد از زدنش نشون داده میشه.
 // ---------------------------------------------------------------------------
 
-const KW_EF_CATS = [
-  ["food", "خوراکی", "🍽️"],
-  ["animal", "حیوون", "🐾"],
-  ["thing", "چیزها", "🎒"],
-  ["nature", "طبیعت", "🌳"],
-];
+const KW_EF_CARDS = 6;
+// نقاشی‌هایی که اسمشان یکی نیست (مثلاً 📱 هم گوشی است هم موبایل) در این بازی نمی‌آیند
+const KW_EF_SKIP = new Set(["آب", "شیرینی", "زمین", "رعد", "دست", "پا", "بابا", "مامان", "پسر", "دختر", "بچه", "گوشی", "لامپ", "تخم", "کیف", "شال", "در", "برگ", "پلیس", "رز", "هدیه", "تاکسی", "بینی", "کلوچه", "خروس"]);
+// حرف‌های هم‌صدا: نقاشی‌ای که با حرف هم‌صدا شروع شود گزینه‌ی غلط نمی‌شود (بچه صدا را می‌شنود نه املا را)
+const KW_SAME_SOUND = ["اعآ", "تط", "سصث", "زذضظ", "هح", "قغ"];
 const kwFirst = (w) => (w[0] === "آ" ? "ا" : w[0]);
-const kwEfPool = (id) => (id === "thing" ? [...KIDS_CATS.thing, ...KIDS_CATS.vehicle] : id === "nature" ? [...KIDS_CATS.nature, ...KIDS_CATS.body] : KIDS_CATS[id]);
-let kef = null; // { letter, cats, i, last }
+const kwSound = (ch) => (KW_SAME_SOUND.find((g) => g.includes(ch)) || ch);
+let kef = null; // { letter, need, got }
+
+function kwEfWords() {
+  const seen = new Set();
+  return KIDS_WORDS.filter(([w, pic]) => !KW_EF_SKIP.has(w) && !seen.has(pic) && seen.add(pic));
+}
 
 function kwEf() {
   kwStop();
   kwIn = "ef";
-  // فقط حرف‌هایی که دست‌کم سه دسته برایشان جواب دارند
+  const words = kwEfWords();
   const count = {};
-  for (const [id] of KW_EF_CATS) {
-    for (const ch of new Set(kwEfPool(id).map((w) => kwFirst(w[0])))) count[ch] = (count[ch] || 0) + 1;
-  }
+  for (const [w] of words) count[kwFirst(w)] = (count[kwFirst(w)] || 0) + 1;
+  // حرف‌هایی که دست‌کم سه نقاشی دارند
   const last = kef && kef.letter;
-  const letters = Object.keys(count).filter((ch) => count[ch] >= 3 && ch !== last);
-  const letter = lnPick(letters);
-  kef = { letter, cats: KW_EF_CATS.filter(([id]) => kwEfPool(id).some((w) => kwFirst(w[0]) === letter)), i: 0 };
-  kwEfRound();
-}
-
-function kwEfRound() {
-  const [id, label, ic] = kef.cats[kef.i];
-  const pool = kwEfPool(id);
-  const right = lnPick(pool.filter((w) => kwFirst(w[0]) === kef.letter));
-  const others = [];
-  for (const w of shuffled(pool, Math.random)) {
-    const f = kwFirst(w[0]);
-    if (others.length < 2 && f !== kef.letter && !others.some((o) => kwFirst(o[0]) === f)) others.push(w);
+  const letter = lnPick(Object.keys(count).filter((ch) => count[ch] >= 3 && ch !== last));
+  const right = shuffled(words.filter(([w]) => kwFirst(w) === letter), Math.random).slice(0, 2 + (Math.random() < 0.5 ? 1 : 0));
+  const same = kwSound(letter);
+  const wrong = [];
+  for (const w of shuffled(words, Math.random)) {
+    if (wrong.length >= KW_EF_CARDS - right.length) break;
+    if (kwSound(kwFirst(w[0])) !== same) wrong.push(w);
   }
-  const opts = shuffled([right, ...others], Math.random);
+  kef = { letter, need: right.length, got: 0, right: new Set(right.map((w) => w[0])) };
+  const cards = shuffled([...right, ...wrong], Math.random);
   $("kwStars").textContent = faDigits(kwTodayStars());
   $("kwStage").innerHTML = `
-    <div class="kw-ef-head">
-      <div class="kw-letter">${kef.letter}</div>
-      <div class="kw-cat"><span>${ic}</span>${label}</div>
-    </div>
-    <div class="kw-ask">کدوم با «${kef.letter}» شروع میشه؟</div>
-    <div class="kw-cards">${opts.map((w) => `<button class="kw-card" type="button" data-w="${w[0]}"><span>${w[1]}</span><b>${w[0]}</b></button>`).join("")}</div>
-    <div class="kw-dots">${kef.cats.map((_, k) => `<i class="${k < kef.i ? "done" : k === kef.i ? "now" : ""}"></i>`).join("")}</div>`;
-  let missed = false;
+    <div class="kw-ef-head"><div class="kw-letter">${letter}</div></div>
+    <div class="kw-ask">اسم کدوم نقاشی‌ها با «${letter}» شروع میشه؟<br><small id="kefLeft">${faDigits(kef.need)} تا پیدا کن</small></div>
+    <div class="kw-cards six">${cards.map(([w, pic]) => `<button class="kw-card" type="button" data-w="${w}"><span>${pic}</span><b>${w}</b></button>`).join("")}</div>`;
   $("kwStage").querySelectorAll(".kw-card").forEach((b) => (b.onclick = () => {
-    if (b.dataset.w !== right[0]) {
-      missed = true;
+    if (!kef.right.has(b.dataset.w)) {
       b.disabled = true;
+      b.classList.add("show");
       return kwOops(b);
     }
+    b.disabled = true;
+    b.classList.add("right", "show");
+    kef.got++;
+    if (kef.got < kef.need) {
+      if (typeof sound === "function") sound("letter", kef.got);
+      $("kefLeft").textContent = `${faDigits(kef.need - kef.got)} تای دیگه`;
+      return;
+    }
     $("kwStage").querySelectorAll(".kw-card").forEach((o) => (o.disabled = true));
-    b.classList.add("right");
-    if (!missed) kwReward();
-    else if (typeof sound === "function") sound("found");
+    kwReward();
     $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
-    kwLater(() => (++kef.i < kef.cats.length ? kwEfRound() : kwEf()), 1400);
+    kwLater(kwEf, 1800);
   }));
 }
 

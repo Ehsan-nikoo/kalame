@@ -2520,3 +2520,10 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .mode-kids #hintWordBtn, .mode-kids #hintTargetBtn, .mode-kids #hintRocketBtn, .mode-kids #chestBtn,
 .mode-kids .top .coins, .mode-kids #hintLetterBtn .cost { visibility: hidden; }
 .mode-kids .clue-btn { display: none; }
+
+/* اسم فامیل کودک: شش نقاشی بی‌اسم؛ اسم بعد از زدن نشان داده می‌شود */
+.kw-cards.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kw-cards.six .kw-card b { visibility: hidden; }
+.kw-cards.six .kw-card.show b { visibility: visible; }
+.kw-cards.six .kw-card span { font-size: 56px; }
+.kw-ask small { font-size: 15px; font-weight: 700; color: #ff7a45; }
