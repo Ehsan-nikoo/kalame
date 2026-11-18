@@ -99,6 +99,9 @@ function showClue() {
 
 function hintMeaning() {
   if (locked || dragging || !puzzle) return;
+  // معنیِ خریده‌شده‌ی همین مرحله بعد از بستن و باز کردن بازی هم دوباره مجانی است
+  const kept = X().clue;
+  if (kept && kept.k === playKey && puzzle.words.includes(kept.w)) clueWord = kept.w;
   if (clueWord && !found.includes(clueWord) && puzzle.words.includes(clueWord)) return showClue();
   const left = puzzle.words.filter((w) => !found.includes(w) && (dict.get(w) || extraDict.get(w)));
   if (!left.length) {
@@ -107,6 +110,8 @@ function hintMeaning() {
   }
   if (!spend(COST_HINT_MEANING)) return;
   clueWord = left[Math.floor(Math.random() * left.length)];
+  X().clue = { k: playKey, w: clueWord };
+  persist();
   showClue();
 }
 clueBtn.addEventListener("click", hintMeaning);
@@ -785,8 +790,9 @@ function offerFal() {
 
 gameHooks.push((name, d) => {
   switch (name) {
-    case "level":
-      clueWord = null;
+    case "level": {
+      const kept = X().clue;
+      clueWord = kept && kept.k === playKey && puzzle.words.includes(kept.w) && !found.includes(kept.w) ? kept.w : null;
       clueSheet.classList.add("hidden");
       refreshClueBtn();
       levelStart = !d.daily && !isMode() && !isVariant() && d.level === save.unlocked ? Date.now() : 0;
@@ -799,6 +805,7 @@ gameHooks.push((name, d) => {
         if (duel) stopDuel();
       }
       break;
+    }
     case "found":
       if (d.word === clueWord) clueWord = null;
       if (isDuel()) duelScored(d.word);

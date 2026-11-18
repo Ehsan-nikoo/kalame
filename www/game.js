@@ -990,6 +990,7 @@ function spend(cost) {
     return false;
   }
   save.coins -= cost;
+  persist(); // راهنمایی مثل «معنی» خودش چیزی ذخیره نمی‌کند؛ بدون این، با بستن بازی سکه برمی‌گشت
   updateCoins();
   bumpCoins();
   return true;
@@ -1082,7 +1083,9 @@ function showComplete(first, reward) {
 
   const btn = $("overlayBtn");
   btn.textContent = hasNext ? "مرحله‌ی بعد" : "منو";
-  btn.onclick = hasNext ? () => startLevel(current + 1) : goHome;
+  // دو بار زدن سریع نباید یک مرحله را جا بیندازد: فقط اگر هنوز روی همین مرحله‌ایم، بعدی شروع می‌شود
+  const done = current;
+  btn.onclick = hasNext ? () => { if (current === done && screenNow === "play") startLevel(done + 1); } : goHome;
   $("overlayMenu").classList.toggle("hidden", !hasNext);
   $("overlay").classList.remove("hidden");
 
@@ -1347,9 +1350,15 @@ function open(name) {
   else location.hash = name;
 }
 
+// دو بار زدن سریع «منو» یا «برگشت» نباید دو بار به عقب برگردد (بار دوم از بازی بیرون می‌زد)
+let backPending = false;
 function goHome() {
-  if (location.hash) history.back();
-  else route();
+  if (location.hash) {
+    if (backPending) return;
+    backPending = true;
+    setTimeout(() => (backPending = false), 700); // اگر به هر دلیلی hashchange نیامد، قفل نماند
+    history.back();
+  } else route();
 }
 
 function play(i) {
@@ -1596,7 +1605,10 @@ window.addEventListener("pointermove", onPointerMove);
 window.addEventListener("pointerup", onPointerUp);
 window.addEventListener("pointercancel", onPointerCancel);
 window.addEventListener("resize", sizeBoard);
-window.addEventListener("hashchange", route);
+window.addEventListener("hashchange", () => {
+  backPending = false;
+  route();
+});
 $("shuffleBtn").addEventListener("click", shuffle);
 $("hintLetterBtn").addEventListener("click", hintLetter);
 $("hintWordBtn").addEventListener("click", hintWord);
@@ -1659,7 +1671,9 @@ function loadingFrame(now) {
   loadingBar.shown += (goal - loadingBar.shown) * (1 - Math.exp(-dt / (loadingBar.done ? 160 : 260)));
   const p = loadingBar.shown;
   fill.style.transform = "translateX(" + ((p - 1) * 100).toFixed(2) + "%)";
-  tile.style.transform = "translateX(" + (p * track.offsetWidth).toFixed(1) + "px)";
+  // پهنای نوار یک بار خوانده می‌شود؛ خواندنش در هر فریم، چیدمان صفحه را دوباره حساب می‌کرد
+  if (!loadingBar.w) loadingBar.w = track.offsetWidth;
+  tile.style.transform = "translateX(" + (p * loadingBar.w).toFixed(1) + "px)";
   if (loadingBar.done && p > 0.995) return;
   loadingBar.raf = requestAnimationFrame(loadingFrame);
 }
