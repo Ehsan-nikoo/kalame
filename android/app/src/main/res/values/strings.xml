@@ -4,4 +4,7 @@
     <string name="title_activity_main">کلمه</string>
     <string name="package_name">com.kalameh.game</string>
     <string name="custom_url_scheme">com.kalameh.game</string>
+    <string name="widget_title">کلمه‌ی امروز</string>
+    <string name="widget_open">بازی رو باز کن تا کلمه‌ی امروز بیاد</string>
+    <string name="widget_desc">کلمه‌ی هر روز با معنی‌اش، و رکورد مرحله‌ی روزانه</string>
 </resources>

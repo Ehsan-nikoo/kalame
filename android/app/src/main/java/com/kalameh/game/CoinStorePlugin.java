@@ -156,6 +156,18 @@ public class CoinStorePlugin extends Plugin {
         }
     }
 
+    /** داده‌ی ویجت «کلمه‌ی امروز» (KalamehWidget): کلمه‌های روزهای آینده و رکورد مرحله‌ی روزانه */
+    @PluginMethod
+    public void widget(PluginCall call) {
+        String data = call.getString("data");
+        if (data == null) {
+            call.reject("no data");
+            return;
+        }
+        KalamehWidget.save(getContext(), data);
+        call.resolve();
+    }
+
     /** آیا خرید ممکن است؟ */
     @PluginMethod
     public void init(PluginCall call) {

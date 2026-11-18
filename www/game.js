@@ -139,10 +139,18 @@ function defineTheme(id, def) {
   themeDefs[id] = def;
 }
 
+// فقط برای تست با start-game: همه‌ی ظاهرهای پولی در مرورگر باز هستند.
+// قبل از ساختن APK این را false کنید. (در خود اپ اندروید هیچ‌وقت اثری ندارد.)
+const TEST_ALL_THEMES = true;
+// نسخه‌ی تست APK (build-apk.yml با گزینه‌ی test) این را true می‌کند تا ظاهرها روی گوشی هم باز باشند.
+const TEST_APK = false;
+const IN_NATIVE_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
 // ظاهر رایگان است یا خریده شده؟
 function themeOwned(id) {
   const t = THEMES.find((x) => x.id === id);
   if (!t) return false;
+  if (TEST_APK || (TEST_ALL_THEMES && !IN_NATIVE_APP)) return true;
   // امتحانِ یک‌روزه از گردونه‌ی شانس (extras.js)
   const trial = save.x && save.x.trial;
   if (trial && trial.id === id && trial.until > Date.now()) return true;
@@ -325,7 +333,21 @@ function startPuzzle(level, index, key) {
   layout = buildLayout(level.words);
 
   const name = levelName(index);
-  $("levelLabel").textContent = isDaily() ? dailyLabel() : `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
+  const label = $("levelLabel");
+  if (isDaily()) label.textContent = dailyLabel();
+  else {
+    // شماره و اسم جدا، تا ظاهرهایی مثل قلم و مرکب اسم بلند را در خط دوم بنویسند
+    const num = document.createElement("span");
+    num.className = "ll-num";
+    num.textContent = `مرحله‌ی ${faDigits(index + 1)}`;
+    label.replaceChildren(num);
+    if (name) {
+      const nm = document.createElement("span");
+      nm.className = "ll-name";
+      nm.textContent = name;
+      label.append(nm);
+    }
+  }
   renderBoard();
   renderWheel();
   hidePreview();
@@ -387,8 +409,12 @@ function sizeBoard() {
   if (!layout || screenNow !== "play") return;
   const area = boardEl.parentElement;
   const gap = 5;
-  const w = (area.clientWidth - gap * (layout.cols - 1)) / layout.cols;
-  const h = (area.clientHeight - 32 - gap * (layout.rows - 1)) / layout.rows;
+  // ظاهرهایی که دور جدول قاب یا پنل دارند، اندازه‌ی آن را با --board-chrome-x/y می‌گویند
+  const css = getComputedStyle(area);
+  const cx = parseFloat(css.getPropertyValue("--board-chrome-x")) || 0;
+  const cy = parseFloat(css.getPropertyValue("--board-chrome-y")) || 0;
+  const w = (area.clientWidth - cx - gap * (layout.cols - 1)) / layout.cols;
+  const h = (area.clientHeight - 32 - cy - gap * (layout.rows - 1)) / layout.rows;
   const size = Math.max(22, Math.min(56, w, h));
   boardEl.style.setProperty("--cell", size + "px");
 }
@@ -1287,7 +1313,8 @@ const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("s
 function route() {
   let name = location.hash.slice(1);
   if (!(name in screens)) name = "home";
-  if (!save.theme) name = "themes";                       // بار اول: انتخاب ظاهر
+  // بار اول: انتخاب ظاهر (به جز چرخ کلمه‌ی بخش کودک، kids.js)
+  if (!save.theme && !(name === "play" && typeof isKidsPlay === "function" && isKidsPlay())) name = "themes";
   if (name === "play" && !puzzle) name = "home";         // مثلاً بعد از باز شدن دوباره‌ی برنامه
   if (name === "shop" && !store) name = "home";
 

@@ -466,12 +466,35 @@ function createGenerator(dict, levels = new Map()) {
       return best;
     },
 
+    // نسخه‌ی تازه‌ی یک مرحله‌ی تمام‌شده (چالش تاج، plus.js): همان سختی (طول کلمه‌ی اصلی)،
+    // ولی با کلمه‌ی اصلی و کلمه‌های دیگر. n شماره‌ی نسخه است؛ هر n جدول دیگری می‌دهد.
+    variant(level, n, avoid = "") {
+      const g = Math.max(0, level - HANDMADE_LEVELS);
+      let len = level < HANDMADE_LEVELS ? 4 : lengthFor(g);
+      while (!seeds[len].length && len > 4) len--;
+      const list = seeds[len];
+      const span = g < RARE_SEEDS_FROM && list.common ? list.common : list.length;
+      const rareOk = g >= RARE_WORDS_FROM;
+      const pick = seededRandom(level * 7919 + n * 104729 + 17);
+      let best = null;
+      for (let k = 0; k < 8; k++) {
+        const seed = list[Math.floor(pick() * span)];
+        if (fold(seed) === fold(avoid)) continue;
+        const rnd = seededRandom(hashText(seed) + n * 3571 + level);
+        const words = pickWords(seed, rnd, rareOk || levelOf(seed) > 1);
+        if (!best || words.length > best.words.length) best = { letters: shuffled([...seed], rnd), words, seed };
+        if (words.length >= TIERS[len].min) break;
+      }
+      return best;
+    },
+
     // مرحله‌ی روزانه: برای هر روز (day مثل "2026-11-13") برای همه‌ی بازیکن‌ها یکسان است.
     // prefer: کلمه‌های مناسبت (نوروز، یلدا، ...)؛ تا جایی که بشود، چند تا از آن‌ها در جدول می‌آیند.
-    daily(day, prefer = []) {
+    // big: جمعه‌ی ویژه، جدول بزرگ‌تر با کلمه‌ی اصلی ۷ حرفی
+    daily(day, prefer = [], big = false) {
       const rnd0 = seededRandom(hashText("daily:" + day));
       const r = rnd0();
-      const len = r < 0.6 ? 5 : 6;
+      const len = big && seeds[7].length ? 7 : r < 0.6 ? 5 : 6;
       const commons = (L) => seeds[L].slice(0, seeds[L].common || seeds[L].length);
       const want = [...new Set(prefer)]; // می‌توانند از extra-words.txt هم باشند
       let cands = [];

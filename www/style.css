@@ -28,6 +28,8 @@
   --accent: #5f8a7a;
   --accent-ink: #ffffff;
   --accent-soft: #dfe9e3;
+  /* پس‌زمینه‌ی روشن کادرهای کوچک (مأموریت‌ها، فال، آمار و ...)؛ ظاهرهایی که accent-soft تیره دارند آن را جدا تعریف می‌کنند */
+  --tint: var(--accent-soft);
   --edge: transparent;
   --cell-empty: #e9e4da;
   --wrong: #c97b6b;
@@ -893,15 +895,25 @@ button { font-family: inherit; cursor: pointer; }
   padding: 12px 32px;
   border-radius: 999px;
 }
+/* کارهای دوم هر کارت (بستن، منو، بعداً…) هم دکمه‌ی واقعی‌اند، نه فقط نوشته */
 .card-link {
   display: block;
-  margin: 10px auto 0;
-  padding: 6px 12px;
-  border: none;
-  background: none;
-  color: var(--muted);
+  margin: 12px auto 0;
+  min-width: 128px;
+  min-height: 42px;
+  padding: 8px 24px;
+  border: 1.5px solid var(--edge);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.12s ease, background-color 0.15s ease;
 }
+.card-link:active { transform: scale(0.96); }
+.card-link + .card-link { margin-top: 8px; }
 
 .error {
   position: fixed;
@@ -1482,7 +1494,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 10px 12px;
   border-radius: 14px;
   border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.08));
-  background: var(--accent-soft);
+  background: var(--tint);
 }
 .mission.claimed { opacity: 0.6; }
 .mission-body { flex: 1; min-width: 0; }
@@ -1521,7 +1533,7 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 700;
   color: var(--ink);
 }
-.verse-slot.full { background: var(--accent-soft); animation: pop 0.25s ease; }
+.verse-slot.full { background: var(--tint); animation: pop 0.25s ease; }
 .verse-slots.shake { animation: shake 0.4s ease; }
 .verse-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
 .verse-tile {
@@ -1828,5 +1840,777 @@ button { font-family: inherit; cursor: pointer; }
 .home-chips .rank-chip small, .home-chips .rank-badge i { display: none; }
 .home-chips .rank-badge b { font-size: 13px; font-weight: 600; }
 .home-chips .word-day { margin: 0; }
+/* روی صحنه‌های شلوغ (باغ، کاروان) نوشته‌ی دکمه‌های کوچک خوانا بماند */
+.home-chips { position: relative; z-index: 2; }
+.home-chips .rank-chip, .home-chips .word-day { background: var(--surface); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .card-text, .card-title { text-align: center; }
 .home-menu .menu-btn { justify-content: center; }
+
+/* ---------- plus.js: کمک‌های «نشونه» و «موشک» ---------- */
+.tools.five { gap: 7px; }
+.tools.five .tool { flex-direction: column; gap: 2px; padding: 7px 12px 6px; border-radius: 16px; font-size: 13px; min-width: 54px; }
+.tools.five .tool svg { width: 20px; height: 20px; }
+.tools.five .tool .cost .coin-icon { width: 12px; height: 12px; }
+.tools.five .tool.shuffle { padding: 12px; border-radius: 50%; min-width: 0; }
+/* حالت نشانه‌گیری؛ با «html» از استایل دکمه‌ها در ظاهرهای پولی جلو می‌زند */
+html .tools .tool.on { background: var(--coin); color: #2b1d08; box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--coin), 0 6px 14px rgba(0, 0, 0, 0.25) !important; transform: translateY(-3px); }
+.mode-speed #hintTargetBtn, .mode-speed #hintRocketBtn { visibility: hidden; }
+html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coin); outline-offset: -3px; animation: aim 1.1s ease-in-out infinite; }
+@keyframes aim { 50% { outline-color: var(--accent); } }
+
+/* ---------- plus.js: ضرب‌المثل فصل ---------- */
+.proverb { margin: 12px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--tint); text-align: center; }
+.proverb-head { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.proverb-line { margin-top: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 6px; font-weight: 800; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.proverb-line .hole { min-width: 2.2em; border-radius: 6px; background: rgba(0, 0, 0, 0.12); color: transparent; }
+.proverb-line .fresh { color: var(--accent); animation: pop 0.5s ease 0.6s both; }
+.proverb.whole .proverb-line { color: var(--accent); }
+.proverb-meaning { margin-top: 4px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ---------- plus.js: سرگرمی‌ها و اسم فامیل ---------- */
+.modes-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.mode-pick {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px;
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--ink); text-align: right; font: inherit;
+}
+.mode-pick:disabled { opacity: 0.5; }
+.mode-pick .mode-icon { font-size: 26px; }
+.mode-pick b { display: block; font-size: 17px; }
+.mode-pick small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+.ef-sheet { align-items: flex-start; overflow-y: auto; padding-top: calc(env(safe-area-inset-top) + 16px); }
+.ef-sheet .ef-card { max-height: none; width: min(420px, 100%); margin: auto 0; }
+.ef-top { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 6px 0 4px; }
+.ef-letter {
+  width: 74px; height: 74px; border-radius: 20px; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-size: 46px; line-height: 1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.ef-letter.spin { animation: ef-spin 0.17s linear infinite; }
+@keyframes ef-spin { 50% { transform: scale(0.88) rotate(-6deg); } }
+.ef-time { font: 800 22px "Vazirmatn", sans-serif; color: var(--ink); min-width: 4.5em; }
+.ef-time.hurry { color: #d9483b; animation: bump 1s ease infinite; }
+.ef-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.ef-row { display: grid; grid-template-columns: 3.9em 1fr 1.2em; align-items: center; gap: 6px; text-align: right; }
+.ef-label { font-weight: 700; font-size: 14px; color: var(--muted); }
+.ef-row input {
+  width: 100%; min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--tint);
+  background: var(--surface); color: var(--ink); font: 700 17px "Vazirmatn", sans-serif; text-align: right; outline: none;
+}
+.ef-row input:focus { border-color: var(--accent); }
+.ef-row input:disabled { opacity: 0.85; }
+.ef-mark { font-style: normal; font-weight: 800; font-size: 18px; }
+.ef-row.right .ef-mark { color: #3c9a5f; }
+.ef-row.right input { border-color: #3c9a5f; }
+.ef-row.wrong .ef-mark { color: #d9483b; }
+.ef-row.wrong input { border-color: #e7a59f; }
+.ef-example { grid-column: 2 / 4; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.ef-score { margin-top: 12px; text-align: center; }
+.ef-score b { display: block; font-family: var(--display); font-size: 52px; line-height: 1.3; color: var(--accent); }
+.ef-score span { font-size: 13.5px; color: var(--muted); }
+.ef-reward { text-align: center; color: var(--muted); font-size: 13px; }
+
+/* ---------- plus.js: کلکسیون ضرب‌المثل‌ها ---------- */
+.proverb-open {
+  display: block; width: 100%; padding: 10px 14px; border-radius: 14px;
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--accent); font: 700 15px "Vazirmatn", sans-serif;
+}
+.proverb-book { overflow-y: auto; min-height: 0; flex: 1 1 auto; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.proverb-book .proverb { margin: 0; }
+.proverb-book .proverb.now { border: 1.5px dashed var(--accent); }
+.proverb-item { padding: 10px 12px; border-radius: 14px; background: var(--tint); }
+.proverb-item b { display: block; color: var(--accent); font-size: 16px; line-height: 1.7; }
+.proverb-item span { display: block; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.proverb-locked { padding: 10px; color: var(--muted); font-size: 13.5px; }
+
+/* ---------- plus.js: چالش تاج ---------- */
+.lv.crowned::before {
+  content: "👑"; position: absolute; top: -17px; left: 50%; translate: -50% 0; font-size: 18px; line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); pointer-events: none;
+}
+.crown-note { margin-top: 10px; font-size: 13.5px; }
+.crown-done { margin: 10px 0 2px; padding: 10px 12px; border-radius: 14px; background: var(--tint); color: var(--ink); font-size: 14px; font-weight: 700; text-align: center; }
+.crown-done b { display: block; font-size: 34px; line-height: 1.2; }
+
+/* ---------- plus2.js: راهنمای «معنی» ---------- */
+.play-area { position: relative; }
+.clue-btn {
+  position: absolute; top: 2px; left: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; gap: 0; padding: 4px 10px; border-radius: 16px; line-height: 1.35;
+  border: 1.5px solid var(--edge); background: var(--tint); color: var(--accent);
+  font: 700 13px "Vazirmatn", sans-serif; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.clue-btn .cost { display: flex; align-items: center; gap: 3px; }
+.clue-btn .coin-icon { width: 12px; height: 12px; }
+.clue-btn.poor { opacity: 0.45; }
+.mode-speed .clue-btn { display: none; }
+.clue-meaning { margin-top: 10px; padding: 14px; border-radius: 14px; background: var(--tint); color: var(--ink); font-size: 18px; font-weight: 700; line-height: 1.8; text-align: center; }
+.clue-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; direction: rtl; }
+.clue-dots span { width: 30px; height: 30px; border-radius: 8px; background: var(--cell-empty, rgba(0, 0, 0, 0.1)); display: grid; place-items: center; font-weight: 800; }
+.clue-dots span.on { background: var(--accent); color: #fff; }
+
+/* ---------- plus2.js: پشتیبان‌گیری ---------- */
+.backup-code {
+  width: 100%; min-height: 110px; margin-top: 10px; padding: 10px; border-radius: 12px; resize: none;
+  border: 1.5px solid var(--tint); background: var(--surface); color: var(--ink);
+  font: 12px/1.5 ui-monospace, monospace; word-break: break-all; text-align: left;
+}
+.backup-msg { min-height: 1.4em; font-weight: 700; color: var(--accent); }
+
+/* ---------- plus2.js: آمار من ---------- */
+.stats-list { overflow-y: auto; min-height: 0; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.stats-row { display: grid; grid-template-columns: 1.8em 1fr auto; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 12px; background: var(--tint); text-align: right; }
+.stats-icon { font-size: 18px; }
+.stats-name { font-size: 14px; color: var(--muted); font-weight: 600; }
+.stats-row b { color: var(--accent); font-size: 15px; }
+
+/* ---------- plus2.js: بازی دونفره ---------- */
+.duel-names { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.duel-names label { display: grid; grid-template-columns: 4.5em 1fr; align-items: center; gap: 8px; text-align: right; }
+.duel-names span { color: var(--muted); font-weight: 700; font-size: 14px; }
+.duel-names input {
+  min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1.5px solid var(--tint);
+  background: var(--surface); color: var(--ink); font: 700 16px "Vazirmatn", sans-serif; outline: none;
+}
+.duel-names input:focus { border-color: var(--accent); }
+.duel-sheet { z-index: 30; }
+.duel-avatar {
+  width: 72px; height: 72px; margin: 4px auto 6px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--display); font-size: 40px; color: #fff; background: #5f8acf;
+}
+.duel-avatar.p1 { background: #d9774b; }
+.duel-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.duel-score { padding: 12px 8px; border-radius: 16px; background: var(--tint); display: flex; flex-direction: column; align-items: center; gap: 2px; border: 2px solid transparent; }
+.duel-score span { font-weight: 700; color: var(--ink); }
+.duel-score b { font-family: var(--display); font-size: 42px; line-height: 1.3; color: var(--accent); }
+.duel-score small { color: var(--muted); font-size: 12px; }
+.duel-score.win { border-color: #e2b23c; }
+
+/* ---------- plus2.js: فال حافظ ---------- */
+.fal-intent { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 6px; }
+.fal-book {
+  width: 96px; height: 96px; border-radius: 24px; border: 1.5px solid var(--edge);
+  background: var(--tint); font-size: 52px; line-height: 1; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  animation: fal-breathe 2.2s ease-in-out infinite;
+}
+.fal-book.open { animation: fal-open 0.65s ease forwards; }
+@keyframes fal-breathe { 50% { transform: scale(1.06); } }
+@keyframes fal-open { 40% { transform: scale(1.2) rotate(-8deg); } 100% { transform: scale(0.2); opacity: 0; } }
+.fal-body { margin-top: 8px; animation: pop 0.5s ease; }
+.fal-num { font-size: 12.5px; color: var(--muted); text-align: center; margin-bottom: 6px; }
+.fal-poem {
+  max-height: 42vh; overflow-y: auto; overscroll-behavior: contain; padding: 8px 10px; border-radius: 16px;
+  background: var(--tint); font-family: "Nastaliq", var(--display), serif; font-size: 15px; line-height: 2.2; color: var(--ink); text-align: center;
+}
+.fal-bayt { display: flex; flex-direction: column; padding: 6px 0; }
+.fal-bayt + .fal-bayt { border-top: 1px dashed color-mix(in srgb, var(--ink) 14%, transparent); }
+.fal-meaning { margin-top: 10px; font-size: 14.5px; line-height: 1.9; color: var(--ink); text-align: center; }
+.fal-chip b { font-size: 13.5px; }
+
+/* ---------- glassmenu.js: منوی «باغ شیشه‌ای» ----------
+   شکل منو همیشه یکی است (شیشه، برق، آیکون، لکه‌های رنگی و حرف‌های شناور)؛
+   رنگ‌ها و گردی گوشه‌ها از ظاهر فعلی می‌آیند (متغیرهای --gm-* پایین‌تر). */
+:root {
+  --gm-glass: rgba(255, 255, 255, 0.55);
+  --gm-edge: rgba(255, 255, 255, 0.9);
+  --gm-ink: var(--ink);
+  --gm-shadow: 0 8px 22px rgba(47, 58, 58, 0.12);
+  --gm-chip: var(--accent-soft);
+  --gm-chip-ink: var(--accent);
+  --gm-primary: linear-gradient(135deg, rgba(111, 156, 139, 0.92), rgba(85, 125, 110, 0.92));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(255, 255, 255, 0.45);
+  --gm-cta-bg: var(--coin);
+  --gm-cta-ink: #2b1d08;
+  --gm-sheen: rgba(255, 255, 255, 0.55);
+  --gm-blob1: #9fd3c0;
+  --gm-blob2: #f4c48a;
+  --gm-blob3: #f4a6b8;
+  --gm-blob-op: 0.55;
+  --gm-float: var(--accent);
+  --gm-radius: 18px;
+}
+[data-theme="stars"] {
+  --gm-glass: rgba(255, 255, 255, 0.07);
+  --gm-edge: rgba(255, 217, 138, 0.3);
+  --gm-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --gm-chip: rgba(255, 217, 138, 0.14);
+  --gm-chip-ink: #ffd98a;
+  --gm-primary: linear-gradient(135deg, rgba(255, 217, 138, 0.3), rgba(140, 110, 255, 0.28));
+  --gm-primary-ink: #fff4dc;
+  --gm-primary-edge: rgba(255, 217, 138, 0.5);
+  --gm-cta-bg: #ffd98a;
+  --gm-cta-ink: #2a1c05;
+  --gm-sheen: rgba(255, 244, 220, 0.22);
+  --gm-blob1: #5b4bd6;
+  --gm-blob2: #c264d8;
+  --gm-blob3: #2f6fd1;
+  --gm-blob-op: 0.5;
+  --gm-float: #ffd98a;
+}
+[data-theme="carpet"] {
+  --gm-glass: rgba(251, 244, 230, 0.62);
+  --gm-edge: rgba(201, 163, 90, 0.75);
+  --gm-shadow: 0 8px 20px rgba(58, 28, 20, 0.18);
+  --gm-chip: rgba(142, 36, 36, 0.1);
+  --gm-chip-ink: #8e2424;
+  --gm-primary: linear-gradient(135deg, rgba(160, 44, 44, 0.9), rgba(120, 28, 28, 0.9));
+  --gm-primary-ink: #f8eedb;
+  --gm-primary-edge: rgba(227, 179, 74, 0.7);
+  --gm-cta-bg: #e3b34a;
+  --gm-blob1: #8e2424;
+  --gm-blob2: #1e2a4a;
+  --gm-blob3: #e3b34a;
+  --gm-blob-op: 0.35;
+  --gm-float: #8e2424;
+  --gm-radius: 12px;
+}
+[data-theme="caravan"] {
+  --gm-glass: rgba(253, 246, 227, 0.6);
+  --gm-edge: rgba(217, 164, 65, 0.8);
+  --gm-shadow: 0 8px 20px rgba(40, 22, 10, 0.22);
+  --gm-chip: rgba(29, 78, 137, 0.12);
+  --gm-chip-ink: #1d4e89;
+  --gm-primary: linear-gradient(135deg, rgba(37, 94, 160, 0.9), rgba(24, 64, 112, 0.9));
+  --gm-primary-ink: #fdf6e3;
+  --gm-primary-edge: rgba(217, 164, 65, 0.7);
+  --gm-cta-bg: #d9a441;
+  --gm-blob1: #2fa4a9;
+  --gm-blob2: #e98a4a;
+  --gm-blob3: #d9a441;
+  --gm-blob-op: 0.45;
+  --gm-float: #1d4e89;
+  --gm-radius: 14px;
+}
+[data-theme="garden"] {
+  --gm-glass: rgba(255, 255, 255, 0.5);
+  --gm-edge: rgba(255, 255, 255, 0.9);
+  --gm-shadow: 0 8px 22px rgba(45, 74, 52, 0.15);
+  --gm-chip: #d6ead2;
+  --gm-chip-ink: #3f8a5a;
+  --gm-primary: linear-gradient(135deg, rgba(79, 158, 106, 0.92), rgba(55, 122, 80, 0.92));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(255, 255, 255, 0.5);
+  --gm-cta-bg: #e8b84a;
+  --gm-blob1: #f4a6b8;
+  --gm-blob2: #8fd3a8;
+  --gm-blob3: #ffe08a;
+  --gm-blob-op: 0.6;
+  --gm-float: #3f8a5a;
+  --gm-radius: 22px;
+}
+[data-theme="ink"] {
+  --gm-glass: rgba(255, 250, 235, 0.5);
+  --gm-edge: rgba(176, 138, 74, 0.75);
+  --gm-shadow: 0 6px 18px rgba(27, 19, 10, 0.15);
+  --gm-chip: rgba(31, 59, 115, 0.1);
+  --gm-chip-ink: #1f3b73;
+  --gm-primary: linear-gradient(135deg, rgba(38, 72, 138, 0.9), rgba(27, 50, 98, 0.9));
+  --gm-primary-ink: #f6e7c4;
+  --gm-primary-edge: rgba(201, 161, 74, 0.7);
+  --gm-cta-bg: #c9a14a;
+  --gm-blob1: #1f3b73;
+  --gm-blob2: #b08a4a;
+  --gm-blob3: #8e2424;
+  --gm-blob-op: 0.22;
+  --gm-float: #1f3b73;
+  --gm-radius: 8px;
+}
+
+#screenHome .home-menu.glass-menu { position: relative; isolation: isolate; }
+#screenHome .glass-menu .menu-btn {
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--gm-edge);
+  border-radius: var(--gm-radius);
+  background: var(--gm-glass);
+  color: var(--gm-ink);
+  box-shadow: var(--gm-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  animation: gm-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.15) both;
+}
+#screenHome .glass-menu .menu-btn:nth-child(3) { animation-delay: 0.06s; }
+#screenHome .glass-menu .menu-btn:nth-child(4) { animation-delay: 0.12s; }
+#screenHome .glass-menu .menu-btn:nth-child(5) { animation-delay: 0.18s; }
+#screenHome .glass-menu .menu-btn:nth-child(6) { animation-delay: 0.24s; }
+#screenHome .glass-menu .menu-btn:nth-child(n+7) { animation-delay: 0.3s; }
+@keyframes gm-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } }
+/* برق شیشه به جای حاشیه‌های تزئینی ظاهرها؛ بیرون دکمه نمی‌زند، پس نشان دستاوردها بریده نمی‌شود */
+#screenHome .glass-menu .menu-btn::after {
+  inset: 0;
+  border: 0;
+  border-radius: inherit;
+  box-shadow: none;
+  background: linear-gradient(105deg, transparent 38%, var(--gm-sheen) 50%, transparent 62%) no-repeat;
+  background-size: 260% 100%;
+  background-position: 160% 0;
+  animation: gm-sheen 6s ease-in-out infinite;
+}
+#screenHome .glass-menu .menu-btn:nth-child(odd)::after { animation-delay: 1.5s; }
+@keyframes gm-sheen { 0%, 62% { background-position: 160% 0; } 100% { background-position: -60% 0; } }
+#screenHome .glass-menu .menu-btn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
+
+#screenHome .glass-menu .menu-btn.primary {
+  justify-content: space-between;
+  padding: 12px 18px 12px 12px;
+  background: var(--gm-primary);
+  color: var(--gm-primary-ink);
+  border-color: var(--gm-primary-edge);
+  text-align: right;
+}
+#screenHome .glass-menu .menu-btn.primary > small { display: block; }
+#screenHome .glass-menu .menu-btn.primary { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; }
+#screenHome .glass-menu .menu-btn.primary > small { grid-column: 1; grid-row: 2; margin-top: -2px; }
+#screenHome .glass-menu .gm-go {
+  grid-column: 2; grid-row: 1 / span 2; align-self: center;
+  display: grid; place-items: center;
+  width: 46px; height: 46px;
+  border-radius: calc(var(--gm-radius) - 4px);
+  background: var(--gm-cta-bg);
+  color: var(--gm-cta-ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: gm-nudge 2.4s ease-in-out infinite;
+}
+.gm-go svg { width: 24px; height: 24px; }
+@keyframes gm-nudge { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(-4px); } 90% { transform: translateX(1px); } }
+
+#screenHome .glass-menu .gm-ic {
+  order: -1;
+  flex: none;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border-radius: calc(var(--gm-radius) - 6px);
+  background: var(--gm-chip);
+  color: var(--gm-chip-ink);
+}
+.gm-ic svg { width: 20px; height: 20px; }
+#screenHome .glass-menu .daily-btn { justify-content: flex-start; padding-right: 12px; }
+#screenHome .glass-menu .gm-daily { width: 42px; height: 42px; }
+#screenHome .glass-menu .gm-daily > svg { width: 30px; height: 30px; color: inherit; }
+#screenHome .glass-menu .daily-btn.solved .gm-daily { color: var(--coin); }
+
+/* لکه‌های رنگی و حرف‌ها، پشت دکمه‌ها */
+.gm-deco {
+  position: absolute; inset: -30px -16px; z-index: -1; pointer-events: none; overflow: hidden;
+  /* لبه‌ها محو می‌شوند تا لکه‌های بریده خط صاف نسازند */
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at center, #000 60%, transparent 100%);
+}
+.gm-blob {
+  position: absolute;
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  filter: blur(34px);
+  opacity: var(--gm-blob-op);
+  animation: gm-drift 14s ease-in-out infinite alternate;
+}
+.gm-blob.b1 { background: var(--gm-blob1); top: -10px; right: -30px; }
+.gm-blob.b2 { background: var(--gm-blob2); top: 35%; left: -40px; animation-duration: 17s; animation-delay: -5s; }
+.gm-blob.b3 { background: var(--gm-blob3); bottom: -20px; right: 20%; animation-duration: 12s; animation-delay: -8s; }
+@keyframes gm-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 20px) scale(1.15); }
+  100% { transform: translate(20px, -15px) scale(0.9); }
+}
+.gm-float {
+  position: absolute;
+  bottom: -10px;
+  font-family: var(--display);
+  font-size: 22px;
+  color: var(--gm-float);
+  opacity: 0;
+  animation: gm-rise 10.4s linear infinite;
+}
+@keyframes gm-rise {
+  0% { transform: translateY(0) rotate(-8deg); opacity: 0; }
+  15% { opacity: 0.32; }
+  80% { opacity: 0.18; }
+  100% { transform: translateY(-360px) rotate(10deg); opacity: 0; }
+}
+/* «جلوه‌های کمتر» و کاهش حرکت: شیشه می‌ماند، حرکت‌ها و تاری سنگین می‌روند */
+:root[data-lite="1"] .gm-deco .gm-float,
+:root[data-lite="1"] .gm-go { animation: none; }
+:root[data-lite="1"] .gm-float { display: none; }
+:root[data-lite="1"] .gm-blob { animation: none; }
+:root[data-lite="1"] #screenHome .glass-menu .menu-btn::after { animation: none; background: none; }
+:root[data-lite="1"] #screenHome .glass-menu .menu-btn { -webkit-backdrop-filter: none; backdrop-filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .gm-float { display: none; }
+  .gm-blob, .gm-go, #screenHome .glass-menu .menu-btn, #screenHome .glass-menu .menu-btn::after { animation: none; }
+}
+@media (max-height: 700px) {
+  #screenHome .glass-menu .menu-btn.primary { padding: 8px 14px 8px 10px; }
+  #screenHome .glass-menu .gm-go { width: 40px; height: 40px; }
+  #screenHome .glass-menu .gm-ic { width: 28px; height: 28px; }
+}
+#screenHome .home-menu.glass-menu { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#screenHome .glass-menu .menu-btn { min-width: 0; flex-wrap: wrap; row-gap: 0; }
+/* زیرنویس دکمه‌های کوچک (مثل «سرعتی · اسم فامیل») زیر عنوان می‌رود */
+#screenHome .glass-menu .menu-btn:not(.primary):not(.daily-btn) > small { flex-basis: 100%; text-align: center; font-size: 11px; line-height: 1.3; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn { padding: 4px 8px 8px; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { padding: 6px 16px 8px 10px; }
+
+/* چیدمان مثل طرح اولیه‌ی «باغ شیشه‌ای»: کارت بزرگ «ادامه»، نوار باریک روزانه،
+   و چهار ردیف تمام‌عرض باریک (آیکون، عنوان، فلش) که از کنار وارد می‌شوند */
+#screenHome .home-menu.glass-menu { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+#screenHome .glass-menu .menu-btn.primary { grid-column: auto; margin-bottom: 3px; padding: 14px 18px 14px 14px; }
+#screenHome .glass-menu .menu-btn.primary { font-size: 26px; }
+#screenHome .glass-menu .daily-btn { grid-column: auto; margin-bottom: 3px; padding: 7px 12px; }
+#screenHome .glass-menu .daily-btn > span:not(.gm-ic) { flex: 1; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; font-size: 18px; }
+#screenHome .glass-menu .daily-btn > span:not(.gm-ic) { white-space: nowrap; }
+#screenHome .glass-menu .daily-btn small { flex: 1; min-width: 0; white-space: normal; font-size: 11.5px; line-height: 1.4; opacity: 0.75; text-align: left; }
+#screenHome .glass-menu .gm-daily { width: 34px; height: 34px; }
+#screenHome .glass-menu .gm-daily > svg { width: 22px; height: 22px; }
+#screenHome .glass-menu .menu-btn.gm-row {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 18px;
+  border-radius: calc(var(--gm-radius) - 4px);
+  background: var(--gm-row, var(--gm-glass));
+  animation-name: gm-slide;
+}
+@keyframes gm-slide { from { opacity: 0; transform: translateX(-40px); } }
+#screenHome .glass-menu .menu-btn.gm-row > small { flex-basis: auto; margin-right: auto; font-size: 11px; opacity: 0.6; white-space: nowrap; }
+#screenHome .glass-menu .gm-row .gm-ic { width: 28px; height: 28px; border-radius: calc(var(--gm-radius) - 9px); }
+#screenHome .glass-menu .gm-row .gm-ic svg { width: 17px; height: 17px; }
+#screenHome .glass-menu .gm-arrow { display: grid; place-items: center; margin-right: auto; opacity: 0.45; }
+#screenHome .glass-menu .gm-row > small ~ .gm-arrow { margin-right: 0; }
+.gm-arrow svg { width: 16px; height: 16px; }
+/* ترتیب ردیف‌ها مثل طرح: سرگرمی‌ها، مرحله‌ها، دستاوردها، ظاهر بازی */
+#screenHome .glass-menu #speedBtn { order: 1; }
+#screenHome .glass-menu #levelsBtn { order: 2; }
+#screenHome .glass-menu #achBtn { order: 3; }
+#screenHome .glass-menu #themesBtn { order: 4; }
+#screenHome .glass-menu #speedBtn { animation-delay: 0.16s; }
+#screenHome .glass-menu #levelsBtn { animation-delay: 0.24s; }
+#screenHome .glass-menu #achBtn { animation-delay: 0.32s; }
+#screenHome .glass-menu #themesBtn { animation-delay: 0.4s; }
+#screenHome .glass-menu .gm-row .badge { position: static; min-width: 22px; height: 22px; line-height: 22px; font-size: 13px; box-shadow: none; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.gm-row { padding: 0 12px 3px; font-size: 19px; line-height: 1.8; }
+[data-theme="ink"] #screenHome .glass-menu .daily-btn { padding: 2px 12px 4px; line-height: 1.8; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { line-height: 1.8; }
+@media (max-height: 700px) {
+  #screenHome .glass-menu .menu-btn.gm-row { padding: 4px 12px; }
+  #screenHome .glass-menu .daily-btn { padding: 5px 12px; }
+}
+
+/* glassmenu.js: جدول کلمه‌ی ظاهر ساده بالای اسم بازی */
+.home-scene > svg.plain-grid { max-height: 210px; margin-top: 10px; overflow: visible; }
+.plain-grid rect { fill: #e9e4da; }
+.plain-grid .on rect { fill: var(--accent); filter: drop-shadow(0 3px 0 #46695c); }
+.plain-grid text { fill: #fff; font-family: var(--display); font-size: 25px; text-anchor: middle; dominant-baseline: central; }
+.plain-grid .pg-cell { animation: pg-pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+@keyframes pg-pop { from { transform: scale(0); opacity: 0; } }
+:root[data-lite="1"] .plain-grid .pg-cell { animation: none; }
+@media (prefers-reduced-motion: reduce) { .plain-grid .pg-cell { animation: none; } }
+
+/* صفحه‌ی خانه اسکرول‌بار نشان نمی‌دهد و لکه‌های پشت منو از پایین صفحه بیرون نمی‌زنند */
+#screenHome { scrollbar-width: none; }
+#screenHome::-webkit-scrollbar { display: none; }
+.gm-deco { bottom: 0; }
+
+/* کارت‌ها و برگه‌های بلند (مثل کارت پایان فصل با ضرب‌المثل و تصویر) در صفحه‌ی کوتاه از بالا و پایین بیرون نمی‌زنند:
+   پنجره اسکرول می‌خورد و کارت اگر جا شد وسط (یا پایین) می‌ماند */
+.overlay, .sheet { overflow-y: auto; overscroll-behavior: contain; align-items: flex-start; }
+.overlay > *, .sheet.center > * { margin-top: auto; margin-bottom: auto; flex-shrink: 0; }
+.sheet:not(.center) > * { margin-top: auto; flex-shrink: 0; }
+
+/* تنظیمات در صفحه‌ی کوتاه داخل خودش اسکرول می‌خورد (مثل فهرست دستاوردها و ظاهرها) */
+.settings-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+/* about.js: «درباره‌ی ما» ته تنظیمات */
+.about-card { gap: 6px; }
+.about-rows { margin: 0; display: flex; flex-direction: column; }
+.about-rows > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--edge, rgba(0, 0, 0, 0.08)); }
+.about-rows dt { color: var(--muted); font-size: 15px; white-space: nowrap; }
+.about-rows a { font-size: 14px; overflow-wrap: anywhere; }
+.about-rows dd { margin: 0; font-weight: 700; font-size: 15px; }
+.about-rows a { color: var(--accent); text-decoration: none; unicode-bidi: isolate; }
+.about-thanks { margin: 6px 0 4px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* ---------- learn.js: مشاعره، مرور واژه‌ها، جدول هفتگی، غلط املایی، حالت کودک ---------- */
+.modes-head { margin: 8px 0 -2px; font-size: 13px; font-weight: 700; color: var(--muted); text-align: right; }
+.ln-sheet .level-card { max-height: none; width: min(420px, 100%); }
+.ln-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+.ln-top b { font-family: var(--display); font-weight: 400; font-size: 20px; color: var(--ink); }
+.ln-ask { margin: 12px 0 8px; font-size: 14px; font-weight: 700; color: var(--muted); }
+.ln-options { display: flex; flex-direction: column; gap: 8px; }
+.ln-opt {
+  padding: 11px 14px; border-radius: 14px; border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.1));
+  background: var(--tint); color: var(--ink); font: inherit; font-size: 15px; line-height: 1.7; text-align: right;
+  transition: transform 0.1s;
+}
+.ln-opt:active { transform: scale(0.98); }
+.ln-opt.right { background: #4f9d6a; border-color: #4f9d6a; color: #fff; }
+.ln-opt.wrong { background: #c9584b; border-color: #c9584b; color: #fff; }
+.ln-opt:disabled { opacity: 1; }
+.ln-score { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.ln-big { margin: 6px 0; font-family: var(--display); font-size: 46px; color: var(--accent); line-height: 1.4; }
+.ln-word { margin: 8px 0 0; font-family: var(--display); font-size: 40px; line-height: 1.6; color: var(--accent); }
+.ln-body .card-btn { margin-top: 16px; }
+.ms-beyt { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 14px; background: var(--tint); font-size: 16px; line-height: 1.9; }
+.ms-beyt span:last-child { padding-right: 18%; }
+.ms-beyt mark { background: var(--coin); color: #2b1d08; border-radius: 6px; padding: 0 3px; }
+
+.shake { animation: ln-shake 0.4s ease; }
+@keyframes ln-shake { 25% { transform: translateX(6px); } 50% { transform: translateX(-6px); } 75% { transform: translateX(3px); } }
+
+.cw-grid { display: grid; gap: 3px; margin: 12px auto 10px; max-width: 320px; }
+.cw-cell {
+  position: relative; aspect-ratio: 1; border-radius: 6px; border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.15));
+  background: var(--surface); color: var(--ink); font-family: var(--display); font-size: 19px; line-height: 1; padding: 0;
+  display: grid; place-items: center;
+}
+.cw-cell.void { border: 0; background: none; }
+.cw-cell.sel { background: var(--tint); border-color: var(--accent); }
+.cw-cell.full { color: var(--accent); }
+.cw-cell small { position: absolute; top: 1px; right: 3px; font-family: "Vazirmatn", sans-serif; font-size: 9px; color: var(--muted); }
+.cw-answer { padding: 10px 12px; border-radius: 14px; background: var(--tint); text-align: right; }
+.cw-now { font-size: 14px; line-height: 1.8; }
+.cw-row { display: flex; gap: 8px; margin-top: 8px; }
+.cw-input {
+  flex: 1; min-width: 0; padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--edge, rgba(0, 0, 0, 0.15));
+  background: var(--surface); color: var(--ink); font: inherit; font-size: 18px; text-align: center;
+}
+.ln-body .cw-send { margin-top: 0; padding: 8px 18px; }
+.cw-answer .card-link { margin-top: 6px; font-size: 13px; }
+.cw-clues { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; text-align: right; }
+.cw-head { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.cw-clue { padding: 6px 10px; border-radius: 10px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 1.7; text-align: right; }
+.cw-clue.sel { background: var(--tint); }
+.cw-clue.done { opacity: 0.45; text-decoration: line-through; }
+.cw-clue b { color: var(--accent); }
+.cw-clue em { font-style: normal; color: var(--muted); font-size: 12px; }
+
+.sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sp-opt { text-align: center; font-family: var(--display); font-size: 24px; padding: 14px 6px; }
+.sp-note { min-height: 28px; margin-top: 10px; font-size: 15px; }
+.sp-note b { color: var(--accent); font-size: 18px; }
+.cw-cell { border-color: rgba(128, 128, 128, 0.4); background: var(--tint); }
+.cw-cell.void { background: none; }
+.cw-cell.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ln-opt { border-color: rgba(128, 128, 128, 0.25); }
+#modesSheet .level-card { max-height: none; }
+.ms-next { padding: 10px 14px; border-radius: 14px; border: 1.5px dashed var(--accent); font-size: 16px; line-height: 1.9; color: var(--accent); font-weight: 700; }
+.ms-blank { margin-top: 2px; padding: 2px 10px; border-bottom: 2px dashed var(--accent); color: var(--muted); min-height: 1.9em; }
+.ms-blank.filled { border-bottom-color: transparent; color: var(--accent); font-weight: 700; animation: pop 0.35s ease; }
+
+/* ===== صفحه‌ی انتخاب کودک / بزرگسال (kids.js) ===== */
+.kg {
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
+  display: flex; align-items: flex-start; justify-content: center;
+  background: var(--bg); color: var(--ink);
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+.kg.hidden, .kw.hidden { display: none; }
+.kg-inner { margin: auto 0; width: 100%; max-width: 460px; text-align: center; }
+.kg-logo { font-family: var(--display); font-size: 64px; line-height: 1.3; color: var(--accent); }
+.kg-ask { font-size: 18px; font-weight: 700; margin: 4px 0 26px; }
+.kg-picks { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.kg-pick {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0;
+  padding: 26px 10px 22px; border-radius: 26px; font: inherit; color: var(--ink); cursor: pointer;
+  background: var(--gm-glass, var(--surface)); border: 1.5px solid var(--gm-edge, rgba(0, 0, 0, 0.08));
+  box-shadow: var(--gm-shadow, 0 8px 22px rgba(0, 0, 0, 0.12));
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  transition: transform 0.15s ease;
+}
+.kg-pick:active { transform: scale(0.96); }
+.kg-ic { font-size: 62px; line-height: 1.15; }
+.kg-pick b { font-family: var(--display); font-size: 30px; font-weight: 400; line-height: 1.4; }
+.kg-pick small { font-size: 12.5px; opacity: 0.75; line-height: 1.6; }
+.kg-kid { background: linear-gradient(160deg, #ffe08a, #ffb38a); border-color: rgba(255, 255, 255, 0.7); color: #4a2a10; }
+
+/* ===== بخش کودک ===== */
+.kw {
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
+  display: flex; flex-direction: column; color: #3b2a1a; font-family: "Vazirmatn", sans-serif;
+  background: radial-gradient(circle at 20% 10%, #fff6c9 0, transparent 45%),
+    radial-gradient(circle at 85% 90%, #c9f0ff 0, transparent 50%), linear-gradient(170deg, #fff1d6, #ffe0ec);
+  padding: max(12px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+}
+.kw-top { display: flex; align-items: center; justify-content: space-between; direction: rtl; }
+.kw-home {
+  width: 52px; height: 52px; border-radius: 18px; border: 0; font-size: 26px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.75); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+}
+.kw-stars {
+  display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.75); font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; line-height: 1.2;
+}
+.kw-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 12px 0 24px; }
+.kw-pic { font-size: clamp(110px, 34vw, 170px); line-height: 1.15; animation: pop 0.45s ease; }
+.kw-pic.win { animation: kw-jump 0.7s ease; }
+.kw-slots { direction: rtl; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.kw-slot, .kw-key {
+  width: 54px; height: 60px; border-radius: 16px; display: grid; place-items: center;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1;
+}
+.kw-slot { border: 3px dashed rgba(59, 42, 26, 0.25); background: rgba(255, 255, 255, 0.55); color: #3b2a1a; }
+.kw-slot.on { border: 3px solid #5bbf7a; background: #5bbf7a; color: #fff; animation: pop 0.25s ease; }
+.kw-keys { direction: rtl; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; max-width: 380px; min-height: 64px; }
+.kw-key {
+  border: 0; cursor: pointer; color: #fff; background: #ff8a5c; box-shadow: 0 5px 0 #d8653a;
+  transition: transform 0.1s ease;
+}
+.kw-key:nth-child(3n+2) { background: #6cb8ff; box-shadow: 0 5px 0 #3f8fd8; }
+.kw-key:nth-child(3n+3) { background: #b48cff; box-shadow: 0 5px 0 #8a5fd8; }
+.kw-key:active { transform: translateY(3px); }
+.kw-key:disabled { visibility: hidden; }
+.kw-key.no { animation: ln-shake 0.4s ease; }
+.kw-key.nudge { animation: kw-nudge 0.9s ease-in-out infinite; }
+.kw-word { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 58px; line-height: 1.3; color: #3b9a5a; animation: pop 0.35s ease; }
+.kw-cheer { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; color: #ff7a45; animation: pop 0.35s ease; }
+.kw-bit { position: fixed; top: -40px; z-index: 901; pointer-events: none; animation: kw-fall 1.6s ease-in forwards; }
+@keyframes kw-jump { 30% { transform: translateY(-18px) scale(1.12); } 60% { transform: translateY(0) scale(0.96); } }
+@keyframes kw-nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15) rotate(-6deg); } }
+@keyframes kw-fall { to { transform: translateY(110vh) rotate(260deg); opacity: 0.6; } }
+.kw-slots:has(.kw-slot:nth-child(6)) { gap: 5px; }
+.kw-slots:has(.kw-slot:nth-child(6)) .kw-slot { width: 42px; height: 52px; font-size: 28px; }
+
+/* بخش کودک: فهرست بازی‌ها و سه بازی تازه */
+.kw-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.4; color: #ff7a45; }
+.kw-menu { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 380px; }
+.kw-game {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 8px 16px; border: 0; cursor: pointer;
+  border-radius: 26px; color: #fff; background: #ff8a5c; box-shadow: 0 6px 0 #d8653a; font-family: "Vazirmatn", sans-serif;
+  transition: transform 0.1s ease;
+}
+.kw-game:active { transform: translateY(4px); box-shadow: 0 2px 0 #d8653a; }
+.kw-game span { font-size: 54px; line-height: 1.2; }
+.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 23px; line-height: 1.4; }
+.kw-g-wheel { background: #6cb8ff; box-shadow: 0 6px 0 #3f8fd8; }
+.kw-g-spell { background: #b48cff; box-shadow: 0 6px 0 #8a5fd8; }
+.kw-g-ef { background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a; }
+.kw-ask { font-size: 19px; font-weight: 800; line-height: 1.7; color: #5a3d22; }
+.kw-opts { direction: rtl; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.kw-opt {
+  min-width: 132px; padding: 14px 18px; border-radius: 20px; border: 0; cursor: pointer; color: #3b2a1a;
+  background: #fff; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12); font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.3;
+}
+.kw-opt.right, .kw-card.right { background: #5bbf7a; color: #fff; box-shadow: 0 5px 0 #3e9a5a; }
+.kw-opt:disabled:not(.right), .kw-card:disabled:not(.right) { opacity: 0.45; }
+.kw-opt.no, .kw-card.no { animation: ln-shake 0.4s ease; }
+.kw-ef-head { direction: rtl; display: flex; align-items: center; gap: 14px; }
+.kw-letter {
+  width: 92px; height: 92px; border-radius: 28px; display: grid; place-items: center; color: #fff; background: #ff8a5c;
+  box-shadow: 0 6px 0 #d8653a; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 60px; line-height: 1; animation: pop 0.35s ease;
+}
+.kw-cat {
+  display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 99px; background: rgba(255, 255, 255, 0.8);
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; line-height: 1.3;
+}
+.kw-cards { direction: rtl; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 380px; }
+.kw-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 4px 10px; border: 0; cursor: pointer; border-radius: 22px;
+  background: #fff; color: #3b2a1a; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12); font-family: "Vazirmatn", sans-serif;
+}
+.kw-card span { font-size: 52px; line-height: 1.2; }
+.kw-card b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 21px; line-height: 1.4; }
+.kw-dots { direction: rtl; display: flex; gap: 8px; }
+.kw-dots i { width: 12px; height: 12px; border-radius: 50%; background: rgba(59, 42, 26, 0.18); }
+.kw-dots i.done { background: #5bbf7a; }
+.kw-dots i.now { background: #ff8a5c; transform: scale(1.25); }
+.kw-found { direction: rtl; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 340px; }
+.kw-found span {
+  padding: 6px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.85); color: #3b9a5a;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; line-height: 1.3;
+}
+.kw-next {
+  padding: 14px 34px; border-radius: 22px; border: 0; cursor: pointer; color: #fff; background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 28px; line-height: 1.3;
+}
+.kw-next:active { transform: translateY(4px); box-shadow: 0 2px 0 #3e9a5a; }
+
+/* چرخ کلمه‌ی بچه‌ها: فقط بُر زدن و راهنمای حرف (مجانی) */
+.mode-kids #hintWordBtn, .mode-kids #hintTargetBtn, .mode-kids #hintRocketBtn, .mode-kids #chestBtn,
+.mode-kids .top .coins, .mode-kids #hintLetterBtn .cost { visibility: hidden; }
+.mode-kids .clue-btn { display: none; }
+
+/* اسم فامیل کودک: شش نقاشی بی‌اسم؛ اسم بعد از زدن نشان داده می‌شود */
+.kw-cards.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kw-cards.six .kw-card b { visibility: hidden; }
+.kw-cards.six .kw-card.show b { visibility: visible; }
+.kw-cards.six .kw-card span { font-size: 56px; }
+.kw-ask small { font-size: 15px; font-weight: 700; color: #ff7a45; }
+.mode-kids .chain { display: none; }
+
+/* بخش کودک: دکمه‌ی ظاهر بازی (پهن، زیر چهار بازی) و سؤال بزرگ‌ترها پیش از خرید */
+.kw-game.kw-g-themes {
+  grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; padding: 12px 8px;
+  background: #ffc94d; box-shadow: 0 6px 0 #d9a326; color: #5a3d10;
+}
+.kw-game.kw-g-themes span { font-size: 34px; }
+.kw-parent {
+  position: fixed; inset: 0; z-index: 960; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(20, 14, 8, 0.45);
+}
+.kw-parent.hidden { display: none; }
+.kw-parent-card {
+  width: 100%; max-width: 340px; padding: 22px 18px 14px; border-radius: 24px; text-align: center;
+  background: #fffaf0; color: #3b2a1a; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3); font-family: "Vazirmatn", sans-serif;
+}
+.kw-parent-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; line-height: 1.4; }
+.kw-parent-text { font-size: 14.5px; line-height: 1.8; opacity: 0.8; }
+.kw-parent-q { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; margin: 8px 0 12px; direction: ltr; }
+.kw-parent-opts { display: flex; gap: 10px; justify-content: center; margin-bottom: 6px; }
+.kw-parent-opts .card-btn { flex: 1; margin: 0; }
+.kw-parent .card-link { color: #8a6a4a; }
+
+/* جدول هفتگی: حرف دقیقاً وسط خانه، در همه‌ی ظاهرها با یک قلم (قلم‌های تزئینی مثل نستعلیق حرف را بالا و پایین می‌برند) */
+.cw-cell { font-family: "Vazirmatn", sans-serif !important; font-weight: 800; font-size: 18px; }
+.cw-ch { display: block; width: 100%; text-align: center; line-height: 1; transform: translateY(0.06em); }
+/* اسم مرحله کنار شماره: «مرحله‌ی ۵ · قالی کاشان» */
+.level-label .ll-name::before { content: " · "; }
+
+/* ---------- روان‌تر: باز شدن پنجره‌ها و صفحه‌ها، جلوه‌های سبک‌تر ---------- */
+/* پنجره‌ها نرم باز می‌شوند: پس‌زمینه کم‌کم تیره، کارت از پایین می‌آید (فقط opacity و transform، که کار کارت گرافیک است) */
+.sheet:not(.hidden), .overlay:not(.hidden) { animation: ui-fade 0.2s ease-out both; }
+.sheet:not(.hidden) > * { animation: ui-up 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+.sheet.center:not(.hidden) > *, .overlay:not(.hidden) > .card { animation: ui-pop 0.36s cubic-bezier(0.2, 0.9, 0.3, 1.12) both; }
+@keyframes ui-fade { from { opacity: 0; } }
+@keyframes ui-up { from { opacity: 0; transform: translateY(48px); } }
+@keyframes ui-pop { from { opacity: 0; transform: translateY(16px) scale(0.92); } }
+/* صفحه‌های منو (مرحله‌ها، تنظیمات، …) با محو کوتاه می‌آیند */
+.screen:not(.hidden):not(#screenHome):not(#app) { animation: ui-fade 0.22s ease-out both; }
+/* خانه‌های جدول با فنری نرم‌تر پر می‌شوند */
+@keyframes pop {
+  0% { transform: scale(0.55); opacity: 0.4; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+/* کلمه‌ی تکراری: به جای filter (که هر فریم دوباره کشیده می‌شود) یک تکان کوچک */
+@keyframes flash {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  65% { transform: scale(0.96); }
+}
+/* منوی شیشه‌ای: تاری کمتر و لکه‌های رنگی بدون filter، تا روی گوشی روان بچرخد */
+#screenHome .glass-menu .menu-btn {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation-duration: 0.38s;
+}
+.gm-blob { filter: none; width: 240px; height: 240px; will-change: transform; }
+.gm-blob.b1 { background: radial-gradient(closest-side, var(--gm-blob1), transparent); top: -45px; right: -65px; }
+.gm-blob.b2 { background: radial-gradient(closest-side, var(--gm-blob2), transparent); left: -75px; }
+.gm-blob.b3 { background: radial-gradient(closest-side, var(--gm-blob3), transparent); bottom: -55px; }
+.gm-float { will-change: transform, opacity; }
+/* برق شیشه: به جای جابه‌جا کردن پس‌زمینه، فقط کم و زیاد شدن نور */
+#screenHome .glass-menu .menu-btn::after {
+  background: linear-gradient(105deg, transparent 30%, var(--gm-sheen) 50%, transparent 70%);
+  background-size: 100% 100%;
+  opacity: 0;
+  animation: gm-glint 7s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes gm-glint { 0%, 70%, 100% { opacity: 0; } 82% { opacity: 0.9; } }
+/* فشار دادن هر دکمه حس فوری دارد */
+button { touch-action: manipulation; }
+@media (prefers-reduced-motion: reduce) {
+  .sheet:not(.hidden), .overlay:not(.hidden), .sheet:not(.hidden) > *, .screen:not(.hidden) { animation: none !important; }
+}

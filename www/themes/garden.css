@@ -341,3 +341,14 @@
 [data-theme="garden"] .level-words .meaning + .meaning { border-top: 1px solid rgba(44, 143, 154, 0.3); }
 [data-theme="garden"] .level-words { border-color: rgba(44, 143, 154, 0.35); }
 [data-theme="garden"] { --chest-wood: #8a6a3a; --chest-wood-2: #5a4220; --chest-band: #2c8f9a; }
+
+/* پنل کرم و نیمه‌شفاف پشت جدول تا باغچه‌ها روی منظره‌ی باغ راحت دیده شوند */
+[data-theme="garden"] .board-area { --board-chrome-x: 24px; --board-chrome-y: 24px; }
+[data-theme="garden"] .board {
+  padding: 12px;
+  border-radius: 20px;
+  background: rgba(251, 245, 230, 0.78);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85), inset 0 0 0 3px rgba(44, 143, 154, 0.16), 0 10px 24px rgba(45, 74, 52, 0.28);
+}

@@ -3,7 +3,10 @@
 // مرحله‌ی روزانه، اشتراک نتیجه، مناسبت‌ها (نوروز، یلدا، محرم) و اعلان یادآوری.
 // این فایل بعد از game.js و feel.js بارگذاری می‌شود و از تابع‌ها و متغیرهای آن‌ها استفاده می‌کند.
 
-const DAILY_COINS = 20; // جایزه‌ی حل کردن مرحله‌ی روزانه، یک بار در روز
+const DAILY_COINS_BASE = 20; // جایزه‌ی حل کردن مرحله‌ی روزانه، یک بار در روز
+// جمعه‌ی ویژه: جدول بزرگ‌تر (کلمه‌ی اصلی ۷ حرفی) و جایزه‌ی دوبرابر
+const isFriday = (date = nowDate()) => date.getDay() === 5;
+const dailyCoins = () => (isFriday() ? DAILY_COINS_BASE * 2 : DAILY_COINS_BASE);
 // لینکی که با نتیجه فرستاده می‌شود (صفحه‌ی بازی در کافه‌بازار)
 const SHARE_URL = "https://cafebazaar.ir/app/com.kalameh.game";
 const REMIND_HOUR = 19; // ساعت اعلان یادآوری (به وقت گوشی)
@@ -148,7 +151,7 @@ function dailyLevel(day) {
   if (dailyCache.day !== day) {
     const ev = eventOn(nowDate());
     const words = ev ? ev.words.filter((w) => dict.has(w) || extraDict.has(w)) : [];
-    dailyCache = { day, level: generator.daily(day, words) };
+    dailyCache = { day, level: generator.daily(day, words, isFriday() && !words.length) };
   }
   return dailyCache.level;
 }
@@ -168,7 +171,7 @@ function playDaily() {
 
 function dailyLabel() {
   const ev = eventNow();
-  return `مرحله‌ی روزانه · ${persianDay(nowDate())}` + (ev && !ev.quiet ? " · " + ev.name : "");
+  return `مرحله‌ی روزانه · ${persianDay(nowDate())}` + (ev && !ev.quiet ? " · " + ev.name : isFriday() ? " · جمعه‌ی ویژه 🎉" : "");
 }
 
 // دکمه‌ی مرحله‌ی روزانه در منو
@@ -179,7 +182,7 @@ function renderDailyBtn() {
   const run = save.dailyPuzzle.run;
   $("dailySub").textContent = dailySolved()
     ? `✓ حل شد` + (run > 1 ? ` · ${faDigits(run)} روز پشت سر هم` : "")
-    : persianDay(nowDate()) + (save.partial[DAILY_PREFIX + todayKey()] ? " · نیمه‌کاره" : "");
+    : (isFriday() ? "جمعه‌ی ویژه 🎉 · جایزه ×۲" : persianDay(nowDate())) + (save.partial[DAILY_PREFIX + todayKey()] ? " · نیمه‌کاره" : "");
 }
 
 // پایان مرحله‌ی روزانه (به جای finishLevel)
@@ -193,7 +196,7 @@ function finishDaily(hinted) {
     d.count++;
     d.last = todayKey();
     d.hinted = hinted;
-    save.coins += DAILY_COINS;
+    save.coins += dailyCoins();
   }
   const grid = shareGrid();
   delete save.partial[playKey];
@@ -212,7 +215,7 @@ function showDailyComplete(first, grid, hinted) {
   const ev = eventNow();
   const run = save.dailyPuzzle.run;
   $("overlayReward").classList.toggle("hidden", !first);
-  $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(DAILY_COINS);
+  $("overlayReward").querySelector(".reward-count").textContent = "+" + faDigits(dailyCoins());
   const btn = $("overlayBtn");
   btn.textContent = "منو";
   btn.onclick = goHome;
@@ -240,7 +243,7 @@ function showDailyComplete(first, grid, hinted) {
   celebrate();
   if (first) {
     setTimeout(() => {
-      flyCoins(DAILY_COINS, $("overlayReward").querySelector(".coin-icon").getBoundingClientRect(), document.querySelector("#app .coins"));
+      flyCoins(dailyCoins(), $("overlayReward").querySelector(".coin-icon").getBoundingClientRect(), document.querySelector("#app .coins"));
     }, 350);
   }
 }
