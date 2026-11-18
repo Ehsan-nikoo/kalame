@@ -334,6 +334,7 @@ function startPuzzle(level, index, key) {
 
   const name = levelName(index);
   const label = $("levelLabel");
+  label.classList.remove("has-name");
   if (isDaily()) label.textContent = dailyLabel();
   else {
     // شماره و اسم جدا، تا ظاهرهایی مثل قلم و مرکب اسم بلند را در خط دوم بنویسند
@@ -341,6 +342,7 @@ function startPuzzle(level, index, key) {
     num.className = "ll-num";
     num.textContent = `مرحله‌ی ${faDigits(index + 1)}`;
     label.replaceChildren(num);
+    label.classList.toggle("has-name", !!name);
     if (name) {
       const nm = document.createElement("span");
       nm.className = "ll-name";
@@ -1555,10 +1557,10 @@ function renderLevels() {
       label.style.top = y(i) + "px";
       if (x >= 50) {
         label.style.left = x - 11 + "%";
-        label.style.translate = "-100% -50%";
+        label.style.transform = "translate(-100%, -50%)"; // transform، نه translate، تا وب‌ویوهای قدیمی هم بفهمند
       } else {
         label.style.left = x + 11 + "%";
-        label.style.translate = "0 -50%";
+        label.style.transform = "translate(0, -50%)";
       }
       track.appendChild(label);
     }

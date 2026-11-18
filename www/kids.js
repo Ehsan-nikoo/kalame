@@ -190,7 +190,7 @@ function kwNext() {
   $("kwStars").textContent = faDigits(kwTodayStars());
   $("kwStage").innerHTML = `
     <div class="kw-pic">${pic}</div>
-    <div class="kw-slots">${letters.map(() => `<span class="kw-slot"></span>`).join("")}</div>
+    <div class="kw-slots${letters.length >= 6 ? " many" : ""}">${letters.map(() => `<span class="kw-slot"></span>`).join("")}</div>
     <div class="kw-keys">${order.map((o) => `<button class="kw-key" type="button">${o.ch}</button>`).join("")}</div>`;
   $("kwStage").querySelectorAll(".kw-key").forEach((k) => (k.onclick = () => kwTap(k)));
   kwArmHint();
@@ -285,7 +285,7 @@ const KW_GAMES = [
   ["pic", "🖼️", "نقاشی و کلمه", () => kwNext()],
   ["wheel", "🎡", "چرخ کلمه", () => kwWheel()],
   ["spell", "✏️", "کدوم درسته؟", () => kwSpell()],
-  ["ef", "🔤", "حرف‌شکار", () => kwEf()],
+  ["ef", "🙈", "قایم‌موشک حرف‌ها", () => kwEf()],
   ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
 ];
 

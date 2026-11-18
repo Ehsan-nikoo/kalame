@@ -2469,8 +2469,8 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 @keyframes kw-jump { 30% { transform: translateY(-18px) scale(1.12); } 60% { transform: translateY(0) scale(0.96); } }
 @keyframes kw-nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15) rotate(-6deg); } }
 @keyframes kw-fall { to { transform: translateY(110vh) rotate(260deg); opacity: 0.6; } }
-.kw-slots:has(.kw-slot:nth-child(6)) { gap: 5px; }
-.kw-slots:has(.kw-slot:nth-child(6)) .kw-slot { width: 42px; height: 52px; font-size: 28px; }
+.kw-slots.many { gap: 5px; }
+.kw-slots.many .kw-slot { width: 42px; height: 52px; font-size: 28px; }
 
 /* بخش کودک: فهرست بازی‌ها و سه بازی تازه */
 .kw-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.4; color: #ff7a45; }
