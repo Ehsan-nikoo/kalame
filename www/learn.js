@@ -583,28 +583,50 @@ const SPELL_PAIRS = [
 const SPELL_ROUND = 10;
 let sp = null;
 
+// روزی یک بار؛ ده سؤال هر روز برای همه یکسان است. نتیجه از همان شروع ذخیره می‌شود
+// تا با بستن و دوباره باز کردن، دست تازه‌ای شروع نشود.
+function spToday() {
+  const st = X().sp;
+  return st && st.day === todayKey() ? st : null;
+}
+
 function openSpell() {
   const best = X().spBest || 0;
+  const done = spToday();
+  if (done && done.n >= SPELL_ROUND) {
+    lnShow(`<div class="card-title">غلط املایی ✍️</div>
+      <div class="ln-big">${faDigits(done.right)} از ${faDigits(SPELL_ROUND)}</div>
+      <div class="card-text">غلط املایی امروز رو انجام دادی. فردا ده تا سؤال تازه میاد!
+      ${best ? `<br>بهترین نتیجه‌ت: ${faDigits(best)} از ${faDigits(SPELL_ROUND)}` : ""}</div>${lnFoot()}`);
+    return;
+  }
   lnShow(`<div class="card-title">غلط املایی ✍️</div>
-    <div class="card-text">از چهار کلمه، یکی غلط نوشته شده. پیداش کن! ${faDigits(SPELL_ROUND)} سؤال، هر جواب درست یه سکه.
+    <div class="card-text">از چهار کلمه، یکی غلط نوشته شده. پیداش کن! روزی یه بار، ${faDigits(SPELL_ROUND)} سؤال، هر جواب درست یه سکه.
     ${best ? `<br>بهترین نتیجه‌ت: ${faDigits(best)} از ${faDigits(SPELL_ROUND)}` : ""}</div>
-    ${lnFoot(`<button class="card-btn" type="button" id="spGo">شروع</button>`)}`);
+    ${lnFoot(`<button class="card-btn" type="button" id="spGo">${done ? "ادامه" : "شروع"}</button>`)}`);
   $("spGo").onclick = spStart;
 }
 
 function spStart() {
-  sp = { order: lnMix(SPELL_PAIRS).slice(0, SPELL_ROUND), i: 0, right: 0 };
+  const rnd = seededRandom(hashText("spell" + todayKey()));
+  const order = shuffled(SPELL_PAIRS, rnd).slice(0, SPELL_ROUND);
+  const others = order.map((pair) => {
+    const list = [];
+    while (list.length < 3) {
+      const p = SPELL_PAIRS[Math.floor(rnd() * SPELL_PAIRS.length)];
+      if (p !== pair && !list.includes(p[0])) list.push(p[0]);
+    }
+    return shuffled([pair[1], ...list], rnd);
+  });
+  const st = spToday() || (X().sp = { day: todayKey(), n: 0, right: 0 });
+  persist();
+  sp = { order, others, i: st.n, right: st.right };
   spRound();
 }
 
 function spRound() {
   const pair = sp.order[sp.i];
-  const others = [];
-  while (others.length < 3) {
-    const p = lnPick(SPELL_PAIRS);
-    if (p !== pair && !others.includes(p[0])) others.push(p[0]);
-  }
-  const options = lnMix([pair[1], ...others]);
+  const options = sp.others[sp.i];
   lnBody.innerHTML = `
     <div class="ln-top"><span>${faDigits(sp.i + 1)} از ${faDigits(sp.order.length)}</span><b>غلط املایی</b><span>✓ ${faDigits(sp.right)}</span></div>
     <div class="ln-ask">کدوم غلط نوشته شده؟</div>
@@ -624,7 +646,10 @@ function spRound() {
       btn.classList.add("wrong");
       lnBad();
     }
-    lnLater(() => (++sp.i < sp.order.length ? spRound() : spEnd()), btn === badBtn ? 1100 : 1800);
+    sp.i++;
+    Object.assign(X().sp, { n: sp.i, right: sp.right });
+    persist();
+    lnLater(() => (sp.i < sp.order.length ? spRound() : spEnd()), btn === badBtn ? 1100 : 1800);
   }));
 }
 
@@ -635,8 +660,8 @@ function spEnd() {
   lnBody.innerHTML = `
     <div class="card-title">${sp.right === sp.order.length ? "املات عالیه! 🏆" : "تموم شد!"}</div>
     <div class="ln-big">${faDigits(sp.right)} از ${faDigits(sp.order.length)}</div>
-    ${lnFoot(`<button class="card-btn" type="button" id="spAgain">یه دست دیگه</button>`)}`;
-  $("spAgain").onclick = spStart;
+    <div class="card-text">فردا ده تا سؤال تازه میاد.</div>
+    ${lnFoot()}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -652,7 +677,7 @@ function spEnd() {
     ["modeMs", "📜", "مشاعره", "بیت بعدی با حرف آخر بیت قبلی", openMoshaere],
     ["modeRv", "🧠", "مرور واژه‌ها", "معنی کلمه‌هایی که پیدا کردی یادت بمونه", openReview],
     ["modeCw", "✏️", "جدول هفتگی", "جدول متقاطع با سرنخ، هر شنبه یکی تازه", openCrossword],
-    ["modeSp", "✍️", "غلط املایی", "از چهار کلمه، غلطش رو پیدا کن", openSpell],
+    ["modeSp", "✍️", "غلط املایی", "روزی یه بار؛ از چهار کلمه، غلطش رو پیدا کن", openSpell],
     ["modeKids", "🧸", "حالت کودک", "نقاشی ببین، اسمش رو بساز", openKids],
   ];
   list.append(head);
@@ -671,6 +696,10 @@ function spEnd() {
     baseOpen();
     const n = rvQueue().length;
     $("modeRv").querySelector("small").textContent = n ? `امروز ${faDigits(n)} کلمه برای مرور` : "معنی کلمه‌هایی که پیدا کردی یادت بمونه";
+    const spd = spToday();
+    $("modeSp").querySelector("small").textContent = spd && spd.n >= SPELL_ROUND
+      ? `امروز: ${faDigits(spd.right)} از ${faDigits(SPELL_ROUND)} ✓ · فردا دوباره`
+      : "روزی یه بار؛ از چهار کلمه، غلطش رو پیدا کن";
     const st = X().cw;
     $("modeCw").querySelector("small").textContent = st && st.week === cwWeek() && st.done
       ? "جدول این هفته حل شد ✓ · شنبه جدول تازه"
