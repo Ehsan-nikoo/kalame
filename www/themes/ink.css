@@ -380,14 +380,8 @@
 
 /* ---------- قلم و مرکب: همه‌ی نوشته‌ها وسط‌چین، مثل صفحه‌ی دیوان ---------- */
 [data-theme="ink"] .screen, [data-theme="ink"] .sheet, [data-theme="ink"] .overlay { text-align: center; }
-/* ردیف‌های منو: آیکون و فلش کنار، نوشته وسط */
-[data-theme="ink"] #screenHome .glass-menu .menu-btn.gm-row { position: relative; justify-content: center; padding-right: 48px; padding-left: 40px; }
-[data-theme="ink"] #screenHome .glass-menu .gm-row .gm-ic { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
-[data-theme="ink"] #screenHome .glass-menu .gm-row .gm-arrow { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); margin: 0; }
-[data-theme="ink"] #screenHome .glass-menu .menu-btn.gm-row > small { margin-right: 0; }
-/* «ادامه»: نوشته وسط، با فاصله‌ی هم‌اندازه‌ی دکمه‌ی فلش در سمت راست */
-[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { text-align: center; padding-right: 70px; }
-[data-theme="ink"] #screenHome .glass-menu .daily-btn > span:not(.gm-ic) { flex: 1; align-items: center; justify-content: center; text-align: center; padding-left: 36px; }
+/* منوی اصلی مثل بقیه‌ی ظاهرها راست‌چین می‌ماند */
+[data-theme="ink"] #screenHome .glass-menu { text-align: right; }
 /* تنظیمات، دستاوردها، سرگرمی‌ها، دفتر واژه‌ها، معنی‌ها، جدول هفتگی */
 [data-theme="ink"] .setting-name { flex: 1; text-align: center; }
 [data-theme="ink"] .ach-body { text-align: center; }
