@@ -2302,3 +2302,9 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 #screenHome { scrollbar-width: none; }
 #screenHome::-webkit-scrollbar { display: none; }
 .gm-deco { bottom: 0; }
+
+/* کارت‌ها و برگه‌های بلند (مثل کارت پایان فصل با ضرب‌المثل و تصویر) در صفحه‌ی کوتاه از بالا و پایین بیرون نمی‌زنند:
+   پنجره اسکرول می‌خورد و کارت اگر جا شد وسط (یا پایین) می‌ماند */
+.overlay, .sheet { overflow-y: auto; overscroll-behavior: contain; align-items: flex-start; }
+.overlay > *, .sheet.center > * { margin-top: auto; margin-bottom: auto; flex-shrink: 0; }
+.sheet:not(.center) > * { margin-top: auto; flex-shrink: 0; }

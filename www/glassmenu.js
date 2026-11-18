@@ -78,3 +78,13 @@
     if (box && !box.firstChild) box.innerHTML = gridSVG();
   });
 })();
+
+// کارت‌ها و برگه‌ها حالا اسکرول می‌خورند؛ هر بار که باز می‌شوند از بالا شروع شوند
+(() => {
+  const watch = (el) => new MutationObserver(() => { if (!el.classList.contains("hidden")) el.scrollTop = 0; })
+    .observe(el, { attributes: true, attributeFilter: ["class"] });
+  const seen = new WeakSet();
+  const scan = () => document.querySelectorAll(".overlay, .sheet").forEach((el) => { if (!seen.has(el)) { seen.add(el); watch(el); } });
+  scan();
+  new MutationObserver(scan).observe(document.body, { childList: true });
+})();
