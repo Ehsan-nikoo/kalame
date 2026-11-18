@@ -24,6 +24,12 @@
     chip.className = "gm-ic";
     chip.innerHTML = icon;
     btn.appendChild(chip);
+    // مثل طرح اولیه: هر ردیف یک فلش کوچک در انتها دارد
+    const arrow = document.createElement("span");
+    arrow.className = "gm-arrow";
+    arrow.innerHTML = svg("M14 6l-6 6 6 6");
+    btn.appendChild(arrow);
+    btn.classList.add("gm-row");
   }
   // دکمه‌ی روزانه آیکون خودش را دارد؛ فقط داخل یک قاب می‌رود
   const dailySvg = document.querySelector("#dailyBtn > svg");

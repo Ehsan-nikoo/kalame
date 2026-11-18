@@ -2241,3 +2241,49 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 #screenHome .glass-menu .menu-btn:not(.primary):not(.daily-btn) > small { flex-basis: 100%; text-align: center; font-size: 11px; line-height: 1.3; }
 [data-theme="ink"] #screenHome .glass-menu .menu-btn { padding: 4px 8px 8px; }
 [data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { padding: 6px 16px 8px 10px; }
+
+/* چیدمان مثل طرح اولیه‌ی «باغ شیشه‌ای»: کارت بزرگ «ادامه»، نوار باریک روزانه،
+   و چهار ردیف تمام‌عرض باریک (آیکون، عنوان، فلش) که از کنار وارد می‌شوند */
+#screenHome .home-menu.glass-menu { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+#screenHome .glass-menu .menu-btn.primary { grid-column: auto; margin-bottom: 3px; padding: 14px 18px 14px 14px; }
+#screenHome .glass-menu .menu-btn.primary { font-size: 26px; }
+#screenHome .glass-menu .daily-btn { grid-column: auto; margin-bottom: 3px; padding: 7px 12px; }
+#screenHome .glass-menu .daily-btn > span:not(.gm-ic) { flex: 1; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; font-size: 18px; }
+#screenHome .glass-menu .daily-btn > span:not(.gm-ic) { white-space: nowrap; }
+#screenHome .glass-menu .daily-btn small { flex: 1; min-width: 0; white-space: normal; font-size: 11.5px; line-height: 1.4; opacity: 0.75; text-align: left; }
+#screenHome .glass-menu .gm-daily { width: 34px; height: 34px; }
+#screenHome .glass-menu .gm-daily > svg { width: 22px; height: 22px; }
+#screenHome .glass-menu .menu-btn.gm-row {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 18px;
+  border-radius: calc(var(--gm-radius) - 4px);
+  background: var(--gm-row, var(--gm-glass));
+  animation-name: gm-slide;
+}
+@keyframes gm-slide { from { opacity: 0; transform: translateX(-40px); } }
+#screenHome .glass-menu .menu-btn.gm-row > small { flex-basis: auto; margin-right: auto; font-size: 11px; opacity: 0.6; white-space: nowrap; }
+#screenHome .glass-menu .gm-row .gm-ic { width: 28px; height: 28px; border-radius: calc(var(--gm-radius) - 9px); }
+#screenHome .glass-menu .gm-row .gm-ic svg { width: 17px; height: 17px; }
+#screenHome .glass-menu .gm-arrow { display: grid; place-items: center; margin-right: auto; opacity: 0.45; }
+#screenHome .glass-menu .gm-row > small ~ .gm-arrow { margin-right: 0; }
+.gm-arrow svg { width: 16px; height: 16px; }
+/* ترتیب ردیف‌ها مثل طرح: سرگرمی‌ها، مرحله‌ها، دستاوردها، ظاهر بازی */
+#screenHome .glass-menu #speedBtn { order: 1; }
+#screenHome .glass-menu #levelsBtn { order: 2; }
+#screenHome .glass-menu #achBtn { order: 3; }
+#screenHome .glass-menu #themesBtn { order: 4; }
+#screenHome .glass-menu #speedBtn { animation-delay: 0.16s; }
+#screenHome .glass-menu #levelsBtn { animation-delay: 0.24s; }
+#screenHome .glass-menu #achBtn { animation-delay: 0.32s; }
+#screenHome .glass-menu #themesBtn { animation-delay: 0.4s; }
+#screenHome .glass-menu .gm-row .badge { position: static; min-width: 22px; height: 22px; line-height: 22px; font-size: 13px; box-shadow: none; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.gm-row { padding: 0 12px 3px; font-size: 19px; line-height: 1.8; }
+[data-theme="ink"] #screenHome .glass-menu .daily-btn { padding: 2px 12px 4px; line-height: 1.8; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { line-height: 1.8; }
+@media (max-height: 700px) {
+  #screenHome .glass-menu .menu-btn.gm-row { padding: 4px 12px; }
+  #screenHome .glass-menu .daily-btn { padding: 5px 12px; }
+}
