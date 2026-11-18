@@ -367,3 +367,13 @@
 [data-theme="ink"] #screenHome .glass-menu .menu-btn.primary {
   background: var(--zar) 0 0 / 120px 120px, linear-gradient(135deg, rgba(42, 76, 140, 0.92), rgba(23, 45, 90, 0.92));
 }
+
+/* نستعلیق کشیده‌تر از فونت‌های دیگر است؛ زیرنویس‌ها کمی پایین‌تر می‌روند تا روی عنوان نیفتند */
+[data-theme="ink"] .setting-name { line-height: 2.1; }
+[data-theme="ink"] .setting-name small { margin-top: 4px; line-height: 1.6; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary > small { margin-top: 2px; }
+/* نوار روزانه: نستعلیق پهن است، پس زیرنویس زیر عنوان می‌رود تا نشکند */
+[data-theme="ink"] #screenHome .glass-menu .daily-btn > span:not(.gm-ic) { flex-direction: column; align-items: flex-start; gap: 0; }
+[data-theme="ink"] #screenHome .glass-menu .daily-btn small { text-align: right; margin-top: 3px; }
+/* گوشی کوتاه: نوشته‌ی «… صفحه از دیوان» روی اسم بازی می‌افتاد؛ آنجا پنهان می‌شود */
+@media (max-height: 700px) { [data-theme="ink"] #homeScene { display: none; } }
