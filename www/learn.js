@@ -321,6 +321,7 @@ const KIDS_WORDS = [
   ["خورشید", "☀️"], ["بادکنک", "🎈"], ["دوچرخه", "🚲"], ["پنیر", "🧀"], ["تخم", "🥚"], 
 ];
 const KIDS_ROUND = 8;
+const KIDS_PAID = 10; // کلمه‌های سکه‌دار در هر روز
 let kids = null;
 
 function openKids() {
@@ -354,7 +355,17 @@ function kidsRound() {
     const made = placed.map((k) => k.textContent).join("");
     if (made === word) {
       slots.forEach((s) => s.classList.add("right"));
-      lnGood(slots[0]);
+      // هر روز فقط ۱۰ کلمه‌ی اول سکه دارد؛ بعدش بازی ادامه دارد، بدون سکه
+      let st = X().kids;
+      if (!st || st.day !== todayKey()) st = X().kids = { day: todayKey(), n: 0 };
+      if (st.n < KIDS_PAID) {
+        st.n++;
+        persist();
+        lnGood(slots[0]);
+      } else {
+        if (typeof sound === "function") sound("found");
+        if (typeof haptic === "function") haptic("light");
+      }
       if (typeof sparkle === "function") {
         const r = lnBody.querySelector(".kids-pic").getBoundingClientRect();
         sparkle(r.left + r.width / 2, r.top + r.height / 2, 20);
