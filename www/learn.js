@@ -59,9 +59,9 @@ lnSheet.addEventListener("click", (e) => {
 // ---------------------------------------------------------------------------
 // ۱. مشاعره
 // ---------------------------------------------------------------------------
-// بیت بعدی باید با حرف آخرِ بیت قبلی شروع شود. از سه گزینه یکی درست است.
+// هر بیت با حرف آخرِ بیت قبلی شروع می‌شود؛ بازیکن مصراع دوم آن را پیدا می‌کند.
 
-const MS_TIME = 20;
+const MS_TIME = 25;
 const LN_FIX = { "آ": "ا", "أ": "ا", "إ": "ا", "ئ": "ی", "ؤ": "و", "ة": "ه", "ي": "ی", "ى": "ی", "ك": "ک" };
 function lnLetters(text) {
   return [...String(text)].map((c) => LN_FIX[c] || c).filter((c) => ALPHABET.includes(c));
@@ -74,17 +74,17 @@ let msByFirst = null;
 function msPrepare() {
   if (msBeyts) return;
   msBeyts = [];
-  const add = (m1, m2) => {
+  const add = (m1, m2, g) => {
     const f = lnFirst(m1), l = lnLast(m2);
-    if (f && l) msBeyts.push({ m1, m2, f, l });
+    if (f && l) msBeyts.push({ m1, m2, f, l, g });
   };
   if (typeof HAFEZ_DIVAN !== "undefined") {
-    for (const [, text] of HAFEZ_DIVAN) {
+    for (const [num, text] of HAFEZ_DIVAN) {
       const m = text.split("/");
-      for (let i = 0; i + 1 < m.length; i += 2) add(m[i], m[i + 1]);
+      for (let i = 0; i + 1 < m.length; i += 2) add(m[i], m[i + 1], num);
     }
   } else if (typeof HAFEZ !== "undefined") {
-    for (const [m1, m2] of HAFEZ) add(m1, m2);
+    HAFEZ.forEach(([m1, m2], i) => add(m1, m2, -i));
   }
   msByFirst = {};
   for (const b of msBeyts) (msByFirst[b.f] = msByFirst[b.f] || []).push(b);
@@ -103,7 +103,7 @@ async function openMoshaere() {
   const best = X().msBest || 0;
   lnBody.innerHTML = `
     <div class="card-title">مشاعره 📜</div>
-    <div class="card-text">بیت بعدی باید با <b>حرف آخرِ</b> بیت قبلی شروع بشه. از سه بیت، درستش رو انتخاب کن.
+    <div class="card-text">هر بیت با <b>حرف آخرِ</b> بیت قبلی شروع می‌شه. مصراع اولش رو می‌بینی و باید از سه گزینه‌ی هم‌قافیه، مصراع دوم درستش رو پیدا کنی.
     هر جواب درست یه سکه داره و سه بار می‌تونی اشتباه کنی.${best ? `<br>رکوردت: ${faDigits(best)} بیت پشت سر هم` : ""}</div>
     ${lnFoot(`<button class="card-btn" type="button" id="msGo">شروع</button>`)}`;
   $("msGo").onclick = msStart;
@@ -129,9 +129,11 @@ function msBeytHtml(b, mark) {
   return `<div class="ms-beyt"><span>${lnEsc(b.m1)}</span><span>${m2}</span></div>`;
 }
 
+// بیت بعدی خودکار با حرف آخر بیت قبلی شروع می‌شود؛ بازیکن باید مصراع دومش را از میان سه گزینه
+// پیدا کند. گزینه‌های غلط هم‌قافیه‌اند: یکی از همان غزل و یکی از غزلی دیگر که به همان حرف تمام می‌شود.
 function msRound() {
   const need = ms.cur.l;
-  let good = (msByFirst[need] || []).filter((b) => !ms.used.has(b) && b !== ms.cur);
+  const good = (msByFirst[need] || []).filter((b) => !ms.used.has(b) && b !== ms.cur);
   if (!good.length) {
     // با این حرف بیتی نمانده؛ یک بیت تازه شروع می‌شود
     ms.cur = lnPick(msBeyts);
@@ -139,17 +141,22 @@ function msRound() {
   }
   const right = lnPick(good);
   const wrong = [];
-  while (wrong.length < 2) {
-    const b = lnPick(msBeyts);
-    if (b.f !== need && !wrong.includes(b)) wrong.push(b);
-  }
+  const take = (list) => {
+    const ok = list.filter((b) => b.m2 !== right.m2 && !wrong.some((w) => w.m2 === b.m2));
+    if (ok.length) wrong.push(lnPick(ok));
+  };
+  take(msBeyts.filter((b) => b.g === right.g));
+  take(msBeyts.filter((b) => b.g !== right.g && b.l === right.l));
+  while (wrong.length < 2) take(msBeyts);
   const options = lnMix([right, ...wrong]);
   let left = MS_TIME;
   lnBody.innerHTML = `
     <div class="ln-top"><span>❤️ ${faDigits(ms.lives)}</span><b>مشاعره</b><span id="msClock">⏱ ${faDigits(left)}</span></div>
     ${msBeytHtml(ms.cur, true)}
-    <div class="ln-ask">بیت بعدی با «${need}» شروع می‌شه:</div>
-    <div class="ln-options">${options.map((b, i) => `<button class="ln-opt ms-opt" type="button" data-i="${i}">${lnEsc(b.m1)}</button>`).join("")}</div>
+    <div class="ln-ask">بیت بعدی، با «${need}»:</div>
+    <div class="ms-next">${lnEsc(right.m1)}</div>
+    <div class="ln-ask">مصراع دومش کدومه؟</div>
+    <div class="ln-options">${options.map((b, i) => `<button class="ln-opt ms-opt" type="button" data-i="${i}">${lnEsc(b.m2)}</button>`).join("")}</div>
     <div class="ln-score">زنجیره: ${faDigits(ms.chain)} بیت</div>
     ${lnFoot()}`;
   const buttons = [...lnBody.querySelectorAll(".ms-opt")];
@@ -158,18 +165,17 @@ function msRound() {
     buttons.forEach((b) => (b.disabled = true));
     const okBtn = buttons[options.indexOf(right)];
     okBtn.classList.add("right");
+    ms.used.add(right);
+    ms.cur = right;
     if (btn === okBtn) {
       ms.chain++;
-      ms.used.add(right);
       lnGood(btn);
-      ms.cur = right;
     } else {
       if (btn) btn.classList.add("wrong");
       ms.lives--;
       lnBad();
-      ms.cur = right;
     }
-    lnLater(() => (ms.lives > 0 ? msRound() : msEnd()), btn === okBtn ? 700 : 1500);
+    lnLater(() => (ms.lives > 0 ? msRound() : msEnd()), btn === okBtn ? 900 : 2000);
   };
   buttons.forEach((b) => (b.onclick = () => answer(b)));
   lnTimer = setInterval(() => {
@@ -674,7 +680,7 @@ function spEnd() {
   head.className = "modes-head";
   head.textContent = "یاد بگیر و بازی کن";
   const picks = [
-    ["modeMs", "📜", "مشاعره", "بیت بعدی با حرف آخر بیت قبلی", openMoshaere],
+    ["modeMs", "📜", "مشاعره", "بیت‌های حافظ رو کامل کن، زنجیره‌وار", openMoshaere],
     ["modeRv", "🧠", "مرور واژه‌ها", "معنی کلمه‌هایی که پیدا کردی یادت بمونه", openReview],
     ["modeCw", "✏️", "جدول هفتگی", "جدول متقاطع با سرنخ، هر شنبه یکی تازه", openCrossword],
     ["modeSp", "✍️", "غلط املایی", "روزی یه بار؛ از چهار کلمه، غلطش رو پیدا کن", openSpell],

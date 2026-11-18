@@ -2398,3 +2398,4 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .ln-opt { border-color: rgba(128, 128, 128, 0.25); }
 .kids-slot { border-color: rgba(128, 128, 128, 0.5); }
 #modesSheet .level-card { max-height: none; }
+.ms-next { padding: 10px 14px; border-radius: 14px; border: 1.5px dashed var(--accent); font-size: 16px; line-height: 1.9; color: var(--accent); font-weight: 700; }
