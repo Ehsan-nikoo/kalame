@@ -1299,7 +1299,8 @@ const screens = { themes: $("screenThemes"), home: $("screenHome"), levels: $("s
 function route() {
   let name = location.hash.slice(1);
   if (!(name in screens)) name = "home";
-  if (!save.theme) name = "themes";                       // بار اول: انتخاب ظاهر
+  // بار اول: انتخاب ظاهر (به جز چرخ کلمه‌ی بخش کودک، kids.js)
+  if (!save.theme && !(name === "play" && typeof isKidsPlay === "function" && isKidsPlay())) name = "themes";
   if (name === "play" && !puzzle) name = "home";         // مثلاً بعد از باز شدن دوباره‌ی برنامه
   if (name === "shop" && !store) name = "home";
 

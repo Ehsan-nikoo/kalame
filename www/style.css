@@ -2527,3 +2527,4 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .kw-cards.six .kw-card.show b { visibility: visible; }
 .kw-cards.six .kw-card span { font-size: 56px; }
 .kw-ask small { font-size: 15px; font-weight: 700; color: #ff7a45; }
+.mode-kids .chain { display: none; }

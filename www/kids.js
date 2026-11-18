@@ -2,7 +2,7 @@
 
 // دو بخش بازی (بعد از learn.js بارگذاری می‌شود):
 // هر بار که بازی باز می‌شود، اول بازیکن انتخاب می‌کند: «کودک» (راست) یا «بزرگسال» (چپ).
-// بزرگسال همان بازی همیشگی است. کودک چهار بازی ساده دارد، بدون وقت و بدون باخت:
+// بزرگسال همان بازی همیشگی است. کودک چهار بازی ساده دارد، بدون سکه، بدون وقت و بدون باخت:
 // نقاشی و کلمه، چرخ کلمه (همان بازی اصلی با کلمه‌های آسان)، کدوم درسته (املا) و اسم فامیل.
 
 // هر دسته جدا (برای «اسم فامیل» بچه‌ها هم به کار می‌رود)
@@ -57,7 +57,6 @@ const KIDS_CATS = {
 const KIDS_WORDS = Object.values(KIDS_CATS).flat()
   .filter((w, i, all) => all.findIndex((v) => v[0] === w[0]) === i);
 
-const KIDS_PAID = 10; // هر روز فقط ۱۰ کلمه‌ی اول سکه دارد (بی‌صدا به کیف سکه اضافه می‌شود)
 const KIDS_HINT_MS = 4500; // اگر بچه مدتی حرف درست را نزد، همان حرف تکان می‌خورد
 
 // ---------------------------------------------------------------------------
@@ -247,18 +246,14 @@ function kwConfetti() {
 }
 
 // ---------------------------------------------------------------------------
-// ستاره و سکه، و فهرست بازی‌های کودک
+// ستاره‌ها و فهرست بازی‌های کودک
 // ---------------------------------------------------------------------------
 
-// هر جواب درست یک ستاره؛ هر روز فقط ۱۰ تای اول یک سکه هم (بی‌صدا) به کیف سکه اضافه می‌کند
+// هر جواب درست یک ستاره. بخش کودک سکه ندارد و به کیف سکه‌ی بزرگسال دست نمی‌زند.
 function kwReward() {
   let day = X().kids;
   if (!day || day.day !== todayKey()) day = X().kids = { day: todayKey(), n: 0 };
   day.all = (day.all || day.n || 0) + 1;
-  if (day.n < KIDS_PAID) {
-    day.n++;
-    save.coins += 1;
-  }
   persist();
   $("kwStars").textContent = faDigits(day.all);
   if (typeof sound === "function") sound("complete");
@@ -423,6 +418,53 @@ const isKidsPlay = () => typeof playKey === "string" && playKey.startsWith(KW_PR
   const base = isMode;
   isMode = function () {
     return base() || isKidsPlay();
+  };
+}
+
+// در چرخ کلمه‌ی بچه‌ها: نه سکه، نه زنجیره و مأموریت، نه صندوق و دفتر واژه‌های بزرگسال
+{
+  const adultOnly = (fn) => function (...args) {
+    if (!isKidsPlay()) return fn.apply(this, args);
+  };
+  giveCoins = adultOnly(giveCoins);
+  chainUp = adultOnly(chainUp);
+  missionProgress = adultOnly(missionProgress);
+  addToBook = adultOnly(addToBook);
+  // کلمه‌ی درستی که در جدول نیست: فقط تشویق، بدون صندوق
+  const baseSubmit = submitWord;
+  submitWord = function (raw) {
+    if (isKidsPlay() && puzzle) {
+      const word = matchWord(matchWord(normalize(raw), puzzle.words), bonusWords);
+      if (!puzzle.words.includes(word) && bonusWords.includes(word)) {
+        showPreview(`${word} · آفرین! 👏`, "bonus", 1200);
+        if (typeof sound === "function") sound("bonus");
+        return;
+      }
+    }
+    return baseSubmit(raw);
+  };
+}
+
+// دکمه‌ی «برگشت» گوشی (MainActivity → kalamehBack) در بخش کودک هیچ‌وقت به منوی بزرگسال نمی‌رود:
+// از بازی‌های کودک به فهرست بازی‌های کودک؛ در فهرست و صفحه‌ی انتخاب، دو بار زدن یعنی خروج
+{
+  const baseBack = window.kalamehBack;
+  window.kalamehBack = () => {
+    if (!kidsGate.classList.contains("hidden")) return "home";
+    const inPlay = $("app").classList.contains("mode-kids");
+    if (inPlay && kidsWorld.classList.contains("hidden")) {
+      $("app").classList.remove("mode-kids");
+      history.replaceState(null, "", location.pathname + location.search);
+      route();
+      kwMenu();
+      return "back";
+    }
+    if (!kidsWorld.classList.contains("hidden")) {
+      if (!kwIn) return "home";
+      kwMenu();
+      return "back";
+    }
+    return baseBack ? baseBack() : "home";
   };
 }
 
