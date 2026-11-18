@@ -2461,3 +2461,62 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 @keyframes kw-fall { to { transform: translateY(110vh) rotate(260deg); opacity: 0.6; } }
 .kw-slots:has(.kw-slot:nth-child(6)) { gap: 5px; }
 .kw-slots:has(.kw-slot:nth-child(6)) .kw-slot { width: 42px; height: 52px; font-size: 28px; }
+
+/* بخش کودک: فهرست بازی‌ها و سه بازی تازه */
+.kw-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.4; color: #ff7a45; }
+.kw-menu { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 380px; }
+.kw-game {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 8px 16px; border: 0; cursor: pointer;
+  border-radius: 26px; color: #fff; background: #ff8a5c; box-shadow: 0 6px 0 #d8653a; font-family: "Vazirmatn", sans-serif;
+  transition: transform 0.1s ease;
+}
+.kw-game:active { transform: translateY(4px); box-shadow: 0 2px 0 #d8653a; }
+.kw-game span { font-size: 54px; line-height: 1.2; }
+.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 23px; line-height: 1.4; }
+.kw-g-wheel { background: #6cb8ff; box-shadow: 0 6px 0 #3f8fd8; }
+.kw-g-spell { background: #b48cff; box-shadow: 0 6px 0 #8a5fd8; }
+.kw-g-ef { background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a; }
+.kw-ask { font-size: 19px; font-weight: 800; line-height: 1.7; color: #5a3d22; }
+.kw-opts { direction: rtl; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.kw-opt {
+  min-width: 132px; padding: 14px 18px; border-radius: 20px; border: 0; cursor: pointer; color: #3b2a1a;
+  background: #fff; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12); font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.3;
+}
+.kw-opt.right, .kw-card.right { background: #5bbf7a; color: #fff; box-shadow: 0 5px 0 #3e9a5a; }
+.kw-opt:disabled:not(.right), .kw-card:disabled:not(.right) { opacity: 0.45; }
+.kw-opt.no, .kw-card.no { animation: ln-shake 0.4s ease; }
+.kw-ef-head { direction: rtl; display: flex; align-items: center; gap: 14px; }
+.kw-letter {
+  width: 92px; height: 92px; border-radius: 28px; display: grid; place-items: center; color: #fff; background: #ff8a5c;
+  box-shadow: 0 6px 0 #d8653a; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 60px; line-height: 1; animation: pop 0.35s ease;
+}
+.kw-cat {
+  display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 99px; background: rgba(255, 255, 255, 0.8);
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; line-height: 1.3;
+}
+.kw-cards { direction: rtl; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 380px; }
+.kw-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 4px 10px; border: 0; cursor: pointer; border-radius: 22px;
+  background: #fff; color: #3b2a1a; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12); font-family: "Vazirmatn", sans-serif;
+}
+.kw-card span { font-size: 52px; line-height: 1.2; }
+.kw-card b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 21px; line-height: 1.4; }
+.kw-dots { direction: rtl; display: flex; gap: 8px; }
+.kw-dots i { width: 12px; height: 12px; border-radius: 50%; background: rgba(59, 42, 26, 0.18); }
+.kw-dots i.done { background: #5bbf7a; }
+.kw-dots i.now { background: #ff8a5c; transform: scale(1.25); }
+.kw-found { direction: rtl; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 340px; }
+.kw-found span {
+  padding: 6px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.85); color: #3b9a5a;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; line-height: 1.3;
+}
+.kw-next {
+  padding: 14px 34px; border-radius: 22px; border: 0; cursor: pointer; color: #fff; background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 28px; line-height: 1.3;
+}
+.kw-next:active { transform: translateY(4px); box-shadow: 0 2px 0 #3e9a5a; }
+
+/* چرخ کلمه‌ی بچه‌ها: فقط بُر زدن و راهنمای حرف (مجانی) */
+.mode-kids #hintWordBtn, .mode-kids #hintTargetBtn, .mode-kids #hintRocketBtn, .mode-kids #chestBtn,
+.mode-kids .top .coins, .mode-kids #hintLetterBtn .cost { visibility: hidden; }
+.mode-kids .clue-btn { display: none; }

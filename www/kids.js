@@ -2,45 +2,60 @@
 
 // دو بخش بازی (بعد از learn.js بارگذاری می‌شود):
 // هر بار که بازی باز می‌شود، اول بازیکن انتخاب می‌کند: «کودک» (راست) یا «بزرگسال» (چپ).
-// بزرگسال همان بازی همیشگی است. کودک فقط یک بازی ساده دارد: نقاشی را می‌بیند و
-// با زدن حرف‌ها اسمش را می‌سازد؛ بدون وقت، بدون باخت، بدون منو و سکه و چیز اضافه.
+// بزرگسال همان بازی همیشگی است. کودک چهار بازی ساده دارد، بدون وقت و بدون باخت:
+// نقاشی و کلمه، چرخ کلمه (همان بازی اصلی با کلمه‌های آسان)، کدوم درسته (املا) و اسم فامیل.
 
-const KIDS_WORDS = [
+// هر دسته جدا (برای «اسم فامیل» بچه‌ها هم به کار می‌رود)
+const KIDS_CATS = {
   // میوه و خوراکی
-  ["سیب", "🍎"], ["موز", "🍌"], ["انگور", "🍇"], ["لیمو", "🍋"], ["گیلاس", "🍒"], ["پرتقال", "🍊"],
-  ["هندوانه", "🍉"], ["آناناس", "🍍"], ["هلو", "🍑"], ["گلابی", "🍐"], ["نارگیل", "🥥"], ["کیوی", "🥝"],
-  ["هویج", "🥕"], ["گوجه", "🍅"], ["پیاز", "🧅"], ["سیر", "🧄"], ["ذرت", "🌽"], ["قارچ", "🍄"],
-  ["فلفل", "🌶️"], ["خیار", "🥒"], ["بادمجان", "🍆"], ["نان", "🍞"], ["کیک", "🍰"], ["پنیر", "🧀"],
-  ["تخم", "🥚"], ["عسل", "🍯"], ["پیتزا", "🍕"], ["بستنی", "🍦"], ["شکلات", "🍫"], ["کلوچه", "🍪"],
-  ["چای", "🍵"], ["برنج", "🍚"], ["دونات", "🍩"], ["نمک", "🧂"], ["آب", "💧"], ["شیرینی", "🧁"],
+  food: [
+    ["سیب", "🍎"], ["موز", "🍌"], ["انگور", "🍇"], ["لیمو", "🍋"], ["گیلاس", "🍒"], ["پرتقال", "🍊"],
+    ["هندوانه", "🍉"], ["آناناس", "🍍"], ["هلو", "🍑"], ["گلابی", "🍐"], ["نارگیل", "🥥"], ["کیوی", "🥝"],
+    ["هویج", "🥕"], ["گوجه", "🍅"], ["پیاز", "🧅"], ["سیر", "🧄"], ["ذرت", "🌽"], ["قارچ", "🍄"],
+    ["فلفل", "🌶️"], ["خیار", "🥒"], ["بادمجان", "🍆"], ["نان", "🍞"], ["کیک", "🍰"], ["پنیر", "🧀"],
+    ["تخم", "🥚"], ["عسل", "🍯"], ["پیتزا", "🍕"], ["بستنی", "🍦"], ["شکلات", "🍫"], ["کلوچه", "🍪"],
+    ["چای", "🍵"], ["برنج", "🍚"], ["دونات", "🍩"], ["نمک", "🧂"], ["آب", "💧"], ["شیرینی", "🧁"],
+  ],
   // حیوان‌ها
-  ["ماهی", "🐟"], ["گربه", "🐈"], ["سگ", "🐕"], ["اسب", "🐎"], ["شیر", "🦁"], ["خرس", "🐻"],
-  ["موش", "🐭"], ["مرغ", "🐔"], ["خروس", "🐓"], ["جوجه", "🐥"], ["اردک", "🦆"], ["فیل", "🐘"],
-  ["زنبور", "🐝"], ["میمون", "🐒"], ["خرگوش", "🐇"], ["مار", "🐍"], ["جغد", "🦉"], ["شتر", "🐫"],
-  ["گاو", "🐄"], ["زرافه", "🦒"], ["پروانه", "🦋"], ["ببر", "🐅"], ["گرگ", "🐺"], ["روباه", "🦊"],
-  ["پنگوئن", "🐧"], ["قورباغه", "🐸"], ["کوسه", "🦈"], ["نهنگ", "🐋"], ["دلفین", "🐬"], ["اختاپوس", "🐙"],
-  ["گوسفند", "🐑"], ["بز", "🐐"], ["کانگورو", "🦘"], ["تمساح", "🐊"], ["عقاب", "🦅"], ["طوطی", "🦜"],
-  ["کبوتر", "🕊️"], ["مورچه", "🐜"], ["حلزون", "🐌"], ["عنکبوت", "🕷️"], ["خفاش", "🦇"], ["سنجاب", "🐿️"],
-  ["کرگدن", "🦏"], ["گورخر", "🦓"], ["پلنگ", "🐆"], ["خرچنگ", "🦀"], ["میگو", "🦐"], ["شیر", "🦁"],
+  animal: [
+    ["ماهی", "🐟"], ["گربه", "🐈"], ["سگ", "🐕"], ["اسب", "🐎"], ["شیر", "🦁"], ["خرس", "🐻"],
+    ["موش", "🐭"], ["مرغ", "🐔"], ["خروس", "🐓"], ["جوجه", "🐥"], ["اردک", "🦆"], ["فیل", "🐘"],
+    ["زنبور", "🐝"], ["میمون", "🐒"], ["خرگوش", "🐇"], ["مار", "🐍"], ["جغد", "🦉"], ["شتر", "🐫"],
+    ["گاو", "🐄"], ["زرافه", "🦒"], ["پروانه", "🦋"], ["ببر", "🐅"], ["گرگ", "🐺"], ["روباه", "🦊"],
+    ["پنگوئن", "🐧"], ["قورباغه", "🐸"], ["کوسه", "🦈"], ["نهنگ", "🐋"], ["دلفین", "🐬"], ["اختاپوس", "🐙"],
+    ["گوسفند", "🐑"], ["بز", "🐐"], ["کانگورو", "🦘"], ["تمساح", "🐊"], ["عقاب", "🦅"], ["طوطی", "🦜"],
+    ["کبوتر", "🕊️"], ["مورچه", "🐜"], ["حلزون", "🐌"], ["عنکبوت", "🕷️"], ["خفاش", "🦇"], ["سنجاب", "🐿️"],
+    ["کرگدن", "🦏"], ["گورخر", "🦓"], ["پلنگ", "🐆"], ["خرچنگ", "🦀"], ["میگو", "🦐"], ["شیر", "🦁"],
+  ],
   // طبیعت
-  ["ماه", "🌙"], ["گل", "🌸"], ["رز", "🌹"], ["درخت", "🌳"], ["برگ", "🍃"], ["ابر", "☁️"],
-  ["باران", "🌧️"], ["برف", "❄️"], ["ستاره", "⭐"], ["خورشید", "☀️"], ["کوه", "⛰️"], ["آتش", "🔥"],
-  ["دریا", "🌊"], ["کاکتوس", "🌵"], ["زمین", "🌍"], ["رعد", "⚡"],
+  nature: [
+    ["ماه", "🌙"], ["گل", "🌸"], ["رز", "🌹"], ["درخت", "🌳"], ["برگ", "🍃"], ["ابر", "☁️"],
+    ["باران", "🌧️"], ["برف", "❄️"], ["ستاره", "⭐"], ["خورشید", "☀️"], ["کوه", "⛰️"], ["آتش", "🔥"],
+    ["دریا", "🌊"], ["کاکتوس", "🌵"], ["زمین", "🌍"], ["رعد", "⚡"],
+  ],
   // چیزها
-  ["کفش", "👟"], ["کلاه", "🧢"], ["توپ", "⚽"], ["کتاب", "📖"], ["مداد", "✏️"], ["ساعت", "⌚"],
-  ["خانه", "🏠"], ["قلب", "❤️"], ["هدیه", "🎁"], ["کلید", "🔑"], ["قاشق", "🥄"], ["چتر", "☂️"],
-  ["عینک", "👓"], ["بادکنک", "🎈"], ["لامپ", "💡"], ["قیچی", "✂️"], ["چکش", "🔨"], ["جارو", "🧹"],
-  ["صندلی", "🪑"], ["تخت", "🛏️"], ["در", "🚪"], ["پیراهن", "👕"], ["شلوار", "👖"], ["جوراب", "🧦"],
-  ["دستکش", "🧤"], ["شال", "🧣"], ["تاج", "👑"], ["انگشتر", "💍"], ["کیف", "👜"], ["طبل", "🥁"],
-  ["گیتار", "🎸"], ["زنگ", "🔔"], ["نامه", "✉️"], ["دوربین", "📷"], ["چمدان", "🧳"], ["شمع", "🕯️"],
-  ["گوشی", "📱"], ["بادبادک", "🪁"],
+  thing: [
+    ["کفش", "👟"], ["کلاه", "🧢"], ["توپ", "⚽"], ["کتاب", "📖"], ["مداد", "✏️"], ["ساعت", "⌚"],
+    ["خانه", "🏠"], ["قلب", "❤️"], ["هدیه", "🎁"], ["کلید", "🔑"], ["قاشق", "🥄"], ["چتر", "☂️"],
+    ["عینک", "👓"], ["بادکنک", "🎈"], ["لامپ", "💡"], ["قیچی", "✂️"], ["چکش", "🔨"], ["جارو", "🧹"],
+    ["صندلی", "🪑"], ["تخت", "🛏️"], ["در", "🚪"], ["پیراهن", "👕"], ["شلوار", "👖"], ["جوراب", "🧦"],
+    ["دستکش", "🧤"], ["شال", "🧣"], ["تاج", "👑"], ["انگشتر", "💍"], ["کیف", "👜"], ["طبل", "🥁"],
+    ["گیتار", "🎸"], ["زنگ", "🔔"], ["نامه", "✉️"], ["دوربین", "📷"], ["چمدان", "🧳"], ["شمع", "🕯️"],
+    ["گوشی", "📱"], ["بادبادک", "🪁"],
+  ],
   // وسیله‌های نقلیه
-  ["ماشین", "🚗"], ["قطار", "🚆"], ["کشتی", "🚢"], ["قایق", "⛵"], ["موشک", "🚀"], ["دوچرخه", "🚲"],
-  ["هواپیما", "✈️"], ["اتوبوس", "🚌"], ["تاکسی", "🚕"], ["کامیون", "🚚"], ["تراکتور", "🚜"], ["موتور", "🏍️"],
+  vehicle: [
+    ["ماشین", "🚗"], ["قطار", "🚆"], ["کشتی", "🚢"], ["قایق", "⛵"], ["موشک", "🚀"], ["دوچرخه", "🚲"],
+    ["هواپیما", "✈️"], ["اتوبوس", "🚌"], ["تاکسی", "🚕"], ["کامیون", "🚚"], ["تراکتور", "🚜"], ["موتور", "🏍️"],
+  ],
   // بدن و آدم‌ها
-  ["دست", "✋"], ["چشم", "👁️"], ["گوش", "👂"], ["بینی", "👃"], ["پا", "🦶"], ["دندان", "🦷"],
-  ["بچه", "👶"], ["پسر", "👦"], ["دختر", "👧"], ["بابا", "👨"], ["مامان", "👩"], ["پلیس", "👮"],
-].filter((w, i, all) => all.findIndex((v) => v[0] === w[0]) === i);
+  body: [
+    ["دست", "✋"], ["چشم", "👁️"], ["گوش", "👂"], ["بینی", "👃"], ["پا", "🦶"], ["دندان", "🦷"],
+    ["بچه", "👶"], ["پسر", "👦"], ["دختر", "👧"], ["بابا", "👨"], ["مامان", "👩"], ["پلیس", "👮"],
+  ],
+};
+const KIDS_WORDS = Object.values(KIDS_CATS).flat()
+  .filter((w, i, all) => all.findIndex((v) => v[0] === w[0]) === i);
 
 const KIDS_PAID = 10; // هر روز فقط ۱۰ کلمه‌ی اول سکه دارد (بی‌صدا به کیف سکه اضافه می‌شود)
 const KIDS_HINT_MS = 4500; // اگر بچه مدتی حرف درست را نزد، همان حرف تکان می‌خورد
@@ -58,7 +73,7 @@ kidsGate.innerHTML = `
     <div class="kg-ask">کی می‌خواد بازی کنه؟</div>
     <div class="kg-picks">
       <button class="kg-pick kg-kid" type="button" id="kgKid">
-        <span class="kg-ic">🧸</span><b>کودک</b><small>نقاشی ببین، اسمش رو بساز</small>
+        <span class="kg-ic">🧸</span><b>کودک</b><small>بازی‌های ساده و رنگی</small>
       </button>
       <button class="kg-pick kg-adult" type="button" id="kgAdult">
         <span class="kg-ic">📚</span><b>بزرگسال</b><small>بازی کامل کلمه</small>
@@ -80,6 +95,8 @@ document.body.appendChild(kidsWorld);
 
 function showGate() {
   kwStop();
+  kwLeavePlay();
+  kwIn = null;
   kidsWorld.classList.add("hidden");
   kidsGate.classList.remove("hidden");
 }
@@ -90,11 +107,11 @@ function chooseAdult() {
 function chooseKid() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.remove("hidden");
-  kwNext();
+  kwMenu();
 }
 $("kgKid").onclick = chooseKid;
 $("kgAdult").onclick = chooseAdult;
-$("kwHome").onclick = showGate;
+$("kwHome").onclick = () => (kwIn ? kwMenu() : showGate());
 
 // دکمه‌ی «کودک یا بزرگسال» در تنظیمات، برای عوض کردن بخش بدون بستن بازی
 (() => {
@@ -117,6 +134,7 @@ $("kwHome").onclick = showGate;
 // ---------------------------------------------------------------------------
 
 let kw = null; // { word, pic, letters, at }
+let kwIn = null; // بازی‌ای که الان باز است (null یعنی فهرست بازی‌های کودک)
 let kwWaits = [];
 let kwHintTimer = null;
 const kwLater = (fn, ms) => kwWaits.push(setTimeout(fn, ms));
@@ -153,6 +171,7 @@ function kwTodayStars() {
 
 function kwNext() {
   kwStop();
+  kwIn = "pic";
   const [word, pic] = kwPick();
   const letters = [...word];
   let order = shuffled(letters.map((ch, i) => ({ ch, i })), Math.random);
@@ -204,22 +223,11 @@ function kwWin() {
   const st = kwState();
   st.done++;
   st.recent = [kw.word, ...st.recent.filter((w) => w !== kw.word)].slice(0, 40);
-  let day = X().kids;
-  if (!day || day.day !== todayKey()) day = X().kids = { day: todayKey(), n: 0 };
-  day.all = (day.all || day.n || 0) + 1;
-  if (day.n < KIDS_PAID) {
-    day.n++;
-    save.coins += 1;
-  }
-  persist();
-  if (typeof sound === "function") sound("complete");
-  if (typeof haptic === "function") haptic("light");
+  kwReward();
   const stage = $("kwStage");
   stage.querySelector(".kw-slots").outerHTML = `<div class="kw-word">${kw.word}</div>`;
-  stage.querySelector(".kw-keys").innerHTML = `<div class="kw-cheer">${lnPick(["آفرین!", "عالی!", "ایول!", "باریکلا!", "چه خوب!"])}</div>`;
+  stage.querySelector(".kw-keys").innerHTML = kwCheer();
   stage.querySelector(".kw-pic").classList.add("win");
-  $("kwStars").textContent = faDigits(day.all);
-  kwConfetti();
   kwLater(kwNext, 1700);
 }
 
@@ -236,4 +244,303 @@ function kwConfetti() {
     kidsWorld.appendChild(b);
     setTimeout(() => b.remove(), 1800);
   }
+}
+
+// ---------------------------------------------------------------------------
+// ستاره و سکه، و فهرست بازی‌های کودک
+// ---------------------------------------------------------------------------
+
+// هر جواب درست یک ستاره؛ هر روز فقط ۱۰ تای اول یک سکه هم (بی‌صدا) به کیف سکه اضافه می‌کند
+function kwReward() {
+  let day = X().kids;
+  if (!day || day.day !== todayKey()) day = X().kids = { day: todayKey(), n: 0 };
+  day.all = (day.all || day.n || 0) + 1;
+  if (day.n < KIDS_PAID) {
+    day.n++;
+    save.coins += 1;
+  }
+  persist();
+  $("kwStars").textContent = faDigits(day.all);
+  if (typeof sound === "function") sound("complete");
+  if (typeof haptic === "function") haptic("light");
+  kwConfetti();
+}
+const kwCheer = () => `<div class="kw-cheer">${lnPick(["آفرین!", "عالی!", "ایول!", "باریکلا!", "چه خوب!"])}</div>`;
+// جواب اشتباه فقط تکان می‌خورد؛ چیزی از دست نمی‌رود
+function kwOops(btn) {
+  if (typeof sound === "function") sound("repeat");
+  if (typeof haptic === "function") haptic("light");
+  btn.classList.remove("no");
+  void btn.offsetWidth;
+  btn.classList.add("no");
+}
+
+const KW_GAMES = [
+  ["pic", "🖼️", "نقاشی و کلمه", () => kwNext()],
+  ["wheel", "🎡", "چرخ کلمه", () => kwWheel()],
+  ["spell", "✏️", "کدوم درسته؟", () => kwSpell()],
+  ["ef", "🔤", "اسم فامیل", () => kwEf()],
+];
+
+function kwMenu() {
+  kwStop();
+  kwLeavePlay();
+  kwIn = null;
+  kidsWorld.classList.remove("hidden");
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  $("kwStage").innerHTML = `
+    <div class="kw-title">چی بازی کنیم؟</div>
+    <div class="kw-menu">${KW_GAMES.map(([id, ic, name]) =>
+      `<button class="kw-game kw-g-${id}" type="button" data-kw="${id}"><span>${ic}</span><b>${name}</b></button>`).join("")}</div>`;
+  $("kwStage").querySelectorAll(".kw-game").forEach((b) => (b.onclick = () => KW_GAMES.find((g) => g[0] === b.dataset.kw)[3]()));
+}
+
+// ---------------------------------------------------------------------------
+// کدوم درسته؟ (املا): نقاشی و دو شکل نوشتن؛ بچه شکل درست را می‌زند
+// ---------------------------------------------------------------------------
+// [درست، غلط، نقاشی]؛ شکل غلط نباید خودش کلمه‌ی درستی باشد
+
+const KIDS_SPELL = [
+  ["طوطی", "توتی", "🦜"], ["قاشق", "غاشق", "🥄"], ["صندلی", "سندلی", "🪑"], ["حلزون", "هلزون", "🐌"],
+  ["عینک", "عینگ", "👓"], ["عسل", "اسل", "🍯"], ["قورباغه", "غورباغه", "🐸"], ["ذرت", "زرت", "🌽"],
+  ["خورشید", "خرشید", "☀️"], ["صابون", "سابون", "🧼"], ["طبل", "تبل", "🥁"], ["عقاب", "اقاب", "🦅"],
+  ["غذا", "قذا", "🍲"], ["توپ", "طوپ", "⚽"], ["تخت", "طخت", "🛏️"], ["گوسفند", "گوصفند", "🐑"],
+  ["عروسک", "اروسک", "🪆"], ["صدف", "سدف", "🐚"], ["شطرنج", "شترنج", "♟️"], ["اتوبوس", "اطوبوس", "🚌"],
+  ["تلفن", "طلفن", "☎️"], ["زرافه", "ضرافه", "🦒"], ["صبحانه", "سبحانه", "🍳"], ["قلب", "غلب", "❤️"],
+  ["قطار", "غطار", "🚆"], ["قایق", "غایق", "⛵"], ["چراغ", "چراق", "🚦"], ["مرغ", "مرق", "🐔"],
+  ["سیب", "صیب", "🍎"], ["ستاره", "صتاره", "⭐"], ["ماهی", "ماحی", "🐟"], ["هویج", "حویج", "🥕"],
+  ["حمام", "همام", "🛁"], ["اسب", "اصب", "🐎"], ["خروس", "خروص", "🐓"], ["خواب", "خاب", "😴"],
+  ["خواهر", "خاهر", "👧"], ["عنکبوت", "عنکبود", "🕷️"], ["مداد", "مدات", "✏️"], ["طلا", "تلا", "🥇"],
+  ["ساعت", "ساعط", "⌚"], ["تمساح", "طمساح", "🐊"], ["ظرف", "زرف", "🍽️"], ["بستنی", "بصتنی", "🍦"],
+  ["شکلات", "شکلاط", "🍫"], ["صحرا", "سحرا", "🏜️"],
+];
+let kwSpellLast = [];
+
+function kwSpell() {
+  kwStop();
+  kwIn = "spell";
+  const pool = KIDS_SPELL.filter((x) => !kwSpellLast.includes(x[0]));
+  const [right, wrong, pic] = lnPick(pool.length ? pool : KIDS_SPELL);
+  kwSpellLast = [right, ...kwSpellLast].slice(0, 15);
+  const opts = Math.random() < 0.5 ? [right, wrong] : [wrong, right];
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  $("kwStage").innerHTML = `
+    <div class="kw-pic">${pic}</div>
+    <div class="kw-ask">کدوم درست نوشته شده؟</div>
+    <div class="kw-opts">${opts.map((w) => `<button class="kw-opt" type="button">${w}</button>`).join("")}</div>`;
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-opt").forEach((b) => (b.onclick = () => {
+    if (b.textContent !== right) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    $("kwStage").querySelectorAll(".kw-opt").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    if (!missed) kwReward();
+    else if (typeof sound === "function") sound("found");
+    $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
+    $("kwStage").querySelector(".kw-pic").classList.add("win");
+    kwLater(kwSpell, 1500);
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// اسم فامیل کودک: یک حرف میاد؛ برای هر دسته از سه نقاشی، اونی که با این حرف شروع میشه
+// ---------------------------------------------------------------------------
+
+const KW_EF_CATS = [
+  ["food", "خوراکی", "🍽️"],
+  ["animal", "حیوون", "🐾"],
+  ["thing", "چیزها", "🎒"],
+  ["nature", "طبیعت", "🌳"],
+];
+const kwFirst = (w) => (w[0] === "آ" ? "ا" : w[0]);
+const kwEfPool = (id) => (id === "thing" ? [...KIDS_CATS.thing, ...KIDS_CATS.vehicle] : id === "nature" ? [...KIDS_CATS.nature, ...KIDS_CATS.body] : KIDS_CATS[id]);
+let kef = null; // { letter, cats, i, last }
+
+function kwEf() {
+  kwStop();
+  kwIn = "ef";
+  // فقط حرف‌هایی که دست‌کم سه دسته برایشان جواب دارند
+  const count = {};
+  for (const [id] of KW_EF_CATS) {
+    for (const ch of new Set(kwEfPool(id).map((w) => kwFirst(w[0])))) count[ch] = (count[ch] || 0) + 1;
+  }
+  const last = kef && kef.letter;
+  const letters = Object.keys(count).filter((ch) => count[ch] >= 3 && ch !== last);
+  const letter = lnPick(letters);
+  kef = { letter, cats: KW_EF_CATS.filter(([id]) => kwEfPool(id).some((w) => kwFirst(w[0]) === letter)), i: 0 };
+  kwEfRound();
+}
+
+function kwEfRound() {
+  const [id, label, ic] = kef.cats[kef.i];
+  const pool = kwEfPool(id);
+  const right = lnPick(pool.filter((w) => kwFirst(w[0]) === kef.letter));
+  const others = [];
+  for (const w of shuffled(pool, Math.random)) {
+    const f = kwFirst(w[0]);
+    if (others.length < 2 && f !== kef.letter && !others.some((o) => kwFirst(o[0]) === f)) others.push(w);
+  }
+  const opts = shuffled([right, ...others], Math.random);
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  $("kwStage").innerHTML = `
+    <div class="kw-ef-head">
+      <div class="kw-letter">${kef.letter}</div>
+      <div class="kw-cat"><span>${ic}</span>${label}</div>
+    </div>
+    <div class="kw-ask">کدوم با «${kef.letter}» شروع میشه؟</div>
+    <div class="kw-cards">${opts.map((w) => `<button class="kw-card" type="button" data-w="${w[0]}"><span>${w[1]}</span><b>${w[0]}</b></button>`).join("")}</div>
+    <div class="kw-dots">${kef.cats.map((_, k) => `<i class="${k < kef.i ? "done" : k === kef.i ? "now" : ""}"></i>`).join("")}</div>`;
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-card").forEach((b) => (b.onclick = () => {
+    if (b.dataset.w !== right[0]) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    $("kwStage").querySelectorAll(".kw-card").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    if (!missed) kwReward();
+    else if (typeof sound === "function") sound("found");
+    $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
+    kwLater(() => (++kef.i < kef.cats.length ? kwEfRound() : kwEf()), 1400);
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// چرخ کلمه: همان بازی اصلی، با جدول‌های کوچک و کلمه‌های آسان
+// ---------------------------------------------------------------------------
+// از صفحه‌ی خود بازی استفاده می‌کند، با playKey جدا (k:)، و به پیشرفت بزرگسال دست نمی‌زند.
+// ۱۰ مرحله‌ی اول همان مرحله‌های دست‌ساز آسان‌اند؛ بعد کلمه‌ی اصلی از کلمه‌های بچه‌ها
+// (اول ۴ حرفی، بعد ۵ حرفی) و حداکثر ۴ کلمه در جدول، با کلمه‌های آشناتر در اولویت.
+
+const KW_PREFIX = "k:";
+const KW_MAX_WORDS = 4;
+const isKidsPlay = () => typeof playKey === "string" && playKey.startsWith(KW_PREFIX);
+{
+  // جایزه‌ها و مرحله‌های طلایی و … بزرگسال در بازی بچه‌ها نمی‌آیند
+  const base = isMode;
+  isMode = function () {
+    return base() || isKidsPlay();
+  };
+}
+
+let kwSeeds = null;
+function kwPrepare() {
+  if (kwSeeds) return;
+  const easy = new Set([...KIDS_WORDS.map((w) => w[0]), ...handmade.flatMap((l) => l.words)]);
+  // کلمه‌ی اصلی باید دست‌کم دو کلمه‌ی رایج دیگر هم بسازد؛ اول کلمه‌های بچه‌ها، بعد کلمه‌های اصلی رایج بازی
+  const rich = (w) => generator.wordsFrom(w).filter((x) => x !== w && x.length >= 2 && generator.levelOf(x) === 1).length >= 3;
+  const seedsOf = (L) => {
+    const kid = shuffled(KIDS_WORDS.map((w) => w[0]).filter((w) => [...w].length === L && dict.has(w) && rich(w)), seededRandom(hashText("kids" + L)));
+    const common = (generator.seeds[L] || []).slice(0, generator.seeds[L].common || 0).filter((w) => !kid.includes(w) && rich(w));
+    const seen = new Set();
+    return [...kid, ...common.slice(0, 60)].filter((w) => {
+      const key = [...w.replace(/آ/g, "ا")].sort().join(""); // از هر دسته‌ی حروف یکسان فقط یکی
+      return !seen.has(key) && seen.add(key);
+    });
+  };
+  kwSeeds = { easy, 4: seedsOf(4), 5: seedsOf(5) };
+}
+
+function kwBuild(seed, rnd) {
+  const subs = generator.wordsFrom(seed).filter((w) => w !== seed && w.length >= 2 && generator.levelOf(w) === 1);
+  const rank = (w) => (kwSeeds.easy.has(w) ? 0 : 2) + (w.length === 2 ? 1 : 0) + rnd();
+  const pool = subs.map((w) => ({ w, k: rank(w) })).sort((a, b) => a.k - b.k).map((x) => x.w);
+  const picked = [seed];
+  let twos = 0;
+  for (const w of pool) {
+    if (picked.length >= KW_MAX_WORDS) break;
+    if (w.length === 2 && twos >= 1) continue;
+    if (buildLayout([...picked, w], 400).connected) {
+      picked.push(w);
+      if (w.length === 2) twos++;
+    }
+  }
+  return { letters: shuffled([...seed], rnd), words: picked, seed };
+}
+
+function kwWheelLevel(n) {
+  if (n < handmade.length || !generator) return handmade[n % handmade.length];
+  kwPrepare();
+  const g = n - handmade.length;
+  const list = g < 20 || !kwSeeds[5].length ? kwSeeds[4] : g % 2 ? kwSeeds[5] : kwSeeds[4];
+  let best = null;
+  for (let k = 0; k < 6; k++) {
+    const seed = list[(g + k * 7) % list.length];
+    const lv = kwBuild(seed, seededRandom(hashText(seed) + g));
+    if (!best || lv.words.length > best.words.length) best = lv;
+    if (lv.words.length >= 3) break;
+  }
+  return best;
+}
+
+function kwWheel() {
+  kwStop();
+  kwIn = "wheel";
+  const n = kwState().lv || 0;
+  kidsWorld.classList.add("hidden");
+  $("app").classList.add("mode-kids");
+  startPuzzle(kwWheelLevel(n), n, KW_PREFIX + n);
+  $("levelLabel").textContent = `🧸 مرحله‌ی ${faDigits(n + 1)}`;
+  open("play");
+}
+
+// از صفحه‌ی بازی به بخش کودک برمی‌گردد (اگر آنجا باشیم)
+function kwLeavePlay() {
+  if (!$("app").classList.contains("mode-kids")) return;
+  $("app").classList.remove("mode-kids");
+  if (location.hash === "#play") goHome();
+}
+
+// دکمه‌ی منو و «برگشت» گوشی در بازی بچه‌ها به فهرست بازی‌های کودک می‌رود
+window.addEventListener("hashchange", () => {
+  if (location.hash === "#play" || !$("app").classList.contains("mode-kids")) return;
+  $("app").classList.remove("mode-kids");
+  kwMenu();
+});
+
+// راهنمای حرف در بازی بچه‌ها مجانی است
+$("hintLetterBtn").addEventListener("click", (e) => {
+  if (!isKidsPlay()) return;
+  e.stopImmediatePropagation();
+  if (locked || dragging) return;
+  const empty = Object.values(cellEls).filter((el) => !isFilled(el));
+  if (!empty.length) return;
+  const el = lnPick(empty);
+  revealCell(el, true);
+  emit("hint", { cells: [el] });
+  checkDone();
+}, true);
+
+{
+  const base = finishMode;
+  finishMode = function (hinted) {
+    if (!isKidsPlay()) return base(hinted);
+    locked = true;
+    delete save.partial[playKey];
+    const st = kwState();
+    st.lv = (st.lv || 0) + 1;
+    persist();
+    const key = playKey;
+    setTimeout(() => {
+      if (screenNow === "play" && playKey === key) kwWheelWin();
+    }, 900);
+    return true;
+  };
+}
+
+function kwWheelWin() {
+  kwStop();
+  kwIn = "wheelwin";
+  kidsWorld.classList.remove("hidden");
+  $("kwStage").innerHTML = `
+    <div class="kw-pic win">🎉</div>
+    <div class="kw-word">${lnPick(["آفرین!", "عالی بود!", "ایول!", "باریکلا!"])}</div>
+    <div class="kw-found">${puzzle.words.map((w) => `<span>${w}</span>`).join("")}</div>
+    <button class="kw-next" type="button" id="kwNextLevel">مرحله‌ی بعد ◀</button>`;
+  kwReward();
+  $("kwNextLevel").onclick = kwWheel;
 }
