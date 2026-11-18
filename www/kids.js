@@ -99,13 +99,18 @@ function showGate() {
   kidsWorld.classList.add("hidden");
   kidsGate.classList.remove("hidden");
 }
+// هر بخش ظاهر انتخابی خودش را دارد؛ ظاهر خریده‌شده (save.owned) در هر دو بخش باز است
+const kwThemeOf = (id) => (id && themeOwned(id) ? id : "plain");
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
+  if (activeTheme !== kwThemeOf(save.theme)) applyTheme(kwThemeOf(save.theme));
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.remove("hidden");
+  const id = kwThemeOf(X().kidsTheme || save.theme);
+  if (activeTheme !== id) applyTheme(id);
   kwMenu();
 }
 $("kgKid").onclick = chooseKid;
@@ -275,6 +280,7 @@ const KW_GAMES = [
   ["wheel", "🎡", "چرخ کلمه", () => kwWheel()],
   ["spell", "✏️", "کدوم درسته؟", () => kwSpell()],
   ["ef", "🔤", "اسم فامیل", () => kwEf()],
+  ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
 ];
 
 function kwMenu() {
@@ -584,4 +590,108 @@ function kwWheelWin() {
     <button class="kw-next" type="button" id="kwNextLevel">مرحله‌ی بعد ◀</button>`;
   kwReward();
   $("kwNextLevel").onclick = kwWheel;
+}
+
+// ---------------------------------------------------------------------------
+// ظاهر بازی در بخش کودک
+// ---------------------------------------------------------------------------
+// همان صفحه‌ی ظاهرها، ولی انتخاب در X().kidsTheme ذخیره می‌شود و به ظاهر بزرگسال دست نمی‌زند.
+// خرید مشترک است: ظاهری که در هر بخش خریده شود در هر دو باز است. پیش از خرید در بخش کودک،
+// یک سؤال ساده برای بزرگ‌ترها می‌آید تا بچه خودش چیزی نخرد.
+
+let kwThemeMode = false;
+
+function kwThemes() {
+  kwStop();
+  kwIn = "themes";
+  kwThemeMode = true;
+  kidsWorld.classList.add("hidden");
+  open("themes");
+  renderThemes();
+}
+
+function kwThemesDone() {
+  kwThemeMode = false;
+  kwParentClose();
+  hideThemeSheet();
+  kwMenu();
+}
+
+{
+  const baseRender = renderThemes;
+  renderThemes = function () {
+    baseRender();
+    if (!kwThemeMode) return;
+    const mine = kwThemeOf(X().kidsTheme || save.theme);
+    THEMES.forEach((t, i) => {
+      const card = $("themeList").children[i];
+      if (card) card.classList.toggle("selected", t.id === mine && themeOwned(t.id));
+    });
+    $("themesBack").classList.remove("hidden");
+  };
+
+  const baseChoose = chooseTheme;
+  chooseTheme = function (id) {
+    if (!kwThemeMode) return baseChoose(id);
+    const t = THEMES.find((x) => x.id === id);
+    if (!themeOwned(id)) return kwParentGate(() => showThemeSheet(t));
+    X().kidsTheme = id;
+    persist();
+    applyTheme(id);
+    goHome();
+  };
+}
+
+// «برگشت» از صفحه‌ی ظاهرها (دکمه‌ی بالا یا دکمه‌ی گوشی) به فهرست بازی‌های کودک
+window.addEventListener("hashchange", () => {
+  if (kwThemeMode && location.hash !== "#themes") kwThemesDone();
+});
+{
+  const baseBack = window.kalamehBack;
+  window.kalamehBack = () => {
+    if (!kwThemeMode) return baseBack();
+    if (!kwParent.classList.contains("hidden")) return kwParentClose(), "closed";
+    if (!$("themeSheet").classList.contains("hidden")) return hideThemeSheet(), "closed";
+    history.replaceState(null, "", location.pathname + location.search);
+    route();
+    kwThemesDone();
+    return "back";
+  };
+}
+
+// سؤال بزرگ‌ترها پیش از خرید
+const kwParent = document.createElement("div");
+kwParent.className = "kw-parent hidden";
+kwParent.innerHTML = `<div class="kw-parent-card">
+  <div class="kw-parent-title">این ظاهر خریدنیه 🔒</div>
+  <div class="kw-parent-text">برای خرید، یکی از بزرگ‌ترها باید جواب بده:</div>
+  <div class="kw-parent-q" id="kwParentQ"></div>
+  <div class="kw-parent-opts" id="kwParentOpts"></div>
+  <button class="card-link" type="button" id="kwParentNo">بستن</button>
+</div>`;
+document.body.appendChild(kwParent);
+$("kwParentNo").onclick = () => kwParentClose();
+kwParent.addEventListener("click", (e) => {
+  if (e.target === kwParent) kwParentClose();
+});
+function kwParentClose() {
+  kwParent.classList.add("hidden");
+}
+function kwParentGate(then) {
+  const a = 6 + Math.floor(Math.random() * 4);
+  const b = 6 + Math.floor(Math.random() * 4);
+  const right = a * b;
+  const opts = new Set([right]);
+  while (opts.size < 3) {
+    const n = right + (Math.floor(Math.random() * 9) - 4) * (Math.random() < 0.5 ? 1 : a);
+    if (n > 0) opts.add(n);
+  }
+  $("kwParentQ").textContent = `${faDigits(a)} × ${faDigits(b)} = ؟`;
+  $("kwParentOpts").innerHTML = shuffled([...opts], Math.random)
+    .map((n) => `<button class="card-btn kw-parent-opt" type="button" data-n="${n}">${faDigits(n)}</button>`).join("");
+  $("kwParentOpts").querySelectorAll("button").forEach((btn) => (btn.onclick = () => {
+    kwParentClose();
+    if (Number(btn.dataset.n) === right) then();
+  }));
+  kwParent.classList.remove("hidden");
 }
