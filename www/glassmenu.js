@@ -52,3 +52,29 @@
     [..."کلمهبرسا"].map((ch, i) => `<span class="gm-float" style="right:${(i * 37 + 9) % 92}%;animation-delay:${-i * 1.3}s">${ch}</span>`).join("");
   menu.prepend(deco);
 })();
+
+// ظاهر ساده صحنه‌ای ندارد؛ یک جدول کوچک کلمه بالای اسم بازی می‌آید که خانه‌هایش یکی‌یکی پر می‌شوند
+(() => {
+  // [ردیف، ستون از راست، حرف، پر شده؟]  کلمه، کار، هوا، ابر (ابر هنوز پیدا نشده)
+  const CELLS = [
+    [0, 0, "ک", 1], [0, 1, "ل", 1], [0, 2, "م", 1], [0, 3, "ه", 1],
+    [1, 0, "ا", 1], [1, 3, "و", 1],
+    [2, 0, "ر", 1], [2, 3, "ا", 1], [2, 4, "ب", 0], [2, 5, "ر", 0],
+  ];
+  const S = 44, G = 6, COLS = 6, ROWS = 3;
+  const W = COLS * S + (COLS - 1) * G, H = ROWS * S + (ROWS - 1) * G;
+  function gridSVG() {
+    const cells = CELLS.map(([r, c, ch, on], i) => {
+      const x = (COLS - 1 - c) * (S + G), y = r * (S + G);
+      return `<g class="pg-cell${on ? " on" : ""}" style="animation-delay:${0.15 + i * 0.09}s;transform-origin:${x + S / 2}px ${y + S / 2}px">` +
+        `<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="11"/>` +
+        (on ? `<text x="${x + S / 2}" y="${y + S / 2 + 1}">${ch}</text>` : "") + `</g>`;
+    }).join("");
+    return `<svg class="plain-grid" viewBox="-4 -4 ${W + 8} ${H + 8}" aria-hidden="true">${cells}</svg>`;
+  }
+  gameHooks.push((name) => {
+    if (name !== "home" || document.documentElement.dataset.theme !== "plain") return;
+    const box = document.getElementById("homeScene");
+    if (box && !box.firstChild) box.innerHTML = gridSVG();
+  });
+})();

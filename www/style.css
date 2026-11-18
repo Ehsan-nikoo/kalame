@@ -2287,3 +2287,18 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
   #screenHome .glass-menu .menu-btn.gm-row { padding: 4px 12px; }
   #screenHome .glass-menu .daily-btn { padding: 5px 12px; }
 }
+
+/* glassmenu.js: جدول کلمه‌ی ظاهر ساده بالای اسم بازی */
+.home-scene > svg.plain-grid { max-height: 210px; margin-top: 10px; overflow: visible; }
+.plain-grid rect { fill: #e9e4da; }
+.plain-grid .on rect { fill: var(--accent); filter: drop-shadow(0 3px 0 #46695c); }
+.plain-grid text { fill: #fff; font-family: var(--display); font-size: 25px; text-anchor: middle; dominant-baseline: central; }
+.plain-grid .pg-cell { animation: pg-pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+@keyframes pg-pop { from { transform: scale(0); opacity: 0; } }
+:root[data-lite="1"] .plain-grid .pg-cell { animation: none; }
+@media (prefers-reduced-motion: reduce) { .plain-grid .pg-cell { animation: none; } }
+
+/* صفحه‌ی خانه اسکرول‌بار نشان نمی‌دهد و لکه‌های پشت منو از پایین صفحه بیرون نمی‌زنند */
+#screenHome { scrollbar-width: none; }
+#screenHome::-webkit-scrollbar { display: none; }
+.gm-deco { bottom: 0; }
