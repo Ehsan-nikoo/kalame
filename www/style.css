@@ -2682,3 +2682,17 @@ button { touch-action: manipulation; }
   font-size: 14px;
 }
 @media (prefers-reduced-motion: reduce) { .tour-hole, .tour-kalami, .tour-kalami .tk-eyes { animation: none; } }
+
+/* پیام‌های بلند زیر دکمه‌ی «📖 معنی» نروند: کنار دکمه می‌نشینند و اگر لازم شد دوخطی می‌شوند.
+   --clue-room را plus2.js از اندازه‌ی واقعی دکمه حساب می‌کند. */
+.preview.note, .preview.bonus {
+  max-width: calc(100% - var(--clue-room, 76px));
+  margin-left: var(--clue-room, 76px);
+  white-space: normal;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.45;
+  padding: 0 12px;
+}
+.preview.bonus { font-size: 17px; }
+.mode-speed .preview.note, .mode-kids .preview.note, .mode-speed .preview.bonus, .mode-kids .preview.bonus { max-width: 100%; margin-left: 0; }

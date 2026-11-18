@@ -407,3 +407,5 @@
 [data-theme="ink"] .tour-dots i { background: #e0d1aa; }
 [data-theme="ink"] .tour-dots i.on { background: #8b2b1a; }
 [data-theme="ink"] .tour-hole { box-shadow: 0 0 0 9999px rgba(27, 19, 10, 0.66), 0 0 0 2.5px #c9a14a, 0 0 22px 6px rgba(201, 161, 74, 0.55); }
+/* پیام‌های بلند: نستعلیق کوچک‌تر و دوخطی، کنار دکمه‌ی «معنی» */
+[data-theme="ink"] .preview.note, [data-theme="ink"] .preview.bonus { font-size: 16px; line-height: 1.55; }

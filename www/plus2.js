@@ -60,6 +60,17 @@ clueBtn.setAttribute("aria-label", "راهنما: معنی یه کلمه");
 clueBtn.innerHTML = `<span>📖 معنی</span><span class="cost"><span class="coin-icon"></span><span class="cost-count">${faDigits(COST_HINT_MEANING)}</span></span>`;
 // گوشه‌ی بالای دایره‌ی حروف (روی جدول نمی‌افتد)
 document.querySelector(".play-area").appendChild(clueBtn);
+// پیام‌های بلند (style.css: .preview.note) کنار این دکمه می‌نشینند تا زیرش نروند؛
+// جای دکمه پیش از هر پیام اندازه گرفته می‌شود (هر ظاهر ممکن است اندازه‌اش را عوض کند)
+function measureClueRoom() {
+  if (!clueBtn.offsetWidth) return;
+  clueBtn.parentElement.style.setProperty("--clue-room", clueBtn.offsetLeft + clueBtn.offsetWidth + 6 + "px");
+}
+const showPreviewBase = showPreview;
+showPreview = function (text, kind, ms) {
+  if (/note|bonus/.test(kind)) measureClueRoom();
+  return showPreviewBase(text, kind, ms);
+};
 
 const clueSheet = makeSheet("clueSheet", `
   <div class="card-title">📖 حدس بزن!</div>
