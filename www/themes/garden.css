@@ -352,3 +352,11 @@
   backdrop-filter: blur(6px);
   box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85), inset 0 0 0 3px rgba(44, 143, 154, 0.16), 0 10px 24px rgba(45, 74, 52, 0.28);
 }
+
+/* آموزش: «بلبل» کنار حوض */
+[data-theme="garden"] .tour-card { background: rgba(255, 255, 255, 0.94); color: #2d4a34; border: 2px solid #9fcfb0; box-shadow: 0 14px 40px rgba(20, 60, 40, 0.35); }
+[data-theme="garden"] .tour-next { background: linear-gradient(180deg, #4fa36b, #3f8a5a); box-shadow: 0 3px 0 #2b6640; }
+[data-theme="garden"] .tour-skip { color: #4b6b55; border-color: #cfe5d6; }
+[data-theme="garden"] .tour-dots i { background: #d6e9dc; }
+[data-theme="garden"] .tour-dots i.on { background: #e0475f; }
+[data-theme="garden"] .tour-hole { box-shadow: 0 0 0 9999px rgba(16, 40, 30, 0.62), 0 0 0 3px #fff, 0 0 22px 6px rgba(240, 120, 140, 0.5); }

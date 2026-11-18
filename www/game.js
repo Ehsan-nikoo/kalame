@@ -141,7 +141,7 @@ function defineTheme(id, def) {
 
 // فقط برای تست با start-game: همه‌ی ظاهرهای پولی در مرورگر باز هستند.
 // قبل از ساختن APK این را false کنید. (در خود اپ اندروید هیچ‌وقت اثری ندارد.)
-const TEST_ALL_THEMES = true;
+const TEST_ALL_THEMES = false;
 // نسخه‌ی تست APK (build-apk.yml با گزینه‌ی test) این را true می‌کند تا ظاهرها روی گوشی هم باز باشند.
 const TEST_APK = false;
 const IN_NATIVE_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
@@ -334,6 +334,7 @@ function startPuzzle(level, index, key) {
 
   const name = levelName(index);
   const label = $("levelLabel");
+  label.classList.remove("has-name");
   if (isDaily()) label.textContent = dailyLabel();
   else {
     // شماره و اسم جدا، تا ظاهرهایی مثل قلم و مرکب اسم بلند را در خط دوم بنویسند
@@ -341,6 +342,7 @@ function startPuzzle(level, index, key) {
     num.className = "ll-num";
     num.textContent = `مرحله‌ی ${faDigits(index + 1)}`;
     label.replaceChildren(num);
+    label.classList.toggle("has-name", !!name);
     if (name) {
       const nm = document.createElement("span");
       nm.className = "ll-name";
@@ -988,6 +990,7 @@ function spend(cost) {
     return false;
   }
   save.coins -= cost;
+  persist(); // راهنمایی مثل «معنی» خودش چیزی ذخیره نمی‌کند؛ بدون این، با بستن بازی سکه برمی‌گشت
   updateCoins();
   bumpCoins();
   return true;
@@ -1080,7 +1083,9 @@ function showComplete(first, reward) {
 
   const btn = $("overlayBtn");
   btn.textContent = hasNext ? "مرحله‌ی بعد" : "منو";
-  btn.onclick = hasNext ? () => startLevel(current + 1) : goHome;
+  // دو بار زدن سریع نباید یک مرحله را جا بیندازد: فقط اگر هنوز روی همین مرحله‌ایم، بعدی شروع می‌شود
+  const done = current;
+  btn.onclick = hasNext ? () => { if (current === done && screenNow === "play") startLevel(done + 1); } : goHome;
   $("overlayMenu").classList.toggle("hidden", !hasNext);
   $("overlay").classList.remove("hidden");
 
@@ -1345,9 +1350,15 @@ function open(name) {
   else location.hash = name;
 }
 
+// دو بار زدن سریع «منو» یا «برگشت» نباید دو بار به عقب برگردد (بار دوم از بازی بیرون می‌زد)
+let backPending = false;
 function goHome() {
-  if (location.hash) history.back();
-  else route();
+  if (location.hash) {
+    if (backPending) return;
+    backPending = true;
+    setTimeout(() => (backPending = false), 700); // اگر به هر دلیلی hashchange نیامد، قفل نماند
+    history.back();
+  } else route();
 }
 
 function play(i) {
@@ -1555,10 +1566,10 @@ function renderLevels() {
       label.style.top = y(i) + "px";
       if (x >= 50) {
         label.style.left = x - 11 + "%";
-        label.style.translate = "-100% -50%";
+        label.style.transform = "translate(-100%, -50%)"; // transform، نه translate، تا وب‌ویوهای قدیمی هم بفهمند
       } else {
         label.style.left = x + 11 + "%";
-        label.style.translate = "0 -50%";
+        label.style.transform = "translate(0, -50%)";
       }
       track.appendChild(label);
     }
@@ -1594,7 +1605,10 @@ window.addEventListener("pointermove", onPointerMove);
 window.addEventListener("pointerup", onPointerUp);
 window.addEventListener("pointercancel", onPointerCancel);
 window.addEventListener("resize", sizeBoard);
-window.addEventListener("hashchange", route);
+window.addEventListener("hashchange", () => {
+  backPending = false;
+  route();
+});
 $("shuffleBtn").addEventListener("click", shuffle);
 $("hintLetterBtn").addEventListener("click", hintLetter);
 $("hintWordBtn").addEventListener("click", hintWord);
@@ -1657,7 +1671,9 @@ function loadingFrame(now) {
   loadingBar.shown += (goal - loadingBar.shown) * (1 - Math.exp(-dt / (loadingBar.done ? 160 : 260)));
   const p = loadingBar.shown;
   fill.style.transform = "translateX(" + ((p - 1) * 100).toFixed(2) + "%)";
-  tile.style.transform = "translateX(" + (p * track.offsetWidth).toFixed(1) + "px)";
+  // پهنای نوار یک بار خوانده می‌شود؛ خواندنش در هر فریم، چیدمان صفحه را دوباره حساب می‌کرد
+  if (!loadingBar.w) loadingBar.w = track.offsetWidth;
+  tile.style.transform = "translateX(" + (p * loadingBar.w).toFixed(1) + "px)";
   if (loadingBar.done && p > 0.995) return;
   loadingBar.raf = requestAnimationFrame(loadingFrame);
 }
@@ -1743,6 +1759,8 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => {}),
   ]).finally(() => {
+    // ۱۰۰ مرحله‌ی اول کلمه‌ی تکراری ندارند؛ کلمه‌های مرحله‌های دست‌ساز هم حساب می‌شوند
+    if (generator) generator.avoid(handmade.flatMap((l) => l.words));
     estimateWordStats();
     noteAchievements();
     route();

@@ -15,9 +15,17 @@ const REMIND_HOUR = 19; // ساعت اعلان یادآوری (به وقت گو�
 // تاریخ خورشیدی و قمری
 // ---------------------------------------------------------------------------
 
+// ساختن Intl.DateTimeFormat روی گوشی کند است؛ هر قالب یک بار ساخته می‌شود
+const calendarFormats = new Map();
+function calendarFormat(locale, opts) {
+  const k = locale + JSON.stringify(opts);
+  if (!calendarFormats.has(k)) calendarFormats.set(k, new Intl.DateTimeFormat(locale, opts));
+  return calendarFormats.get(k);
+}
+
 function calendarParts(date, calendar) {
   try {
-    const parts = new Intl.DateTimeFormat("en-u-ca-" + calendar, { year: "numeric", month: "numeric", day: "numeric" }).formatToParts(date);
+    const parts = calendarFormat("en-u-ca-" + calendar, { year: "numeric", month: "numeric", day: "numeric" }).formatToParts(date);
     const get = (t) => parseInt((parts.find((p) => p.type === t) || {}).value, 10);
     return { y: get("year"), m: get("month"), d: get("day") };
   } catch {
@@ -28,7 +36,7 @@ function calendarParts(date, calendar) {
 // «۲۲ آبان»
 function persianDay(date) {
   try {
-    return new Intl.DateTimeFormat("fa-IR-u-ca-persian", { day: "numeric", month: "long" }).format(date);
+    return calendarFormat("fa-IR-u-ca-persian", { day: "numeric", month: "long" }).format(date);
   } catch {
     return faDigits(dateKey(date));
   }
@@ -186,15 +194,24 @@ function renderDailyBtn() {
 }
 
 // پایان مرحله‌ی روزانه (به جای finishLevel)
+// روزِ قبل از یک کلید تاریخ مثل "2026-11-19"
+function dayBeforeKey(day) {
+  const [y, m, dd] = day.split("-").map(Number);
+  return dateKey(new Date(y, m - 1, dd - 1));
+}
+
 function finishDaily(hinted) {
   locked = true;
-  const first = !dailySolved();
+  // روزِ همین جدول، نه امروز: اگر بازیکن قبل از نیمه‌شب شروع کرده و بعدش تمام کرده،
+  // جدول دیروز برای دیروز حساب می‌شود و جدول امروز هنوز باز می‌ماند
+  const day = playKey.slice(DAILY_PREFIX.length);
   const d = save.dailyPuzzle;
+  const first = d.last !== day && !(d.last && d.last > day);
   if (first) {
-    d.run = d.last === yesterdayKey() ? d.run + 1 : 1;
+    d.run = d.last === dayBeforeKey(day) ? d.run + 1 : 1;
     d.best = Math.max(d.best, d.run);
     d.count++;
-    d.last = todayKey();
+    d.last = day;
     d.hinted = hinted;
     save.coins += dailyCoins();
   }

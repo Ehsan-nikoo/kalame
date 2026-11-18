@@ -1,0 +1,283 @@
+// آموزش کوتاه با یک راهنمای بامزه: نور روی هر بخش می‌افتد و راهنما در یک جمله می‌گوید به چه دردی می‌خورد.
+// هر ظاهر راهنما و رنگ خودش را دارد (TOUR_THEMES پایین همین فایل و .tour-card در css همان ظاهر).
+// ظاهر تازه که ساخته می‌شود، باید اینجا راهنمای خودش را بگیرد.
+// سه آموزش جدا، هر کدام فقط یک بار: صفحه‌ی بازی، منوی اصلی، سرگرمی‌ها.
+// از «تنظیمات ← آموزش» دوباره دیده می‌شوند.
+
+const TOUR_STEPS = {
+  play: [
+    { at: "#board", text: "{hi} هر کلمه که بسازی توی جدول می‌شینه؛ روش بزنی، معنیش رو می‌بینی." },
+    { at: ".tools", text: "گیر کردی؟ 💡 یه حرف، 📖 یه کلمه، 🎯 هر خونه که بخوای، 🚀 چند خونه با هم. بُر زدن 🔀 هم مجانیه!" },
+    { at: "#chestBtn", text: "کلمه‌ی درستی که توی جدول نیست می‌ره توی صندوق. صندوق پر بشه، سکه می‌گیری 💰" },
+    { at: "#app .coins", text: "سکه‌هات اینجاست. با هر مرحله، مأموریت و جایزه‌ی روزانه بیشتر می‌شه." },
+    { at: "#wheel", text: "حالا نوبت توئه! بقیه‌ی کلمه‌ها رو پیدا کن 💪", last: "{go}" },
+  ],
+  home: [
+    { at: "#continueBtn", text: "سلام دوباره! 👋 از اینجا مرحله‌ی بعدی رو بازی کن." },
+    { at: "#dailyBtn", text: "هر روز یه جدول تازه 📅 چند روز پشت سر هم حلش کنی، جایزه‌ات بیشتر می‌شه 🔥" },
+    { at: "#speedBtn", text: "بازی‌های کوتاه و سرگرمی: سرعتی، اسم فامیل، دونفره، مشاعره، جدول هفتگی و …" },
+    { at: "#levelsBtn", text: "نقشه‌ی همه‌ی مرحله‌ها 🗺 مرحله‌ی تموم‌شده رو دوباره بزنی، چالش تاج 👑 داره." },
+    { at: "#screenHome .home-tools", text: "مأموریت‌های امروز، گردونه‌ی شانس 🎡 و دفتر واژه‌ها که کلمه‌هات توش جمع می‌شن." },
+    { at: "#screenHome .home-chips", text: "کلمه‌ی روز و فال حافظ 📜 هر روز یه چیز تازه منتظرته." },
+    { at: "#themesBtn", text: "ظاهر بازی رو عوض کن ✨ هر ظاهر داستان و تصویر خودش رو داره.", last: "فهمیدم!" },
+  ],
+  modes: [
+    { group: ["#modeSpeed", "#modeEf", "#modeDuel"], text: "یه دست سریع: سرعتی ⏱، اسم فامیل ✍️ و دونفره 👥 با دوستت روی یه گوشی. دست اول هر روز سکه داره!" },
+    { group: ["#modeMs", "#modeRv", "#modeCw", "#modeSp"], text: "بازی کن و یاد بگیر 📚 بیت‌های حافظ، مرور معنی کلمه‌ها، جدول هفتگی و غلط املایی.", last: "بریم بازی!" },
+  ],
+};
+
+const tourSeen = () => X().tour || (X().tour = {});
+// چشم‌ها (tk-eyes) پلک می‌زنند و کل راهنما آرام بالا و پایین می‌رود
+const TK_EYES = (y = 38, gap = 7.5, cx = 32) => `
+  <ellipse cx="${cx - gap}" cy="${y}" rx="4.2" ry="5" fill="#fff"/><ellipse cx="${cx + gap}" cy="${y}" rx="4.2" ry="5" fill="#fff"/>
+  <g class="tk-eyes" style="transform-origin:${cx}px ${y + 1}px"><circle cx="${cx - gap + 1}" cy="${y + 1}" r="2.4" fill="#1d1d26"/><circle cx="${cx + gap + 1}" cy="${y + 1}" r="2.4" fill="#1d1d26"/>
+  <circle cx="${cx - gap + 1.8}" cy="${y}" r=".8" fill="#fff"/><circle cx="${cx + gap + 1.8}" cy="${y}" r=".8" fill="#fff"/></g>`;
+const TK_SMILE = (y = 47, cx = 32) => `<path d="M${cx - 5} ${y}c3 2.6 7 2.6 10 0" fill="none" stroke="#1d1d26" stroke-width="2.2" stroke-linecap="round"/>`;
+const TK_CHEEKS = (y = 45, gap = 13, cx = 32) => `<circle cx="${cx - gap}" cy="${y}" r="3" fill="#ff8a8a" opacity=".55"/><circle cx="${cx + gap}" cy="${y}" r="3" fill="#ff8a8a" opacity=".55"/>`;
+
+const TOUR_THEMES = {
+  // ساده: «کلمی»، یک قطره‌ی جوهر آبی
+  plain: {
+    hi: "آفرین! 🎉 من کلمی‌ام.",
+    go: "بزن بریم!",
+    svg: `<path d="M32 5c9 9 22 17 22 32a22 22 0 0 1-44 0C10 22 23 14 32 5Z" fill="#5b6cff"/>
+      ${TK_EYES()}${TK_SMILE()}${TK_CHEEKS()}
+      <path d="M22 16c2-3 5-5 7-6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".45"/>`,
+  },
+  // صورت فلکی: «سهیل»، ستاره‌ی طلایی
+  stars: {
+    hi: "آفرین! ✨ من سهیلم، ستاره‌ی راهنمات توی این آسمون.",
+    go: "بریم سراغ ستاره‌ها!",
+    svg: `<path d="M32 3l8.2 17.6 19.3 2.3-14.3 13.2 3.8 19.1L32 45.6 15 55.2l3.8-19.1L4.5 22.9l19.3-2.3Z" fill="#ffd34d" stroke="#f0a91e" stroke-width="2" stroke-linejoin="round"/>
+      ${TK_EYES(30, 6.5)}${TK_SMILE(39)}${TK_CHEEKS(37, 11)}
+      <circle cx="54" cy="8" r="2" fill="#fff6c8"/><circle cx="9" cy="10" r="1.4" fill="#fff6c8"/>`,
+  },
+  // قالی‌باف: «گلی»، گلوله‌ی نخ روناسی
+  carpet: {
+    hi: "آفرین! 🧶 من گلی‌ام، گلوله‌ی نخ این دار قالی.",
+    go: "بافتن رو شروع کن!",
+    svg: `<circle cx="32" cy="36" r="22" fill="#b0302a"/>
+      <path d="M14 26c10 6 26 6 36-2M11 38c12 6 30 6 42-2M16 50c10 3 22 3 32-2M24 15c-4 12-4 30 2 42M40 15c5 12 5 30-1 42" fill="none" stroke="#e7a28f" stroke-width="1.6" opacity=".8"/>
+      ${TK_EYES(36)}${TK_SMILE(45)}${TK_CHEEKS(43)}
+      <path d="M52 47c5 4 6 9 2 12" fill="none" stroke="#b0302a" stroke-width="2.6" stroke-linecap="round"/>`,
+  },
+  // کاروان: «ساربون»، شتر کوچولو
+  caravan: {
+    hi: "آفرین! 🐪 من ساربونم، همسفرت توی این کاروان.",
+    go: "حرکت!",
+    svg: `<ellipse cx="18" cy="16" rx="4" ry="6" fill="#b07a45" transform="rotate(-25 18 16)"/><ellipse cx="46" cy="16" rx="4" ry="6" fill="#b07a45" transform="rotate(25 46 16)"/>
+      <ellipse cx="32" cy="32" rx="19" ry="20" fill="#d6a36a"/>
+      <ellipse cx="32" cy="48" rx="13" ry="9" fill="#ecc896"/>
+      <circle cx="28" cy="48" r="1.4" fill="#6d4523"/><circle cx="36" cy="48" r="1.4" fill="#6d4523"/>
+      ${TK_EYES(31)}<path d="M28 54c2.6 1.6 5.4 1.6 8 0" fill="none" stroke="#6d4523" stroke-width="2" stroke-linecap="round"/>
+      <path d="M22 13c4-5 16-5 20 0" fill="none" stroke="#1d4e89" stroke-width="3" stroke-linecap="round"/>`,
+  },
+  // حوض و باغ: «بلبل»، با یک گل سرخ
+  garden: {
+    hi: "آفرین! 🌹 من بلبلم، از باغ اومدم کمکت.",
+    go: "بریم توی باغ!",
+    svg: `<ellipse cx="32" cy="38" rx="21" ry="19" fill="#9c6b45"/>
+      <ellipse cx="32" cy="44" rx="13" ry="11" fill="#f1d9b5"/>
+      <path d="M12 36c-6 2-8 8-6 12 5-1 9-4 10-8Z" fill="#7d5233"/>
+      <path d="M29 41l3 4 3-4Z" fill="#f2a13a"/>
+      ${TK_EYES(34, 8)}${TK_CHEEKS(42, 14)}
+      <g transform="translate(42 12)"><circle r="6" fill="#e0475f"/><path d="M-3-1c2-3 5-3 6 0M-4 2c3 2 6 2 8 0" fill="none" stroke="#a52238" stroke-width="1.3"/><path d="M-1 6c-2 3-5 4-8 4" fill="none" stroke="#3f8a5a" stroke-width="2"/></g>`,
+  },
+  // قلم و مرکب: «دوات» با قلم نی
+  ink: {
+    hi: "آفرین! 🖋 من دواتم؛ با هم یه صفحه‌ی تازه می‌نویسیم.",
+    go: "قلم رو بردار!",
+    svg: `<path d="M44 2l6 3-12 28-4-2Z" fill="#c9a14a" stroke="#8a6a24" stroke-width="1"/>
+      <rect x="20" y="20" width="24" height="7" rx="2" fill="#1f3b73"/>
+      <path d="M14 34c0-6 6-8 18-8s18 2 18 8v14c0 7-8 11-18 11s-18-4-18-11Z" fill="#1d1b2c"/>
+      <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
+      ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
+  },
+};
+
+const tourTheme = () => TOUR_THEMES[activeTheme] || TOUR_THEMES.plain;
+const tourWords = (text) => text.replace("{hi}", tourTheme().hi).replace("{go}", tourTheme().go);
+
+const tourEl = document.createElement("div");
+tourEl.className = "tour hidden";
+tourEl.innerHTML = `<div class="tour-hole"></div>
+  <div class="tour-card" role="dialog" aria-live="polite">
+    <svg class="tour-kalami" viewBox="0 0 64 64" aria-hidden="true"></svg>
+    <div class="tour-text"></div>
+    <div class="tour-foot">
+      <button class="tour-skip" type="button">رد کردن</button>
+      <span class="tour-dots"></span>
+      <button class="tour-next" type="button">بعدی</button>
+    </div>
+  </div>`;
+document.body.appendChild(tourEl);
+const tourHole = tourEl.querySelector(".tour-hole");
+const tourCard = tourEl.querySelector(".tour-card");
+
+let tourNow = null; // { name, steps, i }
+
+// آیا این آموزش هنوز دیده نشده؟ (feel.js پیش از نشان دادن پیام خودش می‌پرسد)
+function tourWants(name) {
+  return !tourSeen()[name];
+}
+
+const tourVisible = (el) => !!el && el.getClientRects().length > 0 && el.offsetParent !== null;
+
+// بخش‌هایی که این گام رویشان نور می‌اندازد (at: اولین پیدا شده؛ group: همه با هم)
+function tourEls(step) {
+  if (step.group) return step.group.map((s) => document.querySelector(s)).filter(tourVisible);
+  for (const s of step.at.split(",")) {
+    const el = document.querySelector(s.trim());
+    if (tourVisible(el)) return [el];
+  }
+  return [];
+}
+
+function tourStart(name) {
+  if (tourNow || !tourWants(name)) return;
+  const steps = TOUR_STEPS[name].filter((s) => tourEls(s).length);
+  if (!steps.length) return;
+  tourNow = { name, steps, i: 0 };
+  tourEl.querySelector(".tour-kalami").innerHTML = tourTheme().svg;
+  tourEl.classList.remove("hidden");
+  tourEl.querySelector(".tour-dots").innerHTML = steps.map(() => "<i></i>").join("");
+  tourShow();
+}
+
+function tourShow() {
+  const { steps, i } = tourNow;
+  const step = steps[i];
+  const els = tourEls(step);
+  if (!els.length) return tourNext();
+  els[0].scrollIntoView({ block: "nearest" });
+  const rs = els.map((e) => e.getBoundingClientRect());
+  const r = {
+    left: Math.min(...rs.map((q) => q.left)), top: Math.min(...rs.map((q) => q.top)),
+    right: Math.max(...rs.map((q) => q.right)), bottom: Math.max(...rs.map((q) => q.bottom)),
+  };
+  r.width = r.right - r.left;
+  r.height = r.bottom - r.top;
+  const el = els[0];
+  const pad = 7;
+  const radius = Math.min(28, parseFloat(getComputedStyle(el).borderTopLeftRadius) + pad || 16);
+  Object.assign(tourHole.style, {
+    left: r.left - pad + "px",
+    top: r.top - pad + "px",
+    width: r.width + pad * 2 + "px",
+    height: r.height + pad * 2 + "px",
+    borderRadius: radius + "px",
+  });
+  // کارت پایین یا بالای بخش، هر جا جای بیشتری باشد
+  const below = r.top + r.height / 2 < innerHeight * 0.5;
+  tourCard.style.top = below ? Math.min(r.bottom + pad + 14, innerHeight - 200) + "px" : "";
+  tourCard.style.bottom = below ? "" : Math.min(innerHeight - r.top + pad + 14, innerHeight - 200) + "px";
+  tourCard.classList.toggle("below", below);
+  tourEl.querySelector(".tour-text").textContent = tourWords(step.text);
+  tourEl.querySelector(".tour-next").textContent = i === steps.length - 1 ? tourWords(step.last || "تموم!") : "بعدی";
+  tourEl.querySelectorAll(".tour-dots i").forEach((d, k) => d.classList.toggle("on", k === i));
+  tourCard.classList.remove("pop");
+  void tourCard.offsetWidth;
+  tourCard.classList.add("pop");
+  if (typeof sound === "function") sound("tap");
+}
+
+function tourNext() {
+  if (!tourNow) return;
+  tourNow.i++;
+  if (tourNow.i >= tourNow.steps.length) return tourEnd();
+  tourShow();
+}
+
+function tourEnd() {
+  if (!tourNow) return;
+  tourSeen()[tourNow.name] = 1;
+  persist();
+  tourNow = null;
+  tourEl.classList.add("hidden");
+}
+
+tourEl.querySelector(".tour-next").onclick = tourNext;
+tourEl.querySelector(".tour-skip").onclick = tourEnd;
+addEventListener("resize", () => tourNow && tourShow());
+
+// دکمه‌ی برگشت گوشی آموزش را می‌بندد
+{
+  const baseBack = window.kalamehBack;
+  window.kalamehBack = function () {
+    if (tourNow) {
+      tourEnd();
+      return "closed";
+    }
+    return baseBack ? baseBack() : "home";
+  };
+}
+
+// ---------- کی شروع شود ----------
+
+// مرحله‌ی معمولی، نه روزانه و سرعتی و دونفره و بخش کودک
+function tourNormalPlay() {
+  if (screenNow !== "play") return false;
+  if (typeof isDaily === "function" && isDaily()) return false;
+  if (typeof isMode === "function" && isMode()) return false;
+  if (typeof isVariant === "function" && isVariant()) return false;
+  if (typeof isKidsPlay === "function" && isKidsPlay()) return false;
+  if (typeof playKey === "string" && /^[a-z]+:/.test(playKey)) return false;
+  return true;
+}
+
+// صفحه آرام است: پنجره‌ی دیگری باز نیست و صفحه‌ی انتخاب کودک/بزرگسال کنار رفته
+function tourClear() {
+  if (document.querySelector(".sheet:not(.hidden), .overlay:not(.hidden)")) return false;
+  const gate = document.getElementById("kidsGate");
+  const kids = document.getElementById("kidsWorld");
+  if ((gate && !gate.classList.contains("hidden")) || (kids && !kids.classList.contains("hidden"))) return false;
+  const loading = document.getElementById("loading");
+  return !(loading && !loading.classList.contains("hidden") && getComputedStyle(loading).display !== "none");
+}
+
+// چند بار کوتاه صبر می‌کند تا پنجره‌های خوش‌آمد (جایزه‌ی روزانه و …) بسته شوند
+function tourWhenClear(name, ok, tries = 30) {
+  if (!tourWants(name) || tourNow) return;
+  if (!ok()) return;
+  if (tourClear()) return tourStart(name);
+  if (tries > 0) setTimeout(() => tourWhenClear(name, ok, tries - 1), 700);
+}
+
+gameHooks.push((name, detail) => {
+  if (!tourWants("play")) return;
+  // مرحله‌ی اول: بعد از اولین کلمه (دست راهنما اول کشیدن را نشان داده)
+  if (name === "found" && current === 0 && found.length === 1 && tourNormalPlay()) {
+    setTimeout(() => tourWhenClear("play", tourNormalPlay), 1100);
+  }
+  // بازیکن‌های قدیمی‌تر: اول هر مرحله‌ی معمولی دیگر
+  if (name === "level" && detail.level > 0 && !detail.daily) {
+    setTimeout(() => tourWhenClear("play", tourNormalPlay), 900);
+  }
+});
+
+// منوی اصلی: بعد از اینکه بازیکن دست‌کم یک مرحله را تمام کرده
+addEventListener("hashchange", () => setTimeout(tourHomeCheck, 600));
+function tourHomeCheck() {
+  if (screenNow === "home" && save.unlocked >= 1) tourWhenClear("home", () => screenNow === "home");
+}
+setTimeout(tourHomeCheck, 3500);
+// بعد از انتخاب «بزرگسال» در صفحه‌ی اول
+document.getElementById("kgAdult").addEventListener("click", () => setTimeout(tourHomeCheck, 700));
+
+// سرگرمی‌ها: بار اولی که کارتش باز می‌شود
+{
+  const baseOpenModes = openModes;
+  openModes = function () {
+    const out = baseOpenModes.apply(this, arguments);
+    if (tourWants("modes")) setTimeout(() => !tourNow && tourStart("modes"), 450);
+    return out;
+  };
+  if (typeof speedBtn !== "undefined") speedBtn.onclick = openModes;
+}
+
+// تنظیمات ← آموزش: همه‌ی آموزش‌ها از نو
+document.getElementById("setTutorial").addEventListener("click", () => {
+  X().tour = {};
+  persist();
+});

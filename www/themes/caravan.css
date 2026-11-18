@@ -386,3 +386,11 @@
 [data-theme="caravan"] .level-words .meaning + .meaning { border-top: 1px solid rgba(201, 154, 60, 0.45); }
 [data-theme="caravan"] .level-words { border-color: rgba(29, 78, 137, 0.35); }
 [data-theme="caravan"] { --chest-wood: #a8692f; --chest-wood-2: #6e4220; --chest-band: #2fa4a9; }
+
+/* آموزش: «ساربون» روی کاغذ نقشه */
+[data-theme="caravan"] .tour-card { background: linear-gradient(180deg, #fdf6e3, #f4e6c4); color: #3b2a1a; border: 2px solid #b8925a; }
+[data-theme="caravan"] .tour-next { background: linear-gradient(180deg, #2a64a8, #1d4e89); box-shadow: 0 3px 0 #123663; }
+[data-theme="caravan"] .tour-skip { color: #6a5135; border-color: #d8c294; background: #fffaf0; }
+[data-theme="caravan"] .tour-dots i { background: #e2d0a8; }
+[data-theme="caravan"] .tour-dots i.on { background: #1d4e89; }
+[data-theme="caravan"] .tour-hole { box-shadow: 0 0 0 9999px rgba(40, 26, 12, 0.66), 0 0 0 3px #fdf6e3, 0 0 22px 6px rgba(240, 190, 100, 0.6); }

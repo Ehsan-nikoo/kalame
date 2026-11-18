@@ -60,6 +60,17 @@ clueBtn.setAttribute("aria-label", "راهنما: معنی یه کلمه");
 clueBtn.innerHTML = `<span>📖 معنی</span><span class="cost"><span class="coin-icon"></span><span class="cost-count">${faDigits(COST_HINT_MEANING)}</span></span>`;
 // گوشه‌ی بالای دایره‌ی حروف (روی جدول نمی‌افتد)
 document.querySelector(".play-area").appendChild(clueBtn);
+// پیام‌های بلند (style.css: .preview.note) کنار این دکمه می‌نشینند تا زیرش نروند؛
+// جای دکمه پیش از هر پیام اندازه گرفته می‌شود (هر ظاهر ممکن است اندازه‌اش را عوض کند)
+function measureClueRoom() {
+  if (!clueBtn.offsetWidth) return;
+  clueBtn.parentElement.style.setProperty("--clue-room", clueBtn.offsetLeft + clueBtn.offsetWidth + 6 + "px");
+}
+const showPreviewBase = showPreview;
+showPreview = function (text, kind, ms) {
+  if (/note|bonus/.test(kind)) measureClueRoom();
+  return showPreviewBase(text, kind, ms);
+};
 
 const clueSheet = makeSheet("clueSheet", `
   <div class="card-title">📖 حدس بزن!</div>
@@ -88,6 +99,9 @@ function showClue() {
 
 function hintMeaning() {
   if (locked || dragging || !puzzle) return;
+  // معنیِ خریده‌شده‌ی همین مرحله بعد از بستن و باز کردن بازی هم دوباره مجانی است
+  const kept = X().clue;
+  if (kept && kept.k === playKey && puzzle.words.includes(kept.w)) clueWord = kept.w;
   if (clueWord && !found.includes(clueWord) && puzzle.words.includes(clueWord)) return showClue();
   const left = puzzle.words.filter((w) => !found.includes(w) && (dict.get(w) || extraDict.get(w)));
   if (!left.length) {
@@ -96,6 +110,8 @@ function hintMeaning() {
   }
   if (!spend(COST_HINT_MEANING)) return;
   clueWord = left[Math.floor(Math.random() * left.length)];
+  X().clue = { k: playKey, w: clueWord };
+  persist();
   showClue();
 }
 clueBtn.addEventListener("click", hintMeaning);
@@ -774,8 +790,9 @@ function offerFal() {
 
 gameHooks.push((name, d) => {
   switch (name) {
-    case "level":
-      clueWord = null;
+    case "level": {
+      const kept = X().clue;
+      clueWord = kept && kept.k === playKey && puzzle.words.includes(kept.w) && !found.includes(kept.w) ? kept.w : null;
       clueSheet.classList.add("hidden");
       refreshClueBtn();
       levelStart = !d.daily && !isMode() && !isVariant() && d.level === save.unlocked ? Date.now() : 0;
@@ -788,6 +805,7 @@ gameHooks.push((name, d) => {
         if (duel) stopDuel();
       }
       break;
+    }
     case "found":
       if (d.word === clueWord) clueWord = null;
       if (isDuel()) duelScored(d.word);

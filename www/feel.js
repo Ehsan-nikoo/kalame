@@ -220,6 +220,8 @@ function tutorialEvent(name, detail) {
     stopTutorial();
     settings.tutorial = true;
     saveSettings();
+    // اگر آموزش کلمی (tour.js) هنوز دیده نشده، خودش ادامه می‌دهد
+    if (typeof tourWants === "function" && tourWants("play")) return;
     setTimeout(() => showPreview("آفرین! بقیه‌ی کلمه‌ها رو هم پیدا کن", "show note", 2600), 700);
   }
 }
