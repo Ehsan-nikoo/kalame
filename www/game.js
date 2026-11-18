@@ -1743,6 +1743,8 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => {}),
   ]).finally(() => {
+    // ۱۰۰ مرحله‌ی اول کلمه‌ی تکراری ندارند؛ کلمه‌های مرحله‌های دست‌ساز هم حساب می‌شوند
+    if (generator) generator.avoid(handmade.flatMap((l) => l.words));
     estimateWordStats();
     noteAchievements();
     route();

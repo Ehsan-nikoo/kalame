@@ -329,6 +329,8 @@ const MAX_WORDS = 9; // بیشترین کلمه‌ی جدول، تا چیدن ج
 const RARE_WORDS_FROM = 50;
 const RARE_SEEDS_FROM = 150;
 const MAX_GRID = 9; // بیشترین سطر یا ستون جدول، تا روی صفحه‌ی گوشی جا شود
+// در این تعداد مرحله‌ی اول هیچ کلمه‌ای دو بار در جدول نمی‌آید؛ بعد از آن تکرار اشکالی ندارد
+const NO_REPEAT_UNTIL = 100;
 
 function createGenerator(dict, levels = new Map()) {
   const levelOf = (w) => levels.get(w) || 1;
@@ -404,13 +406,13 @@ function createGenerator(dict, levels = new Map()) {
 
   // از میان کلمه‌های ساختنی، تعدادی را انتخاب می‌کند که جدول متقاطعِ به‌هم‌وصل بسازند
   // first: کلمه‌هایی که اگر ساخته شوند، زودتر از بقیه امتحان می‌شوند (مثلاً کلمه‌های مناسبت‌ها)
-  function pickWords(seed, rnd, rareOk, first = []) {
+  function pickWords(seed, rnd, rareOk, first = [], skip = null) {
     const tier = TIERS[seed.length];
     // کلمه‌های بلندتر اول امتحان می‌شوند، با کمی جابه‌جایی تصادفی تا مرحله‌ها شبیه هم نشوند
     const have = letterCounts(seed);
     const more = first.filter((w) => w !== seed && !wordsFrom(seed).includes(w) && canMake(letterCounts(w), have));
     const pool = [...wordsFrom(seed), ...more]
-      .filter((w) => w !== seed && (first.includes(w) || (w.length >= tier.shortest && (rareOk || levelOf(w) === 1))))
+      .filter((w) => w !== seed && !(skip && skip.has(w)) && (first.includes(w) || (w.length >= tier.shortest && (rareOk || levelOf(w) === 1))))
       .map((w) => ({ w, k: w.length + rnd() * 1.5 + (first.includes(w) ? 100 : 0) }))
       .sort((a, b) => b.k - a.k)
       .map((x) => x.w);
@@ -439,31 +441,58 @@ function createGenerator(dict, levels = new Map()) {
     return picked;
   }
 
+  // مرحله‌ی ساخته‌شده‌ی شماره‌ی g؛ used: کلمه‌هایی که نباید دوباره بیایند (برای مرحله‌های اول)
+  function makeLevel(g, used = null) {
+    const len = lengthFor(g);
+    const turn = turnOf(g, len);
+    const list = seeds[len];
+    const rareOk = g >= RARE_WORDS_FROM;
+    // تا مرحله‌ی RARE_SEEDS_FROM فقط کلمه‌های اصلی رایج؛ بعد از آن همه‌ی فهرست
+    const span = g < RARE_SEEDS_FROM && list.common ? list.common : list.length;
+    const round = Math.floor(turn / span); // بعد از تمام شدن کلمه‌ها، دور بعد کلمه‌های دیگری انتخاب می‌شود
+    let best = null;
+    // اگر جدول این کلمه‌ی اصلی کم‌کلمه شد، کلمه‌ی اصلی بعدی امتحان می‌شود
+    // (بدون تکرار، کلمه‌ی اصلی‌ای که قبلاً آمده کنار گذاشته می‌شود و جای امتحان بیشتر است)
+    const tries = used ? Math.min(span, 60) : 8;
+    for (let k = 0, tried = 0; k < span && tried < tries; k++) {
+      const seed = list[(turn + k) % span];
+      if (used && used.has(seed)) continue;
+      tried++;
+      const rnd = seededRandom(hashText(seed) + round * 7919 + g);
+      const words = pickWords(seed, rnd, rareOk || levelOf(seed) > 1, [], used);
+      if (!best || words.length > best.words.length) best = { letters: shuffled([...seed], rnd), words, seed };
+      if (words.length >= TIERS[len].min) break;
+    }
+    return best;
+  }
+
+  // مرحله‌های اول، به ترتیب و بدون کلمه‌ی تکراری (هر مرحله کلمه‌های همه‌ی مرحله‌های قبلش را کنار می‌گذارد)
+  let firstUsed = new Set();
+  let firstLevels = [];
+  function firstLevel(g) {
+    while (firstLevels.length <= g) {
+      const lv = makeLevel(firstLevels.length, firstUsed);
+      firstLevels.push(lv);
+      for (const w of lv.words) firstUsed.add(w);
+    }
+    return firstLevels[g];
+  }
+
   return {
     seeds,
     wordsFrom,
     levelOf,
 
+    // کلمه‌های مرحله‌های دست‌ساز؛ مرحله‌های ساخته‌شده‌ی اول دیگر آن‌ها را نمی‌آورند
+    avoid(words) {
+      firstUsed = new Set(words);
+      firstLevels = [];
+    },
+
     // مرحله‌ی شماره‌ی level (از صفر)، برای مرحله‌های ۱۱ به بعد
     level(level) {
       const g = level - HANDMADE_LEVELS;
-      const len = lengthFor(g);
-      const turn = turnOf(g, len);
-      const list = seeds[len];
-      const rareOk = g >= RARE_WORDS_FROM;
-      // تا مرحله‌ی RARE_SEEDS_FROM فقط کلمه‌های اصلی رایج؛ بعد از آن همه‌ی فهرست
-      const span = g < RARE_SEEDS_FROM && list.common ? list.common : list.length;
-      const round = Math.floor(turn / span); // بعد از تمام شدن کلمه‌ها، دور بعد کلمه‌های دیگری انتخاب می‌شود
-      let best = null;
-      // اگر جدول این کلمه‌ی اصلی کم‌کلمه شد، کلمه‌ی اصلی بعدی امتحان می‌شود
-      for (let k = 0; k < 8; k++) {
-        const seed = list[(turn + k) % span];
-        const rnd = seededRandom(hashText(seed) + round * 7919 + g);
-        const words = pickWords(seed, rnd, rareOk || levelOf(seed) > 1);
-        if (!best || words.length > best.words.length) best = { letters: shuffled([...seed], rnd), words, seed };
-        if (words.length >= TIERS[len].min) break;
-      }
-      return best;
+      return level < NO_REPEAT_UNTIL ? firstLevel(g) : makeLevel(g);
     },
 
     // نسخه‌ی تازه‌ی یک مرحله‌ی تمام‌شده (چالش تاج، plus.js): همان سختی (طول کلمه‌ی اصلی)،
@@ -537,6 +566,6 @@ function createGenerator(dict, levels = new Map()) {
 }
 
 if (typeof module === "object" && module.exports) {
-  module.exports = { normalize, fold, letterCounts, canMake, faDigits, countLetters, parseLevels, buildLayout, parseWords, createGenerator, HANDMADE_LEVELS };
+  module.exports = { normalize, fold, letterCounts, canMake, faDigits, countLetters, parseLevels, buildLayout, parseWords, createGenerator, HANDMADE_LEVELS, NO_REPEAT_UNTIL };
 }
 

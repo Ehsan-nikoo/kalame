@@ -37,7 +37,9 @@ const noMeaning = [...dict].filter(([, m]) => !m).map(([w]) => w);
 assert.deepStrictEqual(noMeaning, [], "کلمه‌های بدون معنی");
 
 const t0 = Date.now();
+const handmadeWords = handmade.flatMap((l) => l.words);
 const gen = E.createGenerator(dict, levels);
+gen.avoid(handmadeWords);
 const tSetup = Date.now() - t0;
 
 function checkLevel(name, lvl, tier, rareOk) {
@@ -71,7 +73,14 @@ for (let i = E.HANDMADE_LEVELS; i < E.HANDMADE_LEVELS + 1000; i++) {
 }
 const tLevels = Date.now() - t1;
 
-assert.deepStrictEqual(gen.level(57), E.createGenerator(dict, levels).level(57), "مرحله‌ها قابل‌تکرار نیستند");
+const again = E.createGenerator(dict, levels);
+again.avoid(handmadeWords);
+assert.deepStrictEqual(gen.level(57), again.level(57), "مرحله‌ها قابل‌تکرار نیستند");
+
+// در ۱۰۰ مرحله‌ی اول (با مرحله‌های دست‌ساز) هیچ کلمه‌ای دو بار نمی‌آید
+const firstWords = [...handmade, ...generated].slice(0, E.NO_REPEAT_UNTIL).flatMap((l) => l.words);
+const dup = firstWords.filter((w, i) => firstWords.indexOf(w) !== i);
+assert.deepStrictEqual(dup, [], `کلمه‌ی تکراری در ${E.NO_REPEAT_UNTIL} مرحله‌ی اول`);
 
 // «آ» و «ا» یکی حساب می‌شوند
 assert.ok(E.canMake(E.letterCounts("آب"), E.letterCounts("باران")), "«آب» باید با حروف «باران» ساخته شود");
