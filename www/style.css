@@ -2696,3 +2696,20 @@ button { touch-action: manipulation; }
 }
 .preview.bonus { font-size: 17px; }
 .mode-speed .preview.note, .mode-kids .preview.note, .mode-speed .preview.bonus, .mode-kids .preview.bonus { max-width: 100%; margin-left: 0; }
+
+/* بخش کودک: صفحه‌ی ظاهرهای خودش (kids.js)؛ فقط پنجره‌ی خرید با بزرگسال مشترک است */
+.kw-themes { direction: rtl; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 380px; }
+.kw-theme {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px 8px;
+  border: 3px solid transparent; border-radius: 22px; background: rgba(255, 255, 255, 0.7); color: #3b2a1a;
+  box-shadow: 0 5px 0 rgba(59, 42, 26, 0.12); font: inherit;
+}
+.kw-theme .tcard-art { width: 64px; height: 64px; font-size: 30px; }
+.kw-theme b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 16px; line-height: 1.4; }
+.kw-theme i { position: absolute; top: 4px; left: 6px; font-style: normal; font-size: 18px; }
+.kw-theme.selected { border-color: #5bbf7a; background: #fff; animation: pop 0.3s ease; }
+.kw-theme.selected::after { content: "✓"; position: absolute; top: 2px; right: 8px; color: #3e9a5a; font-weight: 900; font-size: 18px; }
+.kw-theme.locked .tcard-art { opacity: 0.6; }
+.kw-theme:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(59, 42, 26, 0.12); }
+.kw-themes-note { font-size: 15px; font-weight: 700; opacity: 0.7; }
+.sheet.kw-over { z-index: 950; }

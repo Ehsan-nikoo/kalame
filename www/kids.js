@@ -94,6 +94,7 @@ document.body.appendChild(kidsWorld);
 
 function showGate() {
   kwStop();
+  if (kwThemeMode) kwThemesDone();
   kwLeavePlay();
   kwIn = null;
   kidsWorld.classList.add("hidden");
@@ -292,6 +293,7 @@ const KW_GAMES = [
 function kwMenu() {
   kwStop();
   kwLeavePlay();
+  if (kwThemeMode) kwThemesDone();
   kwIn = null;
   kidsWorld.classList.remove("hidden");
   $("kwStars").textContent = faDigits(kwTodayStars());
@@ -534,12 +536,23 @@ function kwWheel() {
   kwStop();
   kwIn = "wheel";
   const n = kwState().lv || 0;
-  kidsWorld.classList.add("hidden");
   $("app").classList.add("mode-kids");
   startPuzzle(kwWheelLevel(n), n, KW_PREFIX + n);
   $("levelLabel").textContent = `🧸 مرحله‌ی ${faDigits(n + 1)}`;
-  open("play");
+  // دنیای کودک تا وقتی صفحه‌ی بازی واقعاً نشان داده نشده روی صفحه می‌ماند؛
+  // وگرنه بین این دو، منوی بزرگسال (که زیرش است) یک لحظه دیده می‌شود
+  if (screenNow === "play") kidsWorld.classList.add("hidden");
+  else {
+    kwShowPlayPending = true;
+    open("play");
+  }
 }
+let kwShowPlayPending = false;
+window.addEventListener("hashchange", () => {
+  if (!kwShowPlayPending) return;
+  kwShowPlayPending = false;
+  if (screenNow === "play" && $("app").classList.contains("mode-kids")) kidsWorld.classList.add("hidden");
+});
 
 // از صفحه‌ی بازی به بخش کودک برمی‌گردد (اگر آنجا باشیم)
 function kwLeavePlay() {
@@ -601,8 +614,9 @@ function kwWheelWin() {
 // ---------------------------------------------------------------------------
 // ظاهر بازی در بخش کودک
 // ---------------------------------------------------------------------------
-// همان صفحه‌ی ظاهرها، ولی انتخاب در X().kidsTheme ذخیره می‌شود و به ظاهر بزرگسال دست نمی‌زند.
-// خرید مشترک است: ظاهری که در هر بخش خریده شود در هر دو باز است. پیش از خرید در بخش کودک،
+// بخش کودک صفحه‌ی ظاهرهای خودش را دارد (داخل دنیای کودک، نه صفحه‌ی ظاهرهای بزرگسال) و انتخابش
+// فقط در X().kidsTheme ذخیره می‌شود؛ ظاهر بزرگسال (save.theme) دست نمی‌خورد و برعکس.
+// تنها چیز مشترک خرید است: ظاهری که در هر بخش خریده شود در هر دو باز است. پیش از خرید در بخش کودک،
 // یک سؤال ساده برای بزرگ‌ترها می‌آید تا بچه خودش چیزی نخرد.
 
 let kwThemeMode = false;
@@ -611,56 +625,64 @@ function kwThemes() {
   kwStop();
   kwIn = "themes";
   kwThemeMode = true;
-  kidsWorld.classList.add("hidden");
-  open("themes");
-  renderThemes();
+  const mine = kwThemeOf(X().kidsTheme || save.theme);
+  $("kwStage").innerHTML = `
+    <div class="kw-title">ظاهر بازی 🎨</div>
+    <div class="kw-themes">${THEMES.map((t) => {
+      const owned = themeOwned(t.id);
+      return `<button class="kw-theme tc-${t.id}${t.id === mine && owned ? " selected" : ""}${owned ? "" : " locked"}" type="button" data-id="${t.id}">
+        <span class="tcard-art"></span><b></b>${owned ? "" : `<i>🔒</i>`}</button>`;
+    }).join("")}</div>
+    <div class="kw-themes-note">ظاهر چرخ کلمه رو انتخاب کن</div>`;
+  $("kwStage").querySelectorAll(".kw-theme").forEach((btn) => {
+    btn.querySelector("b").textContent = THEMES.find((t) => t.id === btn.dataset.id).name;
+    btn.onclick = () => kwPickTheme(btn.dataset.id);
+  });
+}
+
+function kwPickTheme(id) {
+  const t = THEMES.find((x) => x.id === id);
+  if (!themeOwned(id)) return kwParentGate(() => {
+    $("themeSheet").classList.add("kw-over");
+    showThemeSheet(t);
+  });
+  X().kidsTheme = id;
+  persist();
+  kwUseTheme(id);
+  if (typeof sound === "function") sound("found");
+  kwThemes();
 }
 
 function kwThemesDone() {
   kwThemeMode = false;
   kwParentClose();
   hideThemeSheet();
-  kwMenu();
 }
 
 {
-  const baseRender = renderThemes;
-  renderThemes = function () {
-    baseRender();
-    if (!kwThemeMode) return;
-    const mine = kwThemeOf(X().kidsTheme || save.theme);
-    THEMES.forEach((t, i) => {
-      const card = $("themeList").children[i];
-      if (card) card.classList.toggle("selected", t.id === mine && themeOwned(t.id));
-    });
-    $("themesBack").classList.remove("hidden");
+  // پنجره‌ی خرید (مشترک) روی دنیای کودک باز می‌شود؛ بعد از خرید، ظاهر برای بچه انتخاب می‌شود
+  const baseHide = hideThemeSheet;
+  hideThemeSheet = function () {
+    $("themeSheet").classList.remove("kw-over");
+    return baseHide();
   };
-
   const baseChoose = chooseTheme;
   chooseTheme = function (id) {
     if (!kwThemeMode) return baseChoose(id);
-    const t = THEMES.find((x) => x.id === id);
-    if (!themeOwned(id)) return kwParentGate(() => showThemeSheet(t));
-    X().kidsTheme = id;
-    persist();
-    applyTheme(id);
-    goHome();
+    hideThemeSheet();
+    kwPickTheme(id);
   };
 }
 
-// «برگشت» از صفحه‌ی ظاهرها (دکمه‌ی بالا یا دکمه‌ی گوشی) به فهرست بازی‌های کودک
-window.addEventListener("hashchange", () => {
-  if (kwThemeMode && location.hash !== "#themes") kwThemesDone();
-});
+// «برگشت» گوشی در صفحه‌ی ظاهرهای کودک: اول پنجره‌ها، بعد فهرست بازی‌های کودک
 {
   const baseBack = window.kalamehBack;
   window.kalamehBack = () => {
-    if (!kwThemeMode) return baseBack();
+    if (!kwThemeMode || kidsWorld.classList.contains("hidden")) return baseBack();
     if (!kwParent.classList.contains("hidden")) return kwParentClose(), "closed";
     if (!$("themeSheet").classList.contains("hidden")) return hideThemeSheet(), "closed";
-    history.replaceState(null, "", location.pathname + location.search);
-    route();
     kwThemesDone();
+    kwMenu();
     return "back";
   };
 }
