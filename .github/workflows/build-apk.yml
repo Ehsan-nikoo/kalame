@@ -55,6 +55,9 @@ jobs:
       - name: نصب ابزارهای پروژه
         run: npm ci
 
+      - name: نوشتن شماره‌ی نسخه در «درباره‌ی ما»
+        run: sed -i "s/^const APP_VERSION = .*/const APP_VERSION = \"$VERSION\";/" www/about.js
+
       - name: کپی بازی داخل پروژه‌ی اندروید
         run: npx cap sync android
 

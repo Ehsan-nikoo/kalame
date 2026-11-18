@@ -2311,3 +2311,13 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 
 /* تنظیمات در صفحه‌ی کوتاه داخل خودش اسکرول می‌خورد (مثل فهرست دستاوردها و ظاهرها) */
 .settings-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+/* about.js: «درباره‌ی ما» ته تنظیمات */
+.about-card { gap: 6px; }
+.about-rows { margin: 0; display: flex; flex-direction: column; }
+.about-rows > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--edge, rgba(0, 0, 0, 0.08)); }
+.about-rows dt { color: var(--muted); font-size: 15px; white-space: nowrap; }
+.about-rows a { font-size: 14px; overflow-wrap: anywhere; }
+.about-rows dd { margin: 0; font-weight: 700; font-size: 15px; }
+.about-rows a { color: var(--accent); text-decoration: none; unicode-bidi: isolate; }
+.about-thanks { margin: 6px 0 4px; text-align: center; color: var(--muted); font-size: 14px; }
