@@ -101,16 +101,22 @@ function showGate() {
 }
 // هر بخش ظاهر انتخابی خودش را دارد؛ ظاهر خریده‌شده (save.owned) در هر دو بخش باز است
 const kwThemeOf = (id) => (id && themeOwned(id) ? id : "plain");
+// عوض کردن ظاهر و ساختن دوباره‌ی صفحه‌ی زیرین؛ وگرنه صحنه‌ی بالای منو (جدول ساده، صورت فلکی و …)
+// از ظاهر قبلی می‌ماند و دو ظاهر قاطی می‌شوند
+function kwUseTheme(id) {
+  if (activeTheme === id) return;
+  applyTheme(id);
+  if (screenNow) route();
+}
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
-  if (activeTheme !== kwThemeOf(save.theme)) applyTheme(kwThemeOf(save.theme));
+  kwUseTheme(kwThemeOf(save.theme));
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.remove("hidden");
-  const id = kwThemeOf(X().kidsTheme || save.theme);
-  if (activeTheme !== id) applyTheme(id);
+  kwUseTheme(kwThemeOf(X().kidsTheme || save.theme));
   kwMenu();
 }
 $("kgKid").onclick = chooseKid;
@@ -279,7 +285,7 @@ const KW_GAMES = [
   ["pic", "🖼️", "نقاشی و کلمه", () => kwNext()],
   ["wheel", "🎡", "چرخ کلمه", () => kwWheel()],
   ["spell", "✏️", "کدوم درسته؟", () => kwSpell()],
-  ["ef", "🔤", "اسم فامیل", () => kwEf()],
+  ["ef", "🔤", "حرف‌شکار", () => kwEf()],
   ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
 ];
 

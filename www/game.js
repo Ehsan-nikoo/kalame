@@ -333,7 +333,21 @@ function startPuzzle(level, index, key) {
   layout = buildLayout(level.words);
 
   const name = levelName(index);
-  $("levelLabel").textContent = isDaily() ? dailyLabel() : `مرحله‌ی ${faDigits(index + 1)}` + (name ? " · " + name : "");
+  const label = $("levelLabel");
+  if (isDaily()) label.textContent = dailyLabel();
+  else {
+    // شماره و اسم جدا، تا ظاهرهایی مثل قلم و مرکب اسم بلند را در خط دوم بنویسند
+    const num = document.createElement("span");
+    num.className = "ll-num";
+    num.textContent = `مرحله‌ی ${faDigits(index + 1)}`;
+    label.replaceChildren(num);
+    if (name) {
+      const nm = document.createElement("span");
+      nm.className = "ll-name";
+      nm.textContent = name;
+      label.append(nm);
+    }
+  }
   renderBoard();
   renderWheel();
   hidePreview();

@@ -370,7 +370,7 @@ function cwRender() {
       if (!letter.has(k)) { grid += `<i class="cw-cell void"></i>`; continue; }
       const n = cw.nums.get(k);
       grid += `<button class="cw-cell${selKeys.has(k) ? " sel" : ""}${letter.get(k) ? " full" : ""}" type="button" data-k="${k}">` +
-        (n ? `<small>${faDigits(n)}</small>` : "") + (letter.get(k) || "") + `</button>`;
+        (n ? `<small>${faDigits(n)}</small>` : "") + `<span class="cw-ch">${letter.get(k) || ""}</span></button>`;
     }
   }
   const clue = (s) => `<button class="cw-clue${s === cwSel ? " sel" : ""}${st.solved.includes(s.word) ? " done" : ""}" type="button" data-w="${s.word}">` +

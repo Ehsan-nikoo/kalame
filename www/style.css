@@ -895,15 +895,25 @@ button { font-family: inherit; cursor: pointer; }
   padding: 12px 32px;
   border-radius: 999px;
 }
+/* کارهای دوم هر کارت (بستن، منو، بعداً…) هم دکمه‌ی واقعی‌اند، نه فقط نوشته */
 .card-link {
   display: block;
-  margin: 10px auto 0;
-  padding: 6px 12px;
-  border: none;
-  background: none;
-  color: var(--muted);
+  margin: 12px auto 0;
+  min-width: 128px;
+  min-height: 42px;
+  padding: 8px 24px;
+  border: 1.5px solid var(--edge);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.12s ease, background-color 0.15s ease;
 }
+.card-link:active { transform: scale(0.96); }
+.card-link + .card-link { margin-top: 8px; }
 
 .error {
   position: fixed;
@@ -2550,3 +2560,57 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .kw-parent-opts { display: flex; gap: 10px; justify-content: center; margin-bottom: 6px; }
 .kw-parent-opts .card-btn { flex: 1; margin: 0; }
 .kw-parent .card-link { color: #8a6a4a; }
+
+/* جدول هفتگی: حرف دقیقاً وسط خانه، در همه‌ی ظاهرها با یک قلم (قلم‌های تزئینی مثل نستعلیق حرف را بالا و پایین می‌برند) */
+.cw-cell { font-family: "Vazirmatn", sans-serif !important; font-weight: 800; font-size: 18px; }
+.cw-ch { display: block; width: 100%; text-align: center; line-height: 1; transform: translateY(0.06em); }
+/* اسم مرحله کنار شماره: «مرحله‌ی ۵ · قالی کاشان» */
+.level-label .ll-name::before { content: " · "; }
+
+/* ---------- روان‌تر: باز شدن پنجره‌ها و صفحه‌ها، جلوه‌های سبک‌تر ---------- */
+/* پنجره‌ها نرم باز می‌شوند: پس‌زمینه کم‌کم تیره، کارت از پایین می‌آید (فقط opacity و transform، که کار کارت گرافیک است) */
+.sheet:not(.hidden), .overlay:not(.hidden) { animation: ui-fade 0.2s ease-out both; }
+.sheet:not(.hidden) > * { animation: ui-up 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+.sheet.center:not(.hidden) > *, .overlay:not(.hidden) > .card { animation: ui-pop 0.36s cubic-bezier(0.2, 0.9, 0.3, 1.12) both; }
+@keyframes ui-fade { from { opacity: 0; } }
+@keyframes ui-up { from { opacity: 0; transform: translateY(48px); } }
+@keyframes ui-pop { from { opacity: 0; transform: translateY(16px) scale(0.92); } }
+/* صفحه‌های منو (مرحله‌ها، تنظیمات، …) با محو کوتاه می‌آیند */
+.screen:not(.hidden):not(#screenHome):not(#app) { animation: ui-fade 0.22s ease-out both; }
+/* خانه‌های جدول با فنری نرم‌تر پر می‌شوند */
+@keyframes pop {
+  0% { transform: scale(0.55); opacity: 0.4; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+/* کلمه‌ی تکراری: به جای filter (که هر فریم دوباره کشیده می‌شود) یک تکان کوچک */
+@keyframes flash {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  65% { transform: scale(0.96); }
+}
+/* منوی شیشه‌ای: تاری کمتر و لکه‌های رنگی بدون filter، تا روی گوشی روان بچرخد */
+#screenHome .glass-menu .menu-btn {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation-duration: 0.38s;
+}
+.gm-blob { filter: none; width: 240px; height: 240px; will-change: transform; }
+.gm-blob.b1 { background: radial-gradient(closest-side, var(--gm-blob1), transparent); top: -45px; right: -65px; }
+.gm-blob.b2 { background: radial-gradient(closest-side, var(--gm-blob2), transparent); left: -75px; }
+.gm-blob.b3 { background: radial-gradient(closest-side, var(--gm-blob3), transparent); bottom: -55px; }
+.gm-float { will-change: transform, opacity; }
+/* برق شیشه: به جای جابه‌جا کردن پس‌زمینه، فقط کم و زیاد شدن نور */
+#screenHome .glass-menu .menu-btn::after {
+  background: linear-gradient(105deg, transparent 30%, var(--gm-sheen) 50%, transparent 70%);
+  background-size: 100% 100%;
+  opacity: 0;
+  animation: gm-glint 7s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes gm-glint { 0%, 70%, 100% { opacity: 0; } 82% { opacity: 0.9; } }
+/* فشار دادن هر دکمه حس فوری دارد */
+button { touch-action: manipulation; }
+@media (prefers-reduced-motion: reduce) {
+  .sheet:not(.hidden), .overlay:not(.hidden), .sheet:not(.hidden) > *, .screen:not(.hidden) { animation: none !important; }
+}
