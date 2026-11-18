@@ -2346,18 +2346,6 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .ms-beyt span:last-child { padding-right: 18%; }
 .ms-beyt mark { background: var(--coin); color: #2b1d08; border-radius: 6px; padding: 0 3px; }
 
-.kids-pic { font-size: 84px; line-height: 1.2; margin: 6px 0 10px; animation: pop 0.4s ease; }
-.ln-body .kids-pic:has(+ .card-text) { font-size: 34px; letter-spacing: 4px; }
-.kids-slots { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
-.kids-slot, .kids-letter {
-  width: 52px; height: 56px; border-radius: 14px; font-family: var(--display); font-size: 30px; line-height: 1;
-  display: grid; place-items: center; color: var(--ink);
-}
-.kids-slot { border: 2px dashed var(--edge, rgba(0, 0, 0, 0.2)); background: var(--tint); }
-.kids-slot.right { border-style: solid; border-color: #4f9d6a; background: #4f9d6a; color: #fff; }
-.kids-letters { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.kids-letter { border: 0; background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18); }
-.kids-letter:disabled { opacity: 0.25; box-shadow: none; }
 .shake { animation: ln-shake 0.4s ease; }
 @keyframes ln-shake { 25% { transform: translateX(6px); } 50% { transform: translateX(-6px); } 75% { transform: translateX(3px); } }
 
@@ -2396,8 +2384,80 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .cw-cell.void { background: none; }
 .cw-cell.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
 .ln-opt { border-color: rgba(128, 128, 128, 0.25); }
-.kids-slot { border-color: rgba(128, 128, 128, 0.5); }
 #modesSheet .level-card { max-height: none; }
 .ms-next { padding: 10px 14px; border-radius: 14px; border: 1.5px dashed var(--accent); font-size: 16px; line-height: 1.9; color: var(--accent); font-weight: 700; }
 .ms-blank { margin-top: 2px; padding: 2px 10px; border-bottom: 2px dashed var(--accent); color: var(--muted); min-height: 1.9em; }
 .ms-blank.filled { border-bottom-color: transparent; color: var(--accent); font-weight: 700; animation: pop 0.35s ease; }
+
+/* ===== صفحه‌ی انتخاب کودک / بزرگسال (kids.js) ===== */
+.kg {
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
+  display: flex; align-items: flex-start; justify-content: center;
+  background: var(--bg); color: var(--ink);
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+.kg.hidden, .kw.hidden { display: none; }
+.kg-inner { margin: auto 0; width: 100%; max-width: 460px; text-align: center; }
+.kg-logo { font-family: var(--display); font-size: 64px; line-height: 1.3; color: var(--accent); }
+.kg-ask { font-size: 18px; font-weight: 700; margin: 4px 0 26px; }
+.kg-picks { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.kg-pick {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0;
+  padding: 26px 10px 22px; border-radius: 26px; font: inherit; color: var(--ink); cursor: pointer;
+  background: var(--gm-glass, var(--surface)); border: 1.5px solid var(--gm-edge, rgba(0, 0, 0, 0.08));
+  box-shadow: var(--gm-shadow, 0 8px 22px rgba(0, 0, 0, 0.12));
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  transition: transform 0.15s ease;
+}
+.kg-pick:active { transform: scale(0.96); }
+.kg-ic { font-size: 62px; line-height: 1.15; }
+.kg-pick b { font-family: var(--display); font-size: 30px; font-weight: 400; line-height: 1.4; }
+.kg-pick small { font-size: 12.5px; opacity: 0.75; line-height: 1.6; }
+.kg-kid { background: linear-gradient(160deg, #ffe08a, #ffb38a); border-color: rgba(255, 255, 255, 0.7); color: #4a2a10; }
+
+/* ===== بخش کودک ===== */
+.kw {
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
+  display: flex; flex-direction: column; color: #3b2a1a; font-family: "Vazirmatn", sans-serif;
+  background: radial-gradient(circle at 20% 10%, #fff6c9 0, transparent 45%),
+    radial-gradient(circle at 85% 90%, #c9f0ff 0, transparent 50%), linear-gradient(170deg, #fff1d6, #ffe0ec);
+  padding: max(12px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+}
+.kw-top { display: flex; align-items: center; justify-content: space-between; direction: rtl; }
+.kw-home {
+  width: 52px; height: 52px; border-radius: 18px; border: 0; font-size: 26px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.75); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+}
+.kw-stars {
+  display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.75); font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; line-height: 1.2;
+}
+.kw-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 12px 0 24px; }
+.kw-pic { font-size: clamp(110px, 34vw, 170px); line-height: 1.15; animation: pop 0.45s ease; }
+.kw-pic.win { animation: kw-jump 0.7s ease; }
+.kw-slots { direction: rtl; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.kw-slot, .kw-key {
+  width: 54px; height: 60px; border-radius: 16px; display: grid; place-items: center;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1;
+}
+.kw-slot { border: 3px dashed rgba(59, 42, 26, 0.25); background: rgba(255, 255, 255, 0.55); color: #3b2a1a; }
+.kw-slot.on { border: 3px solid #5bbf7a; background: #5bbf7a; color: #fff; animation: pop 0.25s ease; }
+.kw-keys { direction: rtl; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; max-width: 380px; min-height: 64px; }
+.kw-key {
+  border: 0; cursor: pointer; color: #fff; background: #ff8a5c; box-shadow: 0 5px 0 #d8653a;
+  transition: transform 0.1s ease;
+}
+.kw-key:nth-child(3n+2) { background: #6cb8ff; box-shadow: 0 5px 0 #3f8fd8; }
+.kw-key:nth-child(3n+3) { background: #b48cff; box-shadow: 0 5px 0 #8a5fd8; }
+.kw-key:active { transform: translateY(3px); }
+.kw-key:disabled { visibility: hidden; }
+.kw-key.no { animation: ln-shake 0.4s ease; }
+.kw-key.nudge { animation: kw-nudge 0.9s ease-in-out infinite; }
+.kw-word { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 58px; line-height: 1.3; color: #3b9a5a; animation: pop 0.35s ease; }
+.kw-cheer { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; color: #ff7a45; animation: pop 0.35s ease; }
+.kw-bit { position: fixed; top: -40px; z-index: 901; pointer-events: none; animation: kw-fall 1.6s ease-in forwards; }
+@keyframes kw-jump { 30% { transform: translateY(-18px) scale(1.12); } 60% { transform: translateY(0) scale(0.96); } }
+@keyframes kw-nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15) rotate(-6deg); } }
+@keyframes kw-fall { to { transform: translateY(110vh) rotate(260deg); opacity: 0.6; } }
+.kw-slots:has(.kw-slot:nth-child(6)) { gap: 5px; }
+.kw-slots:has(.kw-slot:nth-child(6)) .kw-slot { width: 42px; height: 52px; font-size: 28px; }

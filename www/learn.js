@@ -1,9 +1,8 @@
 "use strict";
 
-// پنج بازی کوچک تازه در «سرگرمی‌ها» (بعد از plus2.js بارگذاری می‌شود):
+// چهار بازی کوچک تازه در «سرگرمی‌ها» (بعد از plus2.js بارگذاری می‌شود):
 // ۱. بیت رو کامل کن (بیت‌های حافظ)
 // ۲. مرور واژه‌ها: کلمه‌های دفتر واژه‌ها با فاصله‌ی بیشتر و بیشتر دوباره پرسیده می‌شوند
-// ۳. حالت کودک: کلمه‌های ساده با نقاشی، بدون وقت و بدون باخت
 // ۴. جدول متقاطع هفتگی با سرنخ (معنی کلمه‌ها)
 // ۵. غلط املایی رو پیدا کن
 
@@ -282,111 +281,6 @@ function rvEnd() {
     <div class="ln-big">${faDigits(rv.right)} از ${faDigits(rv.queue.length)}</div>
     <div class="card-text">کلمه‌هایی که درست جواب دادی چند روز دیگه دوباره میان تا کاملاً یادت بمونن.</div>
     ${lnFoot()}`;
-}
-
-// ---------------------------------------------------------------------------
-// ۳. حالت کودک
-// ---------------------------------------------------------------------------
-
-const KIDS_WORDS = [
-  ["سیب", "🍎"], ["ماه", "🌙"], ["گل", "🌸"], ["موز", "🍌"], ["ماهی", "🐟"], ["گربه", "🐈"], ["سگ", "🐕"],
-  ["اسب", "🐎"], ["شیر", "🦁"], ["خرس", "🐻"], ["موش", "🐭"], ["مرغ", "🐔"], ["جوجه", "🐥"], ["اردک", "🦆"],
-  ["فیل", "🐘"], ["زنبور", "🐝"], ["کفش", "👟"], ["کلاه", "🧢"], ["توپ", "⚽"], ["کتاب", "📖"], ["مداد", "✏️"],
-  ["ساعت", "⌚"], ["خانه", "🏠"], ["درخت", "🌳"], ["برگ", "🍃"], ["آب", "💧"], ["نان", "🍞"], ["کیک", "🍰"],
-  ["هویج", "🥕"], ["گوجه", "🍅"], ["پیاز", "🧅"], ["ابر", "☁️"], ["باران", "🌧️"], ["برف", "❄️"], ["ستاره", "⭐"],
-  ["قلب", "❤️"], ["ماشین", "🚗"], ["قطار", "🚆"], ["کشتی", "🚢"], ["قایق", "⛵"], ["هدیه", "🎁"], ["کلید", "🔑"],
-  ["قاشق", "🥄"], ["چتر", "☂️"], ["عینک", "👓"], ["دست", "✋"], ["چشم", "👁️"], ["گوش", "👂"], ["موشک", "🚀"],
-  ["میمون", "🐒"], ["خرگوش", "🐇"], ["مار", "🐍"], ["جغد", "🦉"], ["شتر", "🐫"], ["گاو", "🐄"], ["انگور", "🍇"],
-  ["لیمو", "🍋"], ["گیلاس", "🍒"], ["پرتقال", "🍊"], ["هندوانه", "🍉"], ["زرافه", "🦒"], ["پروانه", "🦋"], ["بستنی", "🍦"],
-  ["خورشید", "☀️"], ["بادکنک", "🎈"], ["دوچرخه", "🚲"], ["پنیر", "🧀"], ["تخم", "🥚"], 
-];
-const KIDS_ROUND = 8;
-const KIDS_PAID = 10; // کلمه‌های سکه‌دار در هر روز
-let kids = null;
-
-function openKids() {
-  lnShow(`<div class="card-title">حالت کودک 🧸</div>
-    <div class="card-text">برای بچه‌ها: یه نقاشی می‌بینی و با حرف‌ها اسمش رو می‌سازی. وقت نداره و چیزی هم از دست نمی‌ره.</div>
-    ${lnFoot(`<button class="card-btn" type="button" id="kidsGo">بزن بریم!</button>`)}`);
-  $("kidsGo").onclick = () => {
-    // کلمه‌های کوتاه اول، بلندها آخر
-    const set = lnMix(KIDS_WORDS).slice(0, KIDS_ROUND).sort((a, b) => [...a[0]].length - [...b[0]].length);
-    kids = { set, i: 0 };
-    kidsRound();
-  };
-}
-
-function kidsRound() {
-  const [word, pic] = kids.set[kids.i];
-  const letters = [...word];
-  let order = lnMix(letters.map((ch, i) => ({ ch, i })));
-  if (letters.length > 1 && order.every((o, k) => o.i === k)) order = order.reverse();
-  lnBody.innerHTML = `
-    <div class="ln-top"><span>${faDigits(kids.i + 1)} از ${faDigits(kids.set.length)}</span><b>حالت کودک</b><span>🧸</span></div>
-    <div class="kids-pic">${pic}</div>
-    <div class="kids-slots">${letters.map(() => `<button class="kids-slot" type="button"></button>`).join("")}</div>
-    <div class="kids-letters">${order.map((o) => `<button class="kids-letter" type="button">${o.ch}</button>`).join("")}</div>
-    ${lnFoot()}`;
-  const slots = [...lnBody.querySelectorAll(".kids-slot")];
-  const keys = [...lnBody.querySelectorAll(".kids-letter")];
-  const placed = slots.map(() => null);
-  const check = () => {
-    if (placed.some((p) => !p)) return;
-    const made = placed.map((k) => k.textContent).join("");
-    if (made === word) {
-      slots.forEach((s) => s.classList.add("right"));
-      // هر روز فقط ۱۰ کلمه‌ی اول سکه دارد؛ بعدش بازی ادامه دارد، بدون سکه
-      let st = X().kids;
-      if (!st || st.day !== todayKey()) st = X().kids = { day: todayKey(), n: 0 };
-      if (st.n < KIDS_PAID) {
-        st.n++;
-        persist();
-        lnGood(slots[0]);
-      } else {
-        if (typeof sound === "function") sound("found");
-        if (typeof haptic === "function") haptic("light");
-      }
-      if (typeof sparkle === "function") {
-        const r = lnBody.querySelector(".kids-pic").getBoundingClientRect();
-        sparkle(r.left + r.width / 2, r.top + r.height / 2, 20);
-      }
-      lnLater(() => (++kids.i < kids.set.length ? kidsRound() : kidsEnd()), 1100);
-    } else {
-      lnBad();
-      lnBody.querySelector(".kids-slots").classList.add("shake");
-      lnLater(() => {
-        slots.forEach((s, i) => { s.textContent = ""; placed[i] = null; });
-        keys.forEach((k) => (k.disabled = false));
-        lnBody.querySelector(".kids-slots").classList.remove("shake");
-      }, 600);
-    }
-  };
-  keys.forEach((k) => (k.onclick = () => {
-    const i = placed.indexOf(null);
-    if (i < 0) return;
-    placed[i] = k;
-    slots[i].textContent = k.textContent;
-    k.disabled = true;
-    check();
-  }));
-  slots.forEach((s, i) => (s.onclick = () => {
-    if (!placed[i] || s.classList.contains("right")) return;
-    placed[i].disabled = false;
-    placed[i] = null;
-    s.textContent = "";
-  }));
-}
-
-function kidsEnd() {
-  lnBody.innerHTML = `
-    <div class="card-title">آفرین! 🌟</div>
-    <div class="kids-pic">${kids.set.map((k) => k[1]).join("")}</div>
-    <div class="card-text">همه‌ی ${faDigits(kids.set.length)} تا رو درست ساختی.</div>
-    ${lnFoot(`<button class="card-btn" type="button" id="kidsAgain">باز هم!</button>`)}`;
-  $("kidsAgain").onclick = () => {
-    kids = { set: lnMix(KIDS_WORDS).slice(0, KIDS_ROUND).sort((a, b) => [...a[0]].length - [...b[0]].length), i: 0 };
-    kidsRound();
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -675,7 +569,6 @@ function spEnd() {
     ["modeRv", "🧠", "مرور واژه‌ها", "معنی کلمه‌هایی که پیدا کردی یادت بمونه", openReview],
     ["modeCw", "✏️", "جدول هفتگی", "جدول متقاطع با سرنخ، هر شنبه یکی تازه", openCrossword],
     ["modeSp", "✍️", "غلط املایی", "روزی یه بار؛ از چهار کلمه، غلطش رو پیدا کن", openSpell],
-    ["modeKids", "🧸", "حالت کودک", "نقاشی ببین، اسمش رو بساز", openKids],
   ];
   list.append(head);
   for (const [id, icon, name, sub, fn] of picks) {
