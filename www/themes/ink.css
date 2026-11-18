@@ -358,3 +358,12 @@
 [data-theme="ink"] .level-words .meaning + .meaning { border-top: 1px solid rgba(176, 138, 74, 0.55); }
 [data-theme="ink"] .level-words { border-color: rgba(176, 138, 74, 0.6); }
 [data-theme="ink"] { --chest-wood: #6b4a2a; --chest-wood-2: #3e2a14; --chest-band: #c9a14a; }
+
+/* منوی شیشه‌ای (glassmenu.js): بافت کاغذ و زر همین ظاهر. پس‌زمینه همین‌جا نوشته می‌شود
+   (نه با متغیر --gm-*) تا نشانی تصویرها نسبت به همین فایل حساب شود */
+[data-theme="ink"] #screenHome .glass-menu .menu-btn {
+  background: linear-gradient(180deg, rgba(255, 252, 240, 0.55), rgba(236, 219, 180, 0.35)), var(--fibers) 0 0 / 260px 260px;
+}
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary {
+  background: var(--zar) 0 0 / 120px 120px, linear-gradient(135deg, rgba(42, 76, 140, 0.92), rgba(23, 45, 90, 0.92));
+}

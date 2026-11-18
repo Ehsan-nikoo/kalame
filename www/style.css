@@ -1996,3 +1996,248 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .fal-bayt + .fal-bayt { border-top: 1px dashed color-mix(in srgb, var(--ink) 14%, transparent); }
 .fal-meaning { margin-top: 10px; font-size: 14.5px; line-height: 1.9; color: var(--ink); text-align: center; }
 .fal-chip b { font-size: 13.5px; }
+
+/* ---------- glassmenu.js: منوی «باغ شیشه‌ای» ----------
+   شکل منو همیشه یکی است (شیشه، برق، آیکون، لکه‌های رنگی و حرف‌های شناور)؛
+   رنگ‌ها و گردی گوشه‌ها از ظاهر فعلی می‌آیند (متغیرهای --gm-* پایین‌تر). */
+:root {
+  --gm-glass: rgba(255, 255, 255, 0.55);
+  --gm-edge: rgba(255, 255, 255, 0.9);
+  --gm-ink: var(--ink);
+  --gm-shadow: 0 8px 22px rgba(47, 58, 58, 0.12);
+  --gm-chip: var(--accent-soft);
+  --gm-chip-ink: var(--accent);
+  --gm-primary: linear-gradient(135deg, rgba(111, 156, 139, 0.92), rgba(85, 125, 110, 0.92));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(255, 255, 255, 0.45);
+  --gm-cta-bg: var(--coin);
+  --gm-cta-ink: #2b1d08;
+  --gm-sheen: rgba(255, 255, 255, 0.55);
+  --gm-blob1: #9fd3c0;
+  --gm-blob2: #f4c48a;
+  --gm-blob3: #f4a6b8;
+  --gm-blob-op: 0.55;
+  --gm-float: var(--accent);
+  --gm-radius: 18px;
+}
+[data-theme="stars"] {
+  --gm-glass: rgba(255, 255, 255, 0.07);
+  --gm-edge: rgba(255, 217, 138, 0.3);
+  --gm-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --gm-chip: rgba(255, 217, 138, 0.14);
+  --gm-chip-ink: #ffd98a;
+  --gm-primary: linear-gradient(135deg, rgba(255, 217, 138, 0.3), rgba(140, 110, 255, 0.28));
+  --gm-primary-ink: #fff4dc;
+  --gm-primary-edge: rgba(255, 217, 138, 0.5);
+  --gm-cta-bg: #ffd98a;
+  --gm-cta-ink: #2a1c05;
+  --gm-sheen: rgba(255, 244, 220, 0.22);
+  --gm-blob1: #5b4bd6;
+  --gm-blob2: #c264d8;
+  --gm-blob3: #2f6fd1;
+  --gm-blob-op: 0.5;
+  --gm-float: #ffd98a;
+}
+[data-theme="carpet"] {
+  --gm-glass: rgba(251, 244, 230, 0.62);
+  --gm-edge: rgba(201, 163, 90, 0.75);
+  --gm-shadow: 0 8px 20px rgba(58, 28, 20, 0.18);
+  --gm-chip: rgba(142, 36, 36, 0.1);
+  --gm-chip-ink: #8e2424;
+  --gm-primary: linear-gradient(135deg, rgba(160, 44, 44, 0.9), rgba(120, 28, 28, 0.9));
+  --gm-primary-ink: #f8eedb;
+  --gm-primary-edge: rgba(227, 179, 74, 0.7);
+  --gm-cta-bg: #e3b34a;
+  --gm-blob1: #8e2424;
+  --gm-blob2: #1e2a4a;
+  --gm-blob3: #e3b34a;
+  --gm-blob-op: 0.35;
+  --gm-float: #8e2424;
+  --gm-radius: 12px;
+}
+[data-theme="caravan"] {
+  --gm-glass: rgba(253, 246, 227, 0.6);
+  --gm-edge: rgba(217, 164, 65, 0.8);
+  --gm-shadow: 0 8px 20px rgba(40, 22, 10, 0.22);
+  --gm-chip: rgba(29, 78, 137, 0.12);
+  --gm-chip-ink: #1d4e89;
+  --gm-primary: linear-gradient(135deg, rgba(37, 94, 160, 0.9), rgba(24, 64, 112, 0.9));
+  --gm-primary-ink: #fdf6e3;
+  --gm-primary-edge: rgba(217, 164, 65, 0.7);
+  --gm-cta-bg: #d9a441;
+  --gm-blob1: #2fa4a9;
+  --gm-blob2: #e98a4a;
+  --gm-blob3: #d9a441;
+  --gm-blob-op: 0.45;
+  --gm-float: #1d4e89;
+  --gm-radius: 14px;
+}
+[data-theme="garden"] {
+  --gm-glass: rgba(255, 255, 255, 0.5);
+  --gm-edge: rgba(255, 255, 255, 0.9);
+  --gm-shadow: 0 8px 22px rgba(45, 74, 52, 0.15);
+  --gm-chip: #d6ead2;
+  --gm-chip-ink: #3f8a5a;
+  --gm-primary: linear-gradient(135deg, rgba(79, 158, 106, 0.92), rgba(55, 122, 80, 0.92));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(255, 255, 255, 0.5);
+  --gm-cta-bg: #e8b84a;
+  --gm-blob1: #f4a6b8;
+  --gm-blob2: #8fd3a8;
+  --gm-blob3: #ffe08a;
+  --gm-blob-op: 0.6;
+  --gm-float: #3f8a5a;
+  --gm-radius: 22px;
+}
+[data-theme="ink"] {
+  --gm-glass: rgba(255, 250, 235, 0.5);
+  --gm-edge: rgba(176, 138, 74, 0.75);
+  --gm-shadow: 0 6px 18px rgba(27, 19, 10, 0.15);
+  --gm-chip: rgba(31, 59, 115, 0.1);
+  --gm-chip-ink: #1f3b73;
+  --gm-primary: linear-gradient(135deg, rgba(38, 72, 138, 0.9), rgba(27, 50, 98, 0.9));
+  --gm-primary-ink: #f6e7c4;
+  --gm-primary-edge: rgba(201, 161, 74, 0.7);
+  --gm-cta-bg: #c9a14a;
+  --gm-blob1: #1f3b73;
+  --gm-blob2: #b08a4a;
+  --gm-blob3: #8e2424;
+  --gm-blob-op: 0.22;
+  --gm-float: #1f3b73;
+  --gm-radius: 8px;
+}
+
+#screenHome .home-menu.glass-menu { position: relative; isolation: isolate; }
+#screenHome .glass-menu .menu-btn {
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--gm-edge);
+  border-radius: var(--gm-radius);
+  background: var(--gm-glass);
+  color: var(--gm-ink);
+  box-shadow: var(--gm-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  animation: gm-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.15) both;
+}
+#screenHome .glass-menu .menu-btn:nth-child(3) { animation-delay: 0.06s; }
+#screenHome .glass-menu .menu-btn:nth-child(4) { animation-delay: 0.12s; }
+#screenHome .glass-menu .menu-btn:nth-child(5) { animation-delay: 0.18s; }
+#screenHome .glass-menu .menu-btn:nth-child(6) { animation-delay: 0.24s; }
+#screenHome .glass-menu .menu-btn:nth-child(n+7) { animation-delay: 0.3s; }
+@keyframes gm-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } }
+/* برق شیشه به جای حاشیه‌های تزئینی ظاهرها؛ بیرون دکمه نمی‌زند، پس نشان دستاوردها بریده نمی‌شود */
+#screenHome .glass-menu .menu-btn::after {
+  inset: 0;
+  border: 0;
+  border-radius: inherit;
+  box-shadow: none;
+  background: linear-gradient(105deg, transparent 38%, var(--gm-sheen) 50%, transparent 62%) no-repeat;
+  background-size: 260% 100%;
+  background-position: 160% 0;
+  animation: gm-sheen 6s ease-in-out infinite;
+}
+#screenHome .glass-menu .menu-btn:nth-child(odd)::after { animation-delay: 1.5s; }
+@keyframes gm-sheen { 0%, 62% { background-position: 160% 0; } 100% { background-position: -60% 0; } }
+#screenHome .glass-menu .menu-btn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
+
+#screenHome .glass-menu .menu-btn.primary {
+  justify-content: space-between;
+  padding: 12px 18px 12px 12px;
+  background: var(--gm-primary);
+  color: var(--gm-primary-ink);
+  border-color: var(--gm-primary-edge);
+  text-align: right;
+}
+#screenHome .glass-menu .menu-btn.primary > small { display: block; }
+#screenHome .glass-menu .menu-btn.primary { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; }
+#screenHome .glass-menu .menu-btn.primary > small { grid-column: 1; grid-row: 2; margin-top: -2px; }
+#screenHome .glass-menu .gm-go {
+  grid-column: 2; grid-row: 1 / span 2; align-self: center;
+  display: grid; place-items: center;
+  width: 46px; height: 46px;
+  border-radius: calc(var(--gm-radius) - 4px);
+  background: var(--gm-cta-bg);
+  color: var(--gm-cta-ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: gm-nudge 2.4s ease-in-out infinite;
+}
+.gm-go svg { width: 24px; height: 24px; }
+@keyframes gm-nudge { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(-4px); } 90% { transform: translateX(1px); } }
+
+#screenHome .glass-menu .gm-ic {
+  order: -1;
+  flex: none;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border-radius: calc(var(--gm-radius) - 6px);
+  background: var(--gm-chip);
+  color: var(--gm-chip-ink);
+}
+.gm-ic svg { width: 20px; height: 20px; }
+#screenHome .glass-menu .daily-btn { justify-content: flex-start; padding-right: 12px; }
+#screenHome .glass-menu .gm-daily { width: 42px; height: 42px; }
+#screenHome .glass-menu .gm-daily > svg { width: 30px; height: 30px; color: inherit; }
+#screenHome .glass-menu .daily-btn.solved .gm-daily { color: var(--coin); }
+
+/* لکه‌های رنگی و حرف‌ها، پشت دکمه‌ها */
+.gm-deco {
+  position: absolute; inset: -30px -16px; z-index: -1; pointer-events: none; overflow: hidden;
+  /* لبه‌ها محو می‌شوند تا لکه‌های بریده خط صاف نسازند */
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at center, #000 60%, transparent 100%);
+}
+.gm-blob {
+  position: absolute;
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  filter: blur(34px);
+  opacity: var(--gm-blob-op);
+  animation: gm-drift 14s ease-in-out infinite alternate;
+}
+.gm-blob.b1 { background: var(--gm-blob1); top: -10px; right: -30px; }
+.gm-blob.b2 { background: var(--gm-blob2); top: 35%; left: -40px; animation-duration: 17s; animation-delay: -5s; }
+.gm-blob.b3 { background: var(--gm-blob3); bottom: -20px; right: 20%; animation-duration: 12s; animation-delay: -8s; }
+@keyframes gm-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 20px) scale(1.15); }
+  100% { transform: translate(20px, -15px) scale(0.9); }
+}
+.gm-float {
+  position: absolute;
+  bottom: -10px;
+  font-family: var(--display);
+  font-size: 22px;
+  color: var(--gm-float);
+  opacity: 0;
+  animation: gm-rise 10.4s linear infinite;
+}
+@keyframes gm-rise {
+  0% { transform: translateY(0) rotate(-8deg); opacity: 0; }
+  15% { opacity: 0.32; }
+  80% { opacity: 0.18; }
+  100% { transform: translateY(-360px) rotate(10deg); opacity: 0; }
+}
+/* «جلوه‌های کمتر» و کاهش حرکت: شیشه می‌ماند، حرکت‌ها و تاری سنگین می‌روند */
+:root[data-lite="1"] .gm-deco .gm-float,
+:root[data-lite="1"] .gm-go { animation: none; }
+:root[data-lite="1"] .gm-float { display: none; }
+:root[data-lite="1"] .gm-blob { animation: none; }
+:root[data-lite="1"] #screenHome .glass-menu .menu-btn::after { animation: none; background: none; }
+:root[data-lite="1"] #screenHome .glass-menu .menu-btn { -webkit-backdrop-filter: none; backdrop-filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .gm-float { display: none; }
+  .gm-blob, .gm-go, #screenHome .glass-menu .menu-btn, #screenHome .glass-menu .menu-btn::after { animation: none; }
+}
+@media (max-height: 700px) {
+  #screenHome .glass-menu .menu-btn.primary { padding: 8px 14px 8px 10px; }
+  #screenHome .glass-menu .gm-go { width: 40px; height: 40px; }
+  #screenHome .glass-menu .gm-ic { width: 28px; height: 28px; }
+}
+#screenHome .home-menu.glass-menu { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#screenHome .glass-menu .menu-btn { min-width: 0; flex-wrap: wrap; row-gap: 0; }
+/* زیرنویس دکمه‌های کوچک (مثل «سرعتی · اسم فامیل») زیر عنوان می‌رود */
+#screenHome .glass-menu .menu-btn:not(.primary):not(.daily-btn) > small { flex-basis: 100%; text-align: center; font-size: 11px; line-height: 1.3; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn { padding: 4px 8px 8px; }
+[data-theme="ink"] #screenHome .glass-menu .menu-btn.primary { padding: 6px 16px 8px 10px; }
