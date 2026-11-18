@@ -2308,3 +2308,6 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .overlay, .sheet { overflow-y: auto; overscroll-behavior: contain; align-items: flex-start; }
 .overlay > *, .sheet.center > * { margin-top: auto; margin-bottom: auto; flex-shrink: 0; }
 .sheet:not(.center) > * { margin-top: auto; flex-shrink: 0; }
+
+/* تنظیمات در صفحه‌ی کوتاه داخل خودش اسکرول می‌خورد (مثل فهرست دستاوردها و ظاهرها) */
+.settings-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
