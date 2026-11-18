@@ -142,13 +142,15 @@ function defineTheme(id, def) {
 // فقط برای تست با start-game: همه‌ی ظاهرهای پولی در مرورگر باز هستند.
 // قبل از ساختن APK این را false کنید. (در خود اپ اندروید هیچ‌وقت اثری ندارد.)
 const TEST_ALL_THEMES = true;
+// نسخه‌ی تست APK (build-apk.yml با گزینه‌ی test) این را true می‌کند تا ظاهرها روی گوشی هم باز باشند.
+const TEST_APK = false;
 const IN_NATIVE_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 // ظاهر رایگان است یا خریده شده؟
 function themeOwned(id) {
   const t = THEMES.find((x) => x.id === id);
   if (!t) return false;
-  if (TEST_ALL_THEMES && !IN_NATIVE_APP) return true;
+  if (TEST_APK || (TEST_ALL_THEMES && !IN_NATIVE_APP)) return true;
   // امتحانِ یک‌روزه از گردونه‌ی شانس (extras.js)
   const trial = save.x && save.x.trial;
   if (trial && trial.id === id && trial.until > Date.now()) return true;

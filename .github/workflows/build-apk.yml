@@ -10,6 +10,11 @@ name: ساخت APK
 
 on:
   workflow_dispatch:
+    inputs:
+      test:
+        description: "نسخه‌ی تست: همه‌ی ظاهرها باز، فقط نسخه‌ی بازار، کنار نسخه‌ی اصلی نصب می‌شود"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -19,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION: 0.1.${{ github.run_number }}
+      TEST_APK: ${{ inputs.test && '1' || '' }}
     steps:
       - name: گرفتن کد پروژه
         uses: actions/checkout@v5
@@ -50,13 +56,20 @@ jobs:
         env:
           BAZAAR_RSA_KEY: ${{ secrets.BAZAAR_RSA_KEY }}
           MYKET_RSA_KEY: ${{ secrets.MYKET_RSA_KEY }}
-        run: bash tools/check-store-keys.sh --strict
+        run: bash tools/check-store-keys.sh ${{ inputs.test && ' ' || '--strict' }}
 
       - name: نصب ابزارهای پروژه
         run: npm ci
 
       - name: نوشتن شماره‌ی نسخه در «درباره‌ی ما»
         run: sed -i "s/^const APP_VERSION = .*/const APP_VERSION = \"$VERSION\";/" www/about.js
+
+      - name: باز کردن همه‌ی ظاهرها (فقط نسخه‌ی تست)
+        if: ${{ inputs.test }}
+        run: |
+          sed -i "s/^const TEST_APK = false;/const TEST_APK = true;/" www/game.js
+          sed -i "s/^const APP_VERSION = .*/const APP_VERSION = \"$VERSION-test\";/" www/about.js
+          grep -q "^const TEST_APK = true;" www/game.js
 
       - name: کپی بازی داخل پروژه‌ی اندروید
         run: npx cap sync android
@@ -71,6 +84,11 @@ jobs:
           if [ -z "$BAZAAR_RSA_KEY" ]; then echo "::warning::BAZAAR_RSA_KEY تنظیم نشده؛ خرید سکه در نسخه‌ی بازار کار نمی‌کند."; fi
           if [ -z "$MYKET_RSA_KEY" ]; then echo "::warning::MYKET_RSA_KEY تنظیم نشده؛ خرید سکه در نسخه‌ی مایکت کار نمی‌کند."; fi
           chmod +x gradlew
+          if [ -n "$TEST_APK" ]; then
+            ./gradlew assembleBazaarRelease --no-daemon
+            cp app/build/outputs/apk/bazaar/release/app-bazaar-release.apk "../kalame-$VERSION-test.apk"
+            exit 0
+          fi
           ./gradlew assembleBazaarRelease assembleMyketRelease --no-daemon
           cp app/build/outputs/apk/bazaar/release/app-bazaar-release.apk "../kalame-$VERSION-bazaar.apk"
           cp app/build/outputs/apk/myket/release/app-myket-release.apk "../kalame-$VERSION-myket.apk"
@@ -79,6 +97,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ -n "$TEST_APK" ]; then
+            gh release create "test-$VERSION" "kalame-$VERSION-test.apk" --prerelease --target "$GITHUB_SHA" \
+              --title "کلمه $VERSION (تست)" \
+              --notes "نسخه‌ی تست از شاخه‌ی ${GITHUB_REF_NAME}: همه‌ی ظاهرها باز هستند. با نام بسته‌ی com.kalameh.game.test کنار نسخه‌ی اصلی نصب می‌شود. برای انتشار در فروشگاه نیست."
+            exit 0
+          fi
           gh release create "v$VERSION" "kalame-$VERSION-bazaar.apk" "kalame-$VERSION-myket.apk" \
             --title "کلمه $VERSION" \
             --notes "kalame-$VERSION-bazaar.apk برای انتشار در کافه‌بازار و kalame-$VERSION-myket.apk برای مایکت است. برای آزمایش روی گوشی هم هر کدام را می‌شود نصب کرد."
