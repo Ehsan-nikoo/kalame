@@ -1,7 +1,7 @@
 // آموزش کوتاه با یک راهنمای بامزه: نور روی هر بخش می‌افتد و راهنما در یک جمله می‌گوید به چه دردی می‌خورد.
 // هر ظاهر راهنما و رنگ خودش را دارد (TOUR_THEMES پایین همین فایل و .tour-card در css همان ظاهر).
 // ظاهر تازه که ساخته می‌شود، باید اینجا راهنمای خودش را بگیرد.
-// سه آموزش جدا، هر کدام فقط یک بار: صفحه‌ی بازی، منوی اصلی، سرگرمی‌ها.
+// چهار آموزش جدا، هر کدام فقط یک بار: صفحه‌ی بازی، منوی اصلی، سرگرمی‌ها، و چرخ کلمه‌ی بچه‌ها (kids).
 // از «تنظیمات ← آموزش» دوباره دیده می‌شوند.
 
 const TOUR_STEPS = {
@@ -24,6 +24,13 @@ const TOUR_STEPS = {
   modes: [
     { group: ["#modeSpeed", "#modeEf", "#modeDuel"], text: "یه دست سریع: سرعتی ⏱، اسم فامیل ✍️ و دونفره 👥 با دوستت روی یه گوشی. دست اول هر روز سکه داره!" },
     { group: ["#modeMs", "#modeRv", "#modeCw", "#modeSp"], text: "بازی کن و یاد بگیر 📚 بیت‌های حافظ، مرور معنی کلمه‌ها، جدول هفتگی و غلط املایی.", last: "بریم بازی!" },
+  ],
+  // چرخ کلمه‌ی بخش کودک: ساده و کوتاه، بدون سکه و صندوق
+  kids: [
+    { at: "#board", text: "{hi} هر کلمه که بسازی، اینجا توی جدول می‌شینه." },
+    { at: "#hintLetterBtn", text: "گیر کردی؟ این دکمه یه حرف رو برات باز می‌کنه 💡 مجانیه!" },
+    { at: "#shuffleBtn", text: "این دکمه حرف‌ها رو جابه‌جا می‌کنه 🔀 شاید کلمه رو زودتر ببینی." },
+    { at: "#wheel", text: "حالا بقیه‌ی کلمه‌ها رو پیدا کن 💪", last: "{go}" },
   ],
 };
 
@@ -93,6 +100,19 @@ const TOUR_THEMES = {
       <path d="M14 34c0-6 6-8 18-8s18 2 18 8v14c0 7-8 11-18 11s-18-4-18-11Z" fill="#1d1b2c"/>
       <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
       ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
+  },
+  // مزرعه‌ی شاد (بخش کودک): «جوجو»، جوجه‌ی زرد مزرعه؛ همین جوجو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
+  toon: {
+    hi: "آفرین! 🐥 من جوجوام، از مزرعه اومدم پیشت.",
+    go: "بریم مزرعه!",
+    svg: `<path d="M25 56v5M39 56v5M21.5 62h7M35.5 62h7" stroke="#ff8a3a" stroke-width="2.6" stroke-linecap="round"/>
+      <ellipse cx="13" cy="39" rx="5.5" ry="9" fill="#f5c22a" transform="rotate(28 13 39)"/><ellipse cx="51" cy="39" rx="5.5" ry="9" fill="#f5c22a" transform="rotate(-28 51 39)"/>
+      <circle cx="32" cy="37" r="20" fill="#ffd84a"/>
+      <path d="M29.5 18c-3-6 1-10 4-7c1.5-5 7.5-2.5 4 2.5" fill="#ffd84a" stroke="#f5c22a" stroke-width="1.4" stroke-linejoin="round"/>
+      <ellipse cx="25" cy="27" rx="5" ry="3" fill="#fff" opacity=".35" transform="rotate(-25 25 27)"/>
+      ${TK_EYES(34, 7.5)}
+      <path d="M27.5 42q4.5-3.4 9 0q-4.5 4.6-9 0Z" fill="#ff8a3a"/>
+      ${TK_CHEEKS(42, 13.5)}`,
   },
 };
 
@@ -254,6 +274,13 @@ gameHooks.push((name, detail) => {
   if (name === "level" && detail.level > 0 && !detail.daily) {
     setTimeout(() => tourWhenClear("play", tourNormalPlay), 900);
   }
+});
+
+// چرخ کلمه‌ی بچه‌ها: بعد از اولین کلمه، با راهنمای همان ظاهر (در «مزرعه‌ی شاد»، جوجو)
+gameHooks.push((name) => {
+  if (name !== "found" || !tourWants("kids")) return;
+  if (typeof isKidsPlay !== "function" || !isKidsPlay()) return;
+  setTimeout(() => tourWhenClear("kids", () => screenNow === "play" && isKidsPlay()), 1100);
 });
 
 // منوی اصلی: بعد از اینکه بازیکن دست‌کم یک مرحله را تمام کرده
