@@ -102,6 +102,25 @@ function showGate() {
 }
 // هر بخش ظاهر انتخابی خودش را دارد؛ ظاهر خریده‌شده (save.owned) در هر دو بخش باز است
 const kwThemeOf = (id) => (id && themeOwned(id) ? id : "plain");
+// ظاهر پیش‌فرض بخش کودک (رایگان، مخصوص بچه‌ها: themes/toon.js)
+const KW_DEFAULT_THEME = "toon";
+// ظاهری که بچه انتخاب کرده؛ اگر انتخاب نکرده یا دیگر باز نیست (مثلاً امتحان یک‌روزه تمام شده)، همان پیش‌فرض کودک
+const kwKidsTheme = () => (X().kidsTheme && themeOwned(X().kidsTheme) ? X().kidsTheme : KW_DEFAULT_THEME);
+// ظاهرهای مخصوص کودک (kids: true در THEMES) در بخش بزرگسال نمی‌آیند
+function adultThemeOf(id) {
+  const t = THEMES.find((x) => x.id === id);
+  return t && !t.kids ? kwThemeOf(id) : "plain";
+}
+// ظاهر می‌تواند فهرست بازی‌های کودک (kidsmenu) و صفحه‌ی برد چرخ کلمه (kidswin) را هم تزئین کند
+function kwThemeHook(name, detail) {
+  const def = themeDefs[activeTheme];
+  if (!def || !def.on || !def.on[name]) return;
+  try {
+    def.on[name](detail);
+  } catch (e) {
+    console.error(e);
+  }
+}
 // عوض کردن ظاهر و ساختن دوباره‌ی صفحه‌ی زیرین؛ وگرنه صحنه‌ی بالای منو (جدول ساده، صورت فلکی و …)
 // از ظاهر قبلی می‌ماند و دو ظاهر قاطی می‌شوند
 function kwUseTheme(id) {
@@ -112,12 +131,12 @@ function kwUseTheme(id) {
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
-  kwUseTheme(kwThemeOf(save.theme));
+  kwUseTheme(adultThemeOf(save.theme));
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.remove("hidden");
-  kwUseTheme(kwThemeOf(X().kidsTheme || save.theme));
+  kwUseTheme(kwKidsTheme());
   kwMenu();
 }
 $("kgKid").onclick = chooseKid;
@@ -302,6 +321,7 @@ function kwMenu() {
     <div class="kw-menu">${KW_GAMES.map(([id, ic, name]) =>
       `<button class="kw-game kw-g-${id}" type="button" data-kw="${id}"><span>${ic}</span><b>${name}</b></button>`).join("")}</div>`;
   $("kwStage").querySelectorAll(".kw-game").forEach((b) => (b.onclick = () => KW_GAMES.find((g) => g[0] === b.dataset.kw)[3]()));
+  kwThemeHook("kidsmenu", { lv: kwState().lv || 0 });
 }
 
 // ---------------------------------------------------------------------------
@@ -538,7 +558,12 @@ function kwWheel() {
   const n = kwState().lv || 0;
   $("app").classList.add("mode-kids");
   startPuzzle(kwWheelLevel(n), n, KW_PREFIX + n);
-  $("levelLabel").textContent = `🧸 مرحله‌ی ${faDigits(n + 1)}`;
+  // ظاهر مخصوص کودک اسم مرحله‌ی خودش را دارد (مثلاً «مزرعه‌ی شاد»)؛ بقیه فقط شماره‌ی مرحله‌ی بچه‌ها
+  const look = THEMES.find((t) => t.id === activeTheme);
+  if (!(look && look.kids)) {
+    $("levelLabel").classList.remove("has-name");
+    $("levelLabel").textContent = `🧸 مرحله‌ی ${faDigits(n + 1)}`;
+  }
   // دنیای کودک تا وقتی صفحه‌ی بازی واقعاً نشان داده نشده روی صفحه می‌ماند؛
   // وگرنه بین این دو، منوی بزرگسال (که زیرش است) یک لحظه دیده می‌شود
   if (screenNow === "play") kidsWorld.classList.add("hidden");
@@ -607,6 +632,7 @@ function kwWheelWin() {
     <div class="kw-word">${lnPick(["آفرین!", "عالی بود!", "ایول!", "باریکلا!"])}</div>
     <div class="kw-found">${puzzle.words.map((w) => `<span>${w}</span>`).join("")}</div>
     <button class="kw-next" type="button" id="kwNextLevel">مرحله‌ی بعد ◀</button>`;
+  kwThemeHook("kidswin", { lv: kwState().lv || 0 });
   kwReward();
   $("kwNextLevel").onclick = kwWheel;
 }
@@ -625,10 +651,12 @@ function kwThemes() {
   kwStop();
   kwIn = "themes";
   kwThemeMode = true;
-  const mine = kwThemeOf(X().kidsTheme || save.theme);
+  const mine = kwKidsTheme();
+  // ظاهرهای مخصوص کودک اول
+  const list = [...THEMES.filter((t) => t.kids), ...THEMES.filter((t) => !t.kids)];
   $("kwStage").innerHTML = `
     <div class="kw-title">ظاهر بازی 🎨</div>
-    <div class="kw-themes">${THEMES.map((t) => {
+    <div class="kw-themes">${list.map((t) => {
       const owned = themeOwned(t.id);
       return `<button class="kw-theme tc-${t.id}${t.id === mine && owned ? " selected" : ""}${owned ? "" : " locked"}" type="button" data-id="${t.id}">
         <span class="tcard-art"></span><b></b>${owned ? "" : `<i>🔒</i>`}</button>`;

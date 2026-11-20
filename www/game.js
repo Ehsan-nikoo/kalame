@@ -35,6 +35,8 @@ const THEMES = [
   { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
+  // kids: فقط در بخش کودک (kids.js) دیده می‌شود، نه در صفحه‌ی ظاهرهای بزرگسال
+  { id: "toon", name: "مزرعه‌ی شاد", desc: "کارتونی و رنگی؛ با هر مرحله یه حیوون به مزرعه میاد", kids: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1370,6 +1372,7 @@ function renderThemes() {
   const list = $("themeList");
   list.innerHTML = "";
   for (const t of THEMES) {
+    if (t.kids) continue;
     const owned = themeOwned(t.id);
     const card = document.createElement("button");
     card.type = "button";
@@ -1719,7 +1722,8 @@ function hideLoading() {
 // فایل‌های ظاهرها بعد از این فایل بارگذاری می‌شوند؛ پس شروع را تا آماده شدن صفحه عقب می‌اندازیم
 document.addEventListener("DOMContentLoaded", () => {
   // ظاهر پولی‌ای که (هنوز) خریده نشده، تا رسیدن خریدها از فروشگاه «ساده» نشان داده می‌شود
-  applyTheme(save.theme && themeOwned(save.theme) ? save.theme : "plain");
+  const adultLook = THEMES.find((t) => t.id === save.theme);
+  applyTheme(adultLook && !adultLook.kids && themeOwned(save.theme) ? save.theme : "plain");
   initStore();
   // برنامه همیشه از منو شروع می‌شود
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);

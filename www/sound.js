@@ -156,6 +156,19 @@
       tone(tt + 0.09, note(base, 4), { type: "triangle", dur: 0.8, vol: 0.15 });
     },
 
+    // مزرعه‌ی شاد: «پاپ» کارتونی که بالا می‌پرد و چند نت زایلوفون شاد پشت سرش
+    toon(t, len, lift) {
+      tone(t, 260 * lift, { type: "sine", dur: 0.13, vol: 0.28, glide: 2.6 });
+      const steps = [0, 2, 4, 7];
+      const n = Math.min(Math.max(len - 1, 2), 4);
+      for (let i = 0; i < n; i++) {
+        const tt = t + 0.1 + i * 0.075;
+        const f = note(523 * lift, steps[i]);
+        tone(tt, f, { type: "triangle", dur: 0.26, vol: 0.2 });
+        tone(tt, f * 4, { type: "sine", dur: 0.05, vol: 0.05 });
+      }
+    },
+
     // ساده: یک «دینگ» دو نتی تمیز
     plain(t, len, lift) {
       tone(t, 660 * lift, { type: "sine", dur: 0.25, vol: 0.22 });
