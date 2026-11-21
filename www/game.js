@@ -32,7 +32,7 @@ const THEMES = [
   { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی", product: "theme_stars", price: 99000 },
   { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود", product: "theme_carpet", price: 79000 },
   { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله", product: "theme_caravan", price: 59000 },
-  { id: "tile", name: "کاشی‌کاری", desc: "کاشی لاجوردی و فیروزه‌ای؛ با هر مرحله تکه‌ای از نگاره‌ی سه‌بعدی شاهنامه رنگ می‌گیرد", product: "theme_tile", price: 69000 },
+  { id: "tile", name: "شاهنامه", desc: "۱۰۷ داستان شاهنامه به ترتیب، از کیومرث تا فردوسی؛ با هر مرحله تکه‌ای از نگاره‌ی سه‌بعدی رنگ می‌گیرد", product: "theme_tile", price: 69000 },
   { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },

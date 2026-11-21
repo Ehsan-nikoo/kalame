@@ -1,65 +1,57 @@
-// ظاهر «کاشی‌کاری»: دیوار کاشی هفت‌رنگ لاجوردی و فیروزه‌ای، با تابلوی کاشی معرق هشت‌ضلعی به جای دایره‌ی حروف.
-// هر کلمه‌ی درست، خانه‌های خاکی جدول را کاشی لعاب‌دار می‌کند. هر ۶ مرحله یک داستان شاهنامه است
+// ظاهر «شاهنامه» (شناسه‌ی قدیمی‌اش tile مانده تا خریدها و ذخیره‌ها به هم نخورند): صفحه‌ی نسخه‌ی خطی
+// با جدول‌کشی طلا و لاجورد، و شمسه‌ی تذهیب به جای دایره‌ی حروف. هر کلمه‌ی درست خانه‌های جدول را رنگ می‌کند. هر ۶ مرحله یک داستان شاهنامه است
 // (۱۰۷ داستان به ترتیب شاهنامه، از کیومرث تا یزدگرد) که به سبک نگارگری ایرانی، سه‌بعدی ساخته می‌شود.
 (function () {
   "use strict";
 
   const PARTS = 6;
 
-  // ستاره‌ی چندپر: n پر، شعاع بیرونی R و درونی r
-  function star(n, R, r, rot = 0) {
-    const pts = [];
-    for (let i = 0; i < 2 * n; i++) {
-      const a = (Math.PI * i) / n + rot;
-      const rr = i % 2 ? r : R;
-      pts.push(`${(Math.cos(a) * rr).toFixed(2)},${(Math.sin(a) * rr).toFixed(2)}`);
-    }
-    return pts.join(" ");
+  // ---------- شمسه‌ی تذهیب: زیر دایره‌ی حروف ----------
+  // مثل شمسه‌ی آغاز نسخه‌های خطی شاهنامه: پرتوهای لاجوردی، لبه‌ی کنگره‌ای طلا، نوار مرواریدی،
+  // زمینه‌ی لاجوردی با اسلیمی و ختایی طلایی، و ترنج کوچک وسط.
+  const f2 = (n) => n.toFixed(2);
+  const polar = (r, deg) => { const a = ((deg - 90) * Math.PI) / 180; return [Math.cos(a) * r, Math.sin(a) * r]; };
+  const around = (n, fn, off = 0) => Array.from({ length: n }, (_, i) => fn((i * 360) / n + off)).join("");
+  // برگ اسلیمی (قلب نوک‌تیز) رو به بیرون، از شعاع r0 تا r1
+  const eslimi = (r0, r1, w) => `M0 ${-r1} C${w * 0.5} ${-r1 + 2} ${w} ${-(r0 + r1) / 2} ${w * 0.45} ${-r0 - 1.2} C${w * 0.2} ${-r0} 0 ${-r0 + 0.8} 0 ${-r0 + 0.8} C0 ${-r0 + 0.8} ${-w * 0.2} ${-r0} ${-w * 0.45} ${-r0 - 1.2} C${-w} ${-(r0 + r1) / 2} ${-w * 0.5} ${-r1 + 2} 0 ${-r1}Z`;
+  function shamseh() {
+    const rays = around(48, (d) => {
+      const [x1, y1] = polar(43, d - 1.6), [x2, y2] = polar(43, d + 1.6), [tx, ty] = polar(d % 15 ? 49 : 52, d);
+      return `<polygon points="${f2(x1)},${f2(y1)} ${f2(tx)},${f2(ty)} ${f2(x2)},${f2(y2)}" fill="${d % 15 ? "#2c5aa0" : "#1d3a7a"}"/>`;
+    });
+    const tips = around(24, (d) => { const [x, y] = polar(52.2, d); return `<circle cx="${f2(x)}" cy="${f2(y)}" r=".9" fill="#d9a441"/>`; });
+    const lobes = around(32, (d) => { const [x, y] = polar(42, d); return `<circle cx="${f2(x)}" cy="${f2(y)}" r="3.4"/>`; });
+    const leaves = around(8, (d) => `<g transform="rotate(${d})"><path d="${eslimi(24, 35, 7)}" fill="url(#sh-gold)" stroke="#6b4a12" stroke-width=".35"/><path d="${eslimi(27, 32.5, 3)}" fill="#a8322a"/></g>`);
+    const buds = around(8, (d) => `<g transform="rotate(${d})"><path d="${eslimi(19, 26, 4)}" fill="#2a9fb3" stroke="#d9a441" stroke-width=".4"/><circle cx="0" cy="-30" r="1.1" fill="#efe3c6"/></g>`, 22.5);
+    const vines = around(16, (d) => `<path transform="rotate(${d})" d="M0 -21 C4 -22.5 8 -21 8.6 -17.6 C9 -15.2 7 -14 5.6 -15.4" fill="none" stroke="#d9a441" stroke-width=".55" stroke-linecap="round"/>`);
+    const petals = around(8, (d) => `<path transform="rotate(${d})" d="M0 -3 C2.6 -5 2.6 -8.4 0 -10 C-2.6 -8.4 -2.6 -5 0 -3Z" fill="${(d / 45) % 2 ? "#2a9fb3" : "#a8322a"}" stroke="#6b4a12" stroke-width=".3"/>`);
+    const inLobes = around(16, (d) => { const [x, y] = polar(13, d); return `<circle cx="${f2(x)}" cy="${f2(y)}" r="2"/>`; });
+    return `<svg viewBox="-54 -54 108 108" aria-hidden="true">
+        <defs>
+          <radialGradient id="sh-gold" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fbe3a0"/><stop offset=".55" stop-color="#e3b24f"/><stop offset="1" stop-color="#a8781e"/></radialGradient>
+          <radialGradient id="sh-field" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#21508f"/><stop offset="1" stop-color="#112a57"/></radialGradient>
+          <radialGradient id="sh-gloss" cx=".32" cy=".22" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        </defs>
+        ${rays}${tips}
+        <g fill="url(#sh-gold)">${lobes}<circle r="42"/></g>
+        <circle r="40.4" fill="#efe3c6"/>
+        <circle r="39.6" fill="#1d3a7a"/>
+        <circle r="38" fill="none" stroke="#efe3c6" stroke-width="1.5" stroke-dasharray="0 3.32" stroke-linecap="round"/>
+        <circle r="36.4" fill="#d9a441"/>
+        <circle r="35.6" fill="url(#sh-field)"/>
+        <circle r="21" fill="none" stroke="#d9a441" stroke-width=".55"/>
+        ${vines}${buds}${leaves}
+        <g fill="url(#sh-gold)">${inLobes}<circle r="13"/></g>
+        <circle r="11" fill="#efe3c6" stroke="#6b4a12" stroke-width=".4"/>
+        ${petals}
+        <circle r="2.6" fill="#e3b24f" stroke="#6b4a12" stroke-width=".35"/>
+        <circle r="42" fill="url(#sh-gloss)"/>
+      </svg>`;
   }
-
-  // ---------- تابلوی کاشی معرق هشت‌ضلعی: زیر دایره‌ی حروف ----------
-  // قاب آجری، نوار کاشی‌های ریز شطرنجی، زمینه‌ی شش‌ضلعی و مثلث (کاشی معرق) و ترنج کوچک وسط.
-  // عمداً گرد و طلایی نیست تا با دایره‌ی حروف «کاروان ابریشم» فرق داشته باشد.
-  const OCT = (R) => Array.from({ length: 8 }, (_, i) => {
-    const a = ((i * 45 + 22.5) * Math.PI) / 180;
-    return `${(Math.cos(a) * R).toFixed(2)},${(Math.sin(a) * R).toFixed(2)}`;
-  }).join(" ");
   function addPanel() {
-    const s = 5.2, H = 2 * s * Math.sqrt(3);
-    const hex = (cx, cy, r) => Array.from({ length: 6 }, (_, i) => {
-      const a = (i * Math.PI) / 3;
-      return `${(cx + Math.cos(a) * r).toFixed(2)},${(cy + Math.sin(a) * r).toFixed(2)}`;
-    }).join(" ");
-    const hexA = [[0, 0], [2 * s, 0], [0, H], [2 * s, H]].map(([x, y]) =>
-      `<polygon points="${hex(x, y, s)}" fill="#2a9fb3"/><polygon points="${hex(x, y, s * 0.45)}" fill="#1f7d66"/>`).join("");
-    const hexB = `<polygon points="${hex(s, H / 2, s)}" fill="#efe3c6"/><circle cx="${s}" cy="${H / 2}" r="${s * 0.3}" fill="#c9862f"/>`;
     const div = document.createElement("div");
     div.className = "tile-panel";
-    div.innerHTML = `<svg viewBox="-52 -52 104 104" aria-hidden="true">
-        <defs>
-          <linearGradient id="tp-brick" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cf8656"/><stop offset="1" stop-color="#9a5232"/></linearGradient>
-          <pattern id="tp-bond" width="8" height="4" patternUnits="userSpaceOnUse">
-            <path d="M0 0H8M0 2H8M0 0V2M4 2V4" stroke="#6e3a20" stroke-width=".45" opacity=".55"/></pattern>
-          <pattern id="tp-check" width="5" height="5" patternUnits="userSpaceOnUse">
-            <rect width="5" height="5" fill="#1d4a86"/><rect width="2.5" height="2.5" fill="#2a9fb3"/><rect x="2.5" y="2.5" width="2.5" height="2.5" fill="#2a9fb3"/></pattern>
-          <pattern id="tp-moarraq" width="${2 * s}" height="${H}" patternUnits="userSpaceOnUse">
-            <rect width="${2 * s}" height="${H}" fill="#17396b"/>${hexA}${hexB}
-            <g fill="none" stroke="#241a14" stroke-width=".45">${[[0, 0], [2 * s, 0], [0, H], [2 * s, H], [s, H / 2]].map(([x, y]) => `<polygon points="${hex(x, y, s)}"/>`).join("")}</g>
-          </pattern>
-          <radialGradient id="tp-gloss" cx=".3" cy=".22" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></radialGradient>
-        </defs>
-        <polygon points="${OCT(52)}" fill="url(#tp-brick)"/>
-        <polygon points="${OCT(52)}" fill="url(#tp-bond)"/>
-        <polygon points="${OCT(45.4)}" fill="#e2b04a" stroke="#6e3a20" stroke-width=".6"/>
-        <polygon points="${OCT(44)}" fill="url(#tp-check)"/>
-        <polygon points="${OCT(39.6)}" fill="#241a14"/>
-        <polygon points="${OCT(39)}" fill="url(#tp-moarraq)"/>
-        <polygon points="${OCT(13.6)}" fill="#241a14"/>
-        <polygon points="${OCT(13)}" fill="#efe3c6"/>
-        <g fill="#1f7d66"><circle cx="0" cy="-5" r="3.2"/><circle cx="5" cy="0" r="3.2"/><circle cx="0" cy="5" r="3.2"/><circle cx="-5" cy="0" r="3.2"/></g>
-        <rect x="-2.6" y="-2.6" width="5.2" height="5.2" transform="rotate(45)" fill="#c9862f"/>
-        <polygon points="${OCT(52)}" fill="url(#tp-gloss)"/>
-      </svg>`;
+    div.innerHTML = shamseh();
     document.getElementById("wheel").prepend(div);
   }
 
@@ -67,6 +59,72 @@
   // هر ۶ مرحله یک داستان است؛ هر مرحله یک بخش نگاره را از طرح قلم به رنگ درمی‌آورد.
   const storyName = (level) => SHN.storyOf(level).name;
   let homeView = null;
+
+  // ---------- نگاره‌ی منوی اصلی: به اندازه‌ی جای خالی بالای «کلمه» ----------
+  // جعبه‌ی صحنه با flex ارتفاعش معلوم است؛ نگاره را طوری می‌چینیم که روی عنوان و دکمه‌ها نیفتد.
+  // اگر جا خیلی کم باشد (صفحه‌ی کوتاه)، نگاره نشان داده نمی‌شود و فقط نوشته‌ی داستان می‌ماند.
+  let lastHome = null;
+  // ارتفاعی که نگاره در جعبه می‌گیرد (۰ یعنی جا نیست)
+  function roomFor(box) {
+    const frame = box.querySelector(".shn-frame");
+    const cap = box.querySelector(".scene-caption");
+    const cs = getComputedStyle(box);
+    const fs = getComputedStyle(frame);
+    const capH = cap ? cap.offsetHeight + parseFloat(getComputedStyle(cap).marginTop) : 0;
+    const chrome = parseFloat(fs.marginTop) + parseFloat(fs.paddingTop) + parseFloat(fs.paddingBottom);
+    const availH = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - capH - chrome - 4;
+    const maxW = Math.min(box.clientWidth, 520) - parseFloat(fs.paddingLeft) - parseFloat(fs.paddingRight);
+    return { h: Math.min(maxW * 0.5, availH), maxW };
+  }
+  function fitHome(box) {
+    const home = box.parentElement;
+    home.classList.remove("shn-tight");
+    let { h, maxW } = roomFor(box);
+    // صفحه‌ی کوتاه (مثل پنجره‌ی مرورگر کامپیوتر): لوگو کوچک‌تر و نوشته‌ی زیر نگاره حذف می‌شود
+    // (اسم داستان روی کتیبه‌ی نگاره می‌ماند) تا نگاره جا شود.
+    if (h < 120) {
+      home.classList.add("shn-tight");
+      const cap = box.querySelector(".scene-caption");
+      const capText = cap.textContent;
+      cap.remove();
+      ({ h, maxW } = roomFor(box));
+      if (h < 56) {
+        home.classList.remove("shn-tight");
+        box.querySelector(".shn-frame").remove();
+        box.insertAdjacentHTML("beforeend", `<p class="scene-caption"></p>`);
+        box.querySelector(".scene-caption").textContent = capText;
+        return false;
+      }
+    }
+    const w = Math.min(maxW, Math.round(h * 2.1));
+    h = Math.round(Math.min(h, w * 0.56));
+    const view = box.querySelector(".shn-view");
+    view.style.width = w + "px";
+    view.style.height = h + "px";
+    return true;
+  }
+  function showHome(d) {
+    lastHome = d;
+    const count = d.done % PARTS;
+    const st = SHN.storyOf(d.done);
+    const box = document.getElementById("homeScene");
+    if (homeView) { homeView.dispose(); homeView = null; }
+    box.innerHTML = `<div class="shn-frame home-tile"><div class="shn-view"></div><div class="shn-title"></div></div><p class="scene-caption"></p>`;
+    box.querySelector(".shn-title").textContent = st.name;
+    const no = `داستان ${faDigits(SHN.storyNo(d.done) + 1)} از ${faDigits(SHN.STORIES.length)}`;
+    box.querySelector(".scene-caption").textContent = count
+      ? `${no} · بخش ${faDigits(count)} از ${faDigits(PARTS)} کامل شده`
+      : `${no} · نگاره‌ی تازه`;
+    if (fitHome(box)) homeView = SHN.show(box.querySelector(".shn-view"), { level: d.done, count, fresh: -1 });
+  }
+  let resizeT = 0;
+  function onResize() {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => {
+      const box = document.getElementById("homeScene");
+      if (lastHome && box && box.offsetParent !== null && box.querySelector(".scene-caption")) showHome(lastHome);
+    }, 250);
+  }
 
   // ---------- کاشی که با کلمه‌ی درست روی خانه‌ها می‌نشیند: یک برق از روی لعاب رد می‌شود ----------
   function glint(cells) {
@@ -94,26 +152,18 @@
       document.body.insertAdjacentHTML("beforeend", `<div class="tile-frame" aria-hidden="true"></div>`);
       addPanel();
       SHN.ready().catch(() => {});
+      addEventListener("resize", onResize);
       return () => {
+        removeEventListener("resize", onResize);
+        lastHome = null;
+        document.querySelectorAll(".shn-tight").forEach((el) => el.classList.remove("shn-tight"));
         document.querySelectorAll(".tile-frame, .tile-panel").forEach((el) => el.remove());
         if (homeView) { homeView.dispose(); homeView = null; }
       };
     },
 
     on: {
-      home(d) {
-        const count = d.done % PARTS;
-        const st = SHN.storyOf(d.done);
-        const box = document.getElementById("homeScene");
-        if (homeView) homeView.dispose();
-        box.innerHTML = `<div class="shn-frame home-tile"><div class="shn-view"></div><div class="shn-title"></div></div><p class="scene-caption"></p>`;
-        box.querySelector(".shn-title").textContent = st.name;
-        homeView = SHN.show(box.querySelector(".shn-view"), { level: d.done, count, fresh: -1 });
-        const no = `داستان ${faDigits(SHN.storyNo(d.done) + 1)} از ${faDigits(SHN.STORIES.length)}`;
-        box.querySelector(".scene-caption").textContent = count
-          ? `${no} · بخش ${faDigits(count)} از ${faDigits(PARTS)} کامل شده`
-          : `${no} · نگاره‌ی تازه`;
-      },
+      home: showHome,
       found(d) {
         glint(d.cells);
       },
