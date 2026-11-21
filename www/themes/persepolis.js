@@ -50,6 +50,8 @@
 
   // ---------- نمای سه‌بعدی بنا در منوی اصلی، به اندازه‌ی جای خالی ----------
   const monName = (level) => PRS.monumentOf(level).name;
+  const ORD = ["", "دوم", "سوم", "چهارم", "پنجم", "ششم", "هفتم", "هشتم", "نهم", "دهم"];
+  const roundTag = (level) => { const r = PRS.roundOf(level); return r ? ` · دور ${ORD[r] || faDigits(r + 1)}` : ""; };
   let homeView = null, lastHome = null, resizeT = 0;
   function roomFor(box) {
     const frame = box.querySelector(".prs-frame");
@@ -94,7 +96,7 @@
     if (homeView) { homeView.dispose(); homeView = null; }
     box.innerHTML = `<div class="prs-frame prs-home"><div class="prs-view"></div><div class="prs-title"></div></div><p class="scene-caption"></p>`;
     box.querySelector(".prs-title").textContent = mon.name;
-    const no = `بنای ${faDigits(PRS.monumentNo(d.done) + 1)} از ${faDigits(PRS.MONUMENTS.length)}`;
+    const no = `بنای ${faDigits(PRS.monumentNo(d.done) + 1)} از ${faDigits(PRS.MONUMENTS.length)}${roundTag(d.done)}`;
     box.querySelector(".scene-caption").textContent = count
       ? `${no} · بخش ${faDigits(count)} از ${faDigits(PARTS)} ساخته شده`
       : `${no} · نقشه‌ی تازه`;
@@ -125,7 +127,7 @@
 
   defineTheme("persepolis", {
     name: (level) => monName(level),
-    mapName: (level) => `بنای ${faDigits(PRS.monumentNo(level) + 1)}\n${monName(level)}`,
+    mapName: (level) => `بنای ${faDigits(PRS.monumentNo(level) + 1)}${roundTag(level)}\n${monName(level)}`,
     subName: true,
 
     setup() {
@@ -154,16 +156,19 @@
       },
       shuffle() { turn(30, 600); },
       complete(d) {
-        const step = d.level % PARTS;
-        const mon = PRS.monumentOf(d.level);
-        const done = step === PARTS - 1;
+        // مرحله‌ی روزانه بنایی نمی‌سازد: همان بنای در حال ساخت بی‌تکه‌ی تازه دیده می‌شود
+        const lv = d.daily ? save.unlocked : d.level;
+        const step = d.daily ? (lv % PARTS) - 1 : lv % PARTS;
+        const mon = PRS.monumentOf(lv);
+        const fresh = d.first && !d.daily; // دوباره بازی کردن مرحله‌ی قبلی هم چیزی نمی‌سازد
+        const done = fresh && step === PARTS - 1;
         document.querySelector("#overlay .card").insertAdjacentHTML("afterbegin",
           `<div class="extra prs-done"><div class="prs-frame"><div class="prs-view"></div><div class="prs-title"></div></div>${done ? '<p class="prs-line"></p>' : ""}</div>`);
         const box = document.querySelector("#overlay .prs-done");
         box.querySelector(".prs-title").textContent = mon.name;
         if (done) box.querySelector(".prs-line").textContent = mon.line;
-        PRS.show(box.querySelector(".prs-view"), { level: d.level, count: step + 1, fresh: step });
-        document.getElementById("overlayTitle").textContent =
+        PRS.show(box.querySelector(".prs-view"), { level: lv, count: step + 1, fresh: fresh ? step : -1 });
+        if (fresh) document.getElementById("overlayTitle").textContent =
           done ? `«${mon.name}» کامل شد!` : `«${PRS.partName(mon, step)}» برپا شد`;
       },
     },

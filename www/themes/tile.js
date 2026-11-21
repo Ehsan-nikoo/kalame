@@ -180,16 +180,19 @@
         turn(45, 600);
       },
       complete(d) {
-        const step = d.level % PARTS;
-        const st = SHN.storyOf(d.level);
-        const done = step === PARTS - 1;
+        // مرحله‌ی روزانه و دوباره بازی کردن، تکه‌ی تازه‌ای به نقاشی اضافه نمی‌کنند
+        const lv = d.daily ? save.unlocked : d.level;
+        const step = d.daily ? (lv % PARTS) - 1 : lv % PARTS;
+        const st = SHN.storyOf(lv);
+        const fresh = d.first && !d.daily;
+        const done = fresh && step === PARTS - 1;
         document.querySelector("#overlay .card").insertAdjacentHTML("afterbegin",
           `<div class="extra tile-done"><div class="shn-frame"><div class="shn-view"></div><div class="shn-title"></div></div>${done ? '<p class="shn-line"></p>' : ""}</div>`);
         const box = document.querySelector("#overlay .tile-done");
         box.querySelector(".shn-title").textContent = st.name;
         if (done) box.querySelector(".shn-line").textContent = st.line;
-        SHN.show(box.querySelector(".shn-view"), { level: d.level, count: step + 1, fresh: step });
-        document.getElementById("overlayTitle").textContent =
+        SHN.show(box.querySelector(".shn-view"), { level: lv, count: step + 1, fresh: fresh ? step : -1 });
+        if (fresh) document.getElementById("overlayTitle").textContent =
           done ? `«${st.name}» کامل شد!` : `«${SHN.partName(st, step)}» نقش بست`;
       },
     },

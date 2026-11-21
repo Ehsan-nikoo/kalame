@@ -696,14 +696,16 @@
 
     // ---------- حلقه‌ی نمایش ----------
     const t0 = performance.now();
-    let raf = 0, dead = false, last = 0;
+    let raf = 0, dead = false, last = 0, hiddenAt = 0;
     const tmpM = new THREE.Matrix4();
     function frame(now, force) {
       if (dead) return;
       if (!el.isConnected || !cvs.isConnected) return dispose();
       raf = requestAnimationFrame(frame);
       if (!force && now - last < 30) return; // حدود ۳۰ فریم
-      if (!force && el.offsetParent === null) return;
+      // پنهان ماندن طولانی (رفتن به صفحه‌ی بازی): بافت‌ها و WebGL آزاد می‌شوند؛ با برگشتن به منو دوباره ساخته می‌شود
+      if (!force && el.offsetParent === null) { hiddenAt = hiddenAt || now; if (now - hiddenAt > 4000) { cancelAnimationFrame(raf); (window.requestIdleCallback || setTimeout)(dispose); } return; }
+      hiddenAt = 0;
       last = now;
       const t = now - t0, s = t / 1000;
       placeCam(now);
@@ -796,7 +798,8 @@
     el.classList.add("shn-stage");
     if (!webgl()) return flat(el, opts);
     let handle = null, gone = false;
-    ready().then(() => { if (!gone && el.isConnected) handle = mount(el, opts); }).catch((e) => {
+    // ساختن صحنه چند صدم ثانیه کار دارد؛ بعد از کشیده شدن صفحه (مثلاً کارت پایان مرحله) انجام می‌شود تا صفحه گیر نکند
+    ready().then(() => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)))).then(() => { if (!gone && el.isConnected) handle = mount(el, opts); }).catch((e) => {
       console.warn("shahnameh", e);
       if (gone || !el.isConnected) return;
       el.querySelectorAll("canvas").forEach((c) => c.remove());

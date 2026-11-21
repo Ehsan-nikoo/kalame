@@ -458,6 +458,17 @@
   const monumentNo = (level) => Math.floor(level / PARTS.length) % MONUMENTS.length;
   const monumentOf = (level) => MONUMENTS[monumentNo(level)];
   const partName = (m, i) => (m.parts || PARTS)[i];
+  // بعد از ۴۰ بنا بازی از اول می‌چرخد؛ هر دور همان بناها را در وقت دیگری از روز نشان می‌دهد
+  const roundOf = (level) => Math.floor(level / (PARTS.length * MONUMENTS.length));
+  const ROUND_SKY = [
+    { day: "dusk", noon: "dawn", dusk: "night", dawn: "day", night: "dusk" },
+    { day: "night", noon: "night", dusk: "dawn", dawn: "night", night: "dawn" },
+    { day: "dawn", noon: "dusk", dusk: "day", dawn: "noon", night: "day" },
+  ];
+  function skyOf(level) {
+    const base = monumentOf(level).sky, r = roundOf(level);
+    return r ? ROUND_SKY[(r - 1) % ROUND_SKY.length][base] : base;
+  }
 
   // ---------- ساخت صحنه ----------
   function mount(el, opts) {
@@ -466,7 +477,7 @@
     const mon = monumentOf(opts.level);
     const count = opts.count, fresh = opts.fresh;
     const calmNow = typeof calm === "function" && calm();
-    const sky = SKY[mon.sky];
+    const skyKey = skyOf(opts.level), sky = SKY[skyKey];
 
     const W = el.clientWidth || 320, H = el.clientHeight || Math.round(W * 0.62);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
@@ -475,6 +486,8 @@
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.autoUpdate = false; // صحنه ساکن است: سایه فقط وقتی بخشی جابه‌جا می‌شود دوباره حساب می‌شود
+    renderer.shadowMap.needsUpdate = true;
     renderer.domElement.className = "prs-canvas";
     el.appendChild(renderer.domElement);
 
@@ -483,7 +496,7 @@
     const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 120);
     const target = new THREE.Vector3(0, 2.2, -1.2);
     scene.add(new THREE.HemisphereLight(sky.light, 0x6b5a46, sky.amb));
-    const sun = new THREE.DirectionalLight(sky.light, mon.sky === "night" ? 0.55 : 0.95);
+    const sun = new THREE.DirectionalLight(sky.light, skyKey === "night" ? 0.55 : 0.95);
     sun.position.set(-7, 11, 8);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -854,7 +867,7 @@
       const geo = keep(new THREE.PlaneGeometry(0.4 * s, 0.8 * s)); geo.translate(0, 0.4 * s, 0);
       const m = new THREE.Mesh(geo, keep(new THREE.MeshBasicMaterial({ map: flameT, transparent: true, depthWrite: false, side: THREE.DoubleSide })));
       m.position.set(x, y, z); m.userData.flame = Math.random() * 6; m.userData.noEdges = 1;
-      const l = new THREE.PointLight(0xffb050, mon.sky === "night" ? 1.2 : 0.5, 4 * s); l.position.set(x, y + 0.5 * s, z + 0.2);
+      const l = new THREE.PointLight(0xffb050, skyKey === "night" ? 1.2 : 0.5, 4 * s); l.position.set(x, y + 0.5 * s, z + 0.2);
       const g = new THREE.Group(); g.add(m); g.add(l);
       obj(p, g); return g;
     }
@@ -1744,14 +1757,17 @@
 
     // ---------- حلقه‌ی نمایش ----------
     const t0 = performance.now();
-    let raf = 0, dead = false, last = 0;
+    let raf = 0, dead = false, last = 0, hiddenAt = 0;
     const tmpV = new THREE.Vector3();
     function frame(now, force) {
       if (dead) return;
       if (!el.isConnected || !cvs.isConnected) return dispose();
       raf = requestAnimationFrame(frame);
-      if (!force && now - last < 30) return;
-      if (!force && el.offsetParent === null) return;
+      // وقتی چیزی حرکت نمی‌کند (فقط چرخش آرام دوربین)، نیمی از فریم‌ها کافی است
+      if (!force && now - last < (alive || dragging || fades.length ? 30 : 62)) return;
+      // پنهان ماندن طولانی (رفتن به صفحه‌ی بازی): بافت‌ها و WebGL آزاد می‌شوند؛ با برگشتن به منو دوباره ساخته می‌شود
+      if (!force && el.offsetParent === null) { hiddenAt = hiddenAt || now; if (now - hiddenAt > 4000) { cancelAnimationFrame(raf); (window.requestIdleCallback || setTimeout)(dispose); } return; }
+      hiddenAt = 0;
       last = now;
       const t = now - t0, s = t / 1000;
       placeCam(now);
@@ -1762,8 +1778,9 @@
         f.sk.visible = k < 1;
         f.sk.traverse((o) => { if (o.material) o.material.opacity = (o.isLineSegments ? 0.5 : 0.32) * (1 - e); }); // مواد این طرح جداست (sketchOf(m, true))
         f.obj.position.y = f.y - (1 - e) * 0.4;
-        f.sk.position.y = -(1 - e) * 0.0;
+        f.done = k >= 1;
       });
+      if (fades.length) { renderer.shadowMap.needsUpdate = true; if (fades.every((f) => f.done)) fades.length = 0; }
       if (!calmNow && alive) {
         root.traverse((m) => {
           if (m.userData.flame !== undefined) { const p = m.userData.flame; m.scale.y = 1 + Math.sin(s * 9 + p) * 0.14 + Math.sin(s * 13 + p * 2) * 0.06; m.scale.x = 1 + Math.sin(s * 7 + p) * 0.06; m.lookAt(camera.position.x, m.getWorldPosition(tmpV).y, camera.position.z); }
@@ -1803,7 +1820,7 @@
 
   // اگر WebGL نبود: نمای تخت ساده از ستون‌ها و صفه
   function flat(el, opts) {
-    const mon = monumentOf(opts.level), sky = SKY[mon.sky];
+    const mon = monumentOf(opts.level), sky = SKY[skyOf(opts.level)];
     const W = el.clientWidth || 320, H = el.clientHeight || Math.round(W * 0.62), r = Math.min(window.devicePixelRatio || 1, 2);
     const c = document.createElement("canvas");
     c.width = W * r; c.height = H * r; c.className = "prs-canvas";
@@ -1824,7 +1841,8 @@
     el.classList.add("prs-stage");
     if (!webgl()) return flat(el, opts);
     let handle = null, gone = false;
-    ready().then(() => { if (!gone && el.isConnected) handle = mount(el, opts); }).catch((e) => {
+    // ساختن صحنه چند صدم ثانیه کار دارد؛ بعد از کشیده شدن صفحه (مثلاً کارت پایان مرحله) انجام می‌شود تا صفحه گیر نکند
+    ready().then(() => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)))).then(() => { if (!gone && el.isConnected) handle = mount(el, opts); }).catch((e) => {
       console.warn("persepolis", e);
       if (gone || !el.isConnected) return;
       el.querySelectorAll("canvas").forEach((c) => c.remove());
@@ -1833,5 +1851,5 @@
     return { dispose: () => { gone = true; handle && handle.dispose(); } };
   }
 
-  window.PRS = { PARTS, MONUMENTS, monumentOf, monumentNo, partName, show, ready, _mount: mount };
+  window.PRS = { PARTS, MONUMENTS, monumentOf, monumentNo, partName, roundOf, show, ready, _mount: mount };
 })();
