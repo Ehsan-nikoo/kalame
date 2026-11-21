@@ -18,10 +18,19 @@
     return ctx;
   }
 
-  // مرورگرهای موبایل صدا را فقط بعد از اولین لمس کاربر اجازه می‌دهند
+  // Web Audio تا وقتی روشن است پردازنده‌ی صدا را بیدار نگه می‌دارد (باتری و داغ شدن گوشی)؛
+  // پس چند ثانیه بعد از آخرین صدا خاموش می‌شود و با صدای بعدی دوباره روشن می‌شود
+  let idleT = 0;
+  function nap() {
+    clearTimeout(idleT);
+    idleT = setTimeout(() => { if (ctx && ctx.state === "running") ctx.suspend().catch(() => {}); }, 4000);
+  }
+  // مرورگرهای موبایل صدا را فقط بعد از اولین لمس کاربر اجازه می‌دهند؛ اگر صدا خاموش است، اصلاً ساخته نمی‌شود
   function unlock() {
+    if (typeof settings === "object" && settings && !settings.sound) return;
     const c = audio();
     if (c && c.state === "suspended") c.resume().catch(() => {});
+    nap();
   }
   window.addEventListener("pointerdown", unlock, { passive: true });
   window.addEventListener("touchstart", unlock, { passive: true });
@@ -227,6 +236,7 @@
       const c = audio();
       if (!c) return;
       if (c.state === "suspended") c.resume().catch(() => {});
+      nap();
       const play = SOUNDS[theme] || SOUNDS.plain;
       const lift = Math.pow(2, Math.min(Math.max(streak - 1, 0), 6) / 12);
       try {

@@ -1757,7 +1757,9 @@
 
     // ---------- حلقه‌ی نمایش ----------
     const t0 = performance.now();
-    let raf = 0, dead = false, last = 0, hiddenAt = 0;
+    let raf = 0, dead = false, last = 0, hiddenAt = 0, napping = false;
+    const onWake = () => { if (napping && !dead) { napping = false; raf = requestAnimationFrame(frame); } };
+    window.addEventListener("kalame-wake", onWake);
     const tmpV = new THREE.Vector3();
     function frame(now, force) {
       if (dead) return;
@@ -1768,6 +1770,7 @@
       // پنهان ماندن طولانی (رفتن به صفحه‌ی بازی): بافت‌ها و WebGL آزاد می‌شوند؛ با برگشتن به منو دوباره ساخته می‌شود
       if (!force && el.offsetParent === null) { hiddenAt = hiddenAt || now; if (now - hiddenAt > 4000) { cancelAnimationFrame(raf); (window.requestIdleCallback || setTimeout)(dispose); } return; }
       hiddenAt = 0;
+      if (!force && !dragging && !fades.length && document.documentElement.dataset.rest) { napping = true; cancelAnimationFrame(raf); return; } // استراحت (feel.js): صحنه ساکن و حلقه خاموش تا لمس بعدی
       last = now;
       const t = now - t0, s = t / 1000;
       placeCam(now);
@@ -1801,14 +1804,14 @@
       }
       renderer.render(scene, camera);
     }
-    raf = requestAnimationFrame(frame);
-    frame(performance.now(), true);
+    frame(performance.now(), true); // خودش فریم بعدی را می‌خواهد؛ یک rAF جدا اینجا دو حلقه‌ی هم‌زمان می‌ساخت
 
     function dispose() {
       if (dead) return;
       dead = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("deviceorientation", onTilt);
+      window.removeEventListener("kalame-wake", onWake);
       disposables.forEach((d) => d.dispose && d.dispose());
       Object.values(reliefMats).forEach((m) => m.dispose());
       renderer.dispose();

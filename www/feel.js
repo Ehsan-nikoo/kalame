@@ -68,8 +68,12 @@ function audio() {
     masterGain.connect(audioCtx.destination);
   }
   if (audioCtx.state === "suspended") audioCtx.resume();
+  // چند ثانیه بعد از آخرین صدا، Web Audio خاموش می‌شود تا گوشی بیهوده کار نکند (sound.js هم همین کار را می‌کند)
+  clearTimeout(audioIdle);
+  audioIdle = setTimeout(() => { if (audioCtx && audioCtx.state === "running") audioCtx.suspend(); }, 4000);
   return audioCtx;
 }
+let audioIdle = 0;
 
 // یک نت کوتاه: فرکانس، شروع (ثانیه از الان)، طول، بلندی، نوع موج
 function tone(freq, at = 0, dur = 0.18, vol = 0.3, type = "sine") {
@@ -338,3 +342,40 @@ function setupSettings() {
 
 applyTextSize();
 setupSettings();
+
+// ---------------------------------------------------------------------------
+// استراحت: اگر چند ثانیه دست به صفحه نخورد، حرکت‌های تزئینی همیشگی (ابر، ماهی، ستاره، نمای سه‌بعدی …)
+// می‌ایستند و با اولین لمس دوباره راه می‌افتند. حرکت همیشگی یعنی گوشی هر ثانیه ۶۰ تا ۱۲۰ بار صفحه را
+// از نو بکشد، حتی وقتی بازیکن فقط دارد فکر می‌کند؛ همین گوشی را داغ می‌کند و باتری را می‌خورد.
+// ظاهرهایی که خودشان می‌کشند (stars، نماهای سه‌بعدی) به data-rest روی html نگاه می‌کنند.
+// ---------------------------------------------------------------------------
+
+const REST_MS = 8000;
+let restT = 0;
+let restPaused = [];
+function restNow() {
+  const root = document.documentElement;
+  if (root.dataset.rest) return;
+  root.dataset.rest = "1";
+  // فقط حرکت‌های بی‌پایان؛ حرکت‌های یک‌باره (باز شدن کارت، سکه، نوار زمان) دست نمی‌خورند
+  restPaused = document.getAnimations().filter((a) => {
+    if (a.playState !== "running" || !a.effect || !a.effect.getComputedTiming) return false;
+    if (a.effect.getComputedTiming().iterations !== Infinity) return false;
+    const t = a.effect.target;
+    return !(t && t.closest && t.closest("#loading, .loading, .ef-letter"));
+  });
+  restPaused.forEach((a) => a.pause());
+}
+function restWake() {
+  clearTimeout(restT);
+  restT = setTimeout(restNow, REST_MS);
+  const root = document.documentElement;
+  if (!root.dataset.rest) return;
+  delete root.dataset.rest;
+  restPaused.forEach((a) => { try { a.play(); } catch (e) { /* انیمیشن برداشته شده */ } });
+  restPaused = [];
+  window.dispatchEvent(new Event("kalame-wake")); // حلقه‌های کشیدن (ستاره‌ها، نمای سه‌بعدی) دوباره راه می‌افتند
+}
+["pointerdown", "pointermove", "touchstart", "keydown", "wheel"].forEach((e) => window.addEventListener(e, restWake, { passive: true, capture: true }));
+document.addEventListener("visibilitychange", () => (document.hidden ? restNow() : restWake()));
+restWake();
