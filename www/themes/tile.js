@@ -86,6 +86,9 @@
 
   defineTheme("tile", {
     name: (level) => storyName(level),
+    // روی نقشه‌ی مرحله‌ها شماره‌ی داستان هم نوشته می‌شود و دکمه‌ی «ادامه» اسم داستان را نشان می‌دهد
+    mapName: (level) => `داستان ${faDigits(SHN.storyNo(level) + 1)}\n${storyName(level)}`,
+    subName: true,
 
     setup() {
       document.body.insertAdjacentHTML("beforeend", `<div class="tile-frame" aria-hidden="true"></div>`);

@@ -192,6 +192,12 @@ function levelName(i) {
   return def && def.name ? def.name(i) : "";
 }
 
+// اسمی که روی نقشه‌ی مرحله‌ها کنار اولین مرحله‌ی هر بخش نوشته می‌شود؛ ظاهر می‌تواند شکل دیگری بدهد (مثلاً «داستان ۷ · فریدون و ضحاک»)
+function mapName(i) {
+  const def = themeDefs[activeTheme];
+  return def && def.mapName ? def.mapName(i) : levelName(i);
+}
+
 // ---------------------------------------------------------------------------
 // وضعیت بازی
 // ---------------------------------------------------------------------------
@@ -1494,7 +1500,7 @@ function renderHome() {
   renderEvent();
   $("continueSub").textContent = allDone && ready
     ? "همه‌ی مرحله‌ها تموم شده"
-    : `مرحله‌ی ${faDigits(next + 1)} · ${chapterInfo(chapterOf(next)).name}`;
+    : `مرحله‌ی ${faDigits(next + 1)} · ${(themeDefs[activeTheme] || {}).subName ? levelName(next) : chapterInfo(chapterOf(next)).name}`;
 
   // اولین بار هر روز که منو باز می‌شود، جایزه‌ی روزانه نشان داده می‌شود
   if (rewardDue()) setTimeout(() => {
@@ -1567,7 +1573,7 @@ function renderLevels() {
     track.appendChild(btn);
 
     // اسم هر فصل (صورت فلکی، شهر، قالی، باغ) کنار اولین مرحله‌اش، طرف دیگر جاده
-    const name = levelName(i);
+    const name = mapName(i);
     if (name && name !== prevName) {
       const label = document.createElement("span");
       label.className = "map-label" + (status === "locked" ? " locked" : "");

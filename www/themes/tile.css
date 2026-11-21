@@ -306,6 +306,7 @@
 [data-theme="tile"] .map-stitch { stroke: #d9a441; }
 [data-theme="tile"] .map-done { stroke: #2a9fb3; }
 [data-theme="tile"] .map-label { color: #e8b94a; background: rgba(10, 30, 60, 0.85); border-color: rgba(217, 164, 65, 0.6); }
+[data-theme="tile"] .map-label { max-width: none; white-space: pre; overflow: visible; text-overflow: clip; text-align: center; line-height: 1.7; border-radius: 12px; padding: 4px 12px; font-size: 13px; }
 [data-theme="tile"] .map-marker { background: #e8b94a; }
 
 /* ---------- آموزش: «استاد کاشی‌کار» ---------- */
