@@ -1,0 +1,329 @@
+/* ظاهر «زیر دریا» (فقط بخش کودک): آب آبی، حباب، جلبک و مرجان. دکمه‌ها سفید و گرد با لبه‌ی آبی،
+   دایره‌ی حروف یک حلقه‌ی نجات، خانه‌ها مثل سنگ‌ریزه‌های رنگی ته دریا. */
+
+:root[data-theme="sea"] {
+  --bg: #46bdf0;
+  --surface: #ffffff;
+  --ink: #17334d;
+  --muted: #4f6f8a;
+  --accent: #ff6b8b;
+  --accent-ink: #ffffff;
+  --accent-soft: #ffe0e8;
+  --tint: #e6f8ff;
+  --edge: transparent;
+  --cell-empty: #ffffff;
+  --wrong: #e5484d;
+  --line: #ff6b8b;
+  --coin: #ffc21a;
+  --lip: #1f7fc0;
+  --lip-primary: #c94a6c;
+  --lip-glow: rgba(255, 107, 139, 0.25);
+  --conf-0: #ff6b8b;
+  --conf-1: #ffffff;
+  --conf-2: #ffd34a;
+  --conf-3: #7fe0ff;
+  /* رنگ‌های خانه‌ها و حرف‌ها: [رنگ، لبه‌ی تیره‌تر] */
+  --t1: #ff7f9e; --t1d: #d45677;
+  --t2: #2fc4b2; --t2d: #1e9787;
+  --t3: #ffb23a; --t3d: #d88a12;
+  --t4: #a77ce8; --t4d: #7d55c2;
+  --t5: #4f8ff0; --t5d: #2f6cc8;
+}
+
+/* پس‌زمینه: صحنه‌ی زیر آب پشت صفحه‌ی بازی، و همان صحنه پشت دنیای کودک */
+.sea-bg, .sea-kw { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.sea-bg { z-index: 0; }
+.sea-kw { z-index: -1; }
+.sea-bg svg, .sea-kw svg { width: 100%; height: 100%; display: block; }
+[data-theme="sea"] .kw { background: #46bdf0; }
+.sea-rays { animation: sea-sway 9s ease-in-out infinite alternate; transform-origin: 200px 0; }
+.sea-weed { transform-box: fill-box; transform-origin: 50% 100%; animation: sea-weed 3.4s ease-in-out infinite alternate; }
+.sea-school { animation: sea-school 26s linear infinite; }
+.sea-school.s2 { animation-duration: 34s; animation-delay: -14s; animation-direction: reverse; }
+@keyframes sea-sway { from { transform: skewX(-4deg); } to { transform: skewX(4deg); } }
+@keyframes sea-weed { from { transform: skewX(-7deg); } to { transform: skewX(7deg); } }
+@keyframes sea-school {
+  from { transform: translate(-80px, 300px); }
+  50% { transform: translate(200px, 270px); }
+  to { transform: translate(480px, 310px); }
+}
+.sea-bubble {
+  position: absolute;
+  bottom: -30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.9) 0 18%, rgba(255, 255, 255, 0.12) 22%);
+  animation: sea-rise linear infinite;
+}
+@keyframes sea-rise {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 0.9; }
+  50% { transform: translate(12px, -55vh); }
+  100% { transform: translate(-6px, -112vh); opacity: 0.6; }
+}
+
+/* هشتی: گوشه‌ی پایین صفحه‌ی بازی؛ آرام شنا می‌کند و با هر کلمه می‌پرد */
+.sea-pal {
+  position: fixed;
+  z-index: 0;
+  right: 10px;
+  bottom: calc(env(safe-area-inset-bottom) + 8px);
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 3px rgba(20, 60, 110, 0.3));
+  animation: sea-float 3s ease-in-out infinite;
+}
+.sea-pal svg { width: 100%; height: 100%; overflow: visible; }
+.sea-pal .tk-eyes { animation: tour-blink 4s infinite; }
+.sea-pal.hop { animation: sea-hop 0.7s cubic-bezier(.3, 1.4, .5, 1); }
+.sea-pal.no { animation: sea-no 0.5s ease; }
+.sea-pal.spin { animation: sea-turn 0.7s ease; }
+.sea-pal.hi { animation: sea-hop 0.8s cubic-bezier(.3, 1.4, .5, 1) 0.3s 2; }
+@keyframes sea-float { 50% { transform: translateY(-6px); } }
+@keyframes sea-hop { 40% { transform: translateY(-30px) scale(0.92, 1.1); } 75% { transform: translateY(0) scale(1.1, 0.9); } }
+@keyframes sea-no { 20%, 60% { transform: rotate(-12deg); } 40%, 80% { transform: rotate(12deg); } }
+@keyframes sea-turn { to { transform: rotate(360deg); } }
+@media (max-width: 340px) { .sea-pal { width: 46px; height: 46px; right: 4px; } }
+
+/* ---------- سربرگ ---------- */
+[data-theme="sea"] .icon-btn {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  color: #ff6b8b;
+  --lip: #9fdcf7;
+  box-shadow: 0 5px 0 var(--lip);
+}
+[data-theme="sea"] .icon-btn svg { width: 24px; height: 24px; }
+[data-theme="sea"] .level-label {
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  color: #4f6f8a;
+  font-weight: 700;
+  box-shadow: 0 5px 0 #9fdcf7;
+}
+[data-theme="sea"] .level-label.has-name { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 10px; line-height: 1.25; }
+[data-theme="sea"] .level-label .ll-num { font-size: 12px; }
+[data-theme="sea"] .level-label .ll-name { font-family: var(--display); font-weight: 400; font-size: 20px; color: #ff6b8b; }
+[data-theme="sea"] .level-label .ll-name::before { content: none; }
+[data-theme="sea"] .coins { border: 0; background: #fff; box-shadow: 0 5px 0 #ffe08a; }
+
+/* ---------- جدول: خانه‌های خالی مثل حباب سفید؛ پر که شد، سنگ‌ریزه‌ی رنگی ---------- */
+[data-theme="sea"] .cell { border-radius: 14px; font-weight: 800; }
+[data-theme="sea"] .cell.slot {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 3px #bfeaff, 0 3px 0 rgba(31, 127, 192, 0.35);
+}
+[data-theme="sea"] .cell.filled {
+  --c: var(--t1); --d: var(--t1d);
+  background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.45) 0 14%, transparent 15%), var(--c);
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1), 0 4px 0 var(--d);
+  animation: sea-pop-in 0.6s cubic-bezier(.3, 1.6, .5, 1) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+[data-theme="sea"] .cell:nth-child(5n+2).filled { --c: var(--t2); --d: var(--t2d); }
+[data-theme="sea"] .cell:nth-child(5n+3).filled { --c: var(--t3); --d: var(--t3d); }
+[data-theme="sea"] .cell:nth-child(5n+4).filled { --c: var(--t4); --d: var(--t4d); }
+[data-theme="sea"] .cell:nth-child(5n).filled { --c: var(--t5); --d: var(--t5d); }
+[data-theme="sea"] .cell.again { animation: sea-jelly 0.5s ease; }
+@keyframes sea-pop-in {
+  0% { transform: translateY(18px) scale(0.4); opacity: 0; }
+  55% { transform: translateY(-5px) scale(1.15); opacity: 1; }
+  80% { transform: scale(0.95); }
+  100% { transform: none; }
+}
+@keyframes sea-jelly { 30% { transform: scale(1.16, 0.88); } 60% { transform: scale(0.92, 1.1); } }
+
+/* حباب‌هایی که از کلمه‌ی پیدا شده بالا می‌روند */
+.sea-pop {
+  position: fixed;
+  z-index: 20;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: radial-gradient(circle at 32% 30%, #fff 0 20%, rgba(190, 240, 255, 0.35) 24%);
+  pointer-events: none;
+  animation: sea-pop 1s ease-out both;
+}
+@keyframes sea-pop {
+  0% { transform: scale(0.2); opacity: 0; }
+  25% { transform: translateY(-14px) scale(1); opacity: 1; }
+  85% { transform: translate(6px, -60px) scale(1.15); opacity: 1; }
+  100% { transform: translate(6px, -66px) scale(1.8); opacity: 0; }
+}
+
+/* ---------- کلمه‌ی در حال ساختن و پیام‌ها ---------- */
+[data-theme="sea"] .preview { border-radius: 18px; font-family: var(--display); font-weight: 400; }
+[data-theme="sea"] .preview.show { background: #fff; color: #ff6b8b; box-shadow: 0 4px 0 #9fdcf7; }
+[data-theme="sea"] .preview.right { background: #2fc4b2; color: #fff; box-shadow: 0 4px 0 #1e9787; }
+[data-theme="sea"] .preview.wrong { background: #fff; color: #e5484d; box-shadow: 0 4px 0 #ffc9c9; }
+[data-theme="sea"] .preview.bonus { background: #ffd34a; color: #5a3d10; box-shadow: 0 4px 0 #d99a00; }
+[data-theme="sea"] .preview.note { font-family: "Vazirmatn", sans-serif; font-weight: 700; color: #17334d; }
+[data-theme="sea"] .praise {
+  color: #ff6b8b;
+  font-size: 50px;
+  text-shadow: 0 3px 0 #fff, 0 -3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff, 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 0 8px 0 rgba(20, 60, 110, 0.18);
+}
+
+/* ---------- دایره‌ی حروف: حلقه‌ی نجات قرمز و سفید ---------- */
+[data-theme="sea"] .wheel {
+  background:
+    radial-gradient(circle, #f2fbff 0 61%, #d6eef9 63%, transparent 64%),
+    repeating-conic-gradient(from 22.5deg, #ff5f6d 0 45deg, #ffffff 45deg 90deg);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.06), 0 8px 0 #1f7fc0, 0 16px 28px rgba(10, 50, 100, 0.25);
+}
+[data-theme="sea"] .wheel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 50% 28% at 35% 14%, rgba(255, 255, 255, 0.6), transparent 70%);
+  pointer-events: none;
+}
+[data-theme="sea"] .wheel.sea-wobble { animation: sea-no 0.45s ease; }
+[data-theme="sea"] .wheel.sea-swirl { animation: sea-turn 0.6s ease; }
+[data-theme="sea"] .wheel-lines polyline { stroke-width: 5; }
+[data-theme="sea"] .letter {
+  --c: var(--t1); --d: var(--t1d);
+  width: 27%;
+  height: 27%;
+  background: #fff;
+  color: #17334d;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 3.5px var(--c), 0 4px 0 #c6dbe6;
+}
+[data-theme="sea"] .letter:nth-of-type(5n+2) { --c: var(--t2); --d: var(--t2d); }
+[data-theme="sea"] .letter:nth-of-type(5n+3) { --c: var(--t3); --d: var(--t3d); }
+[data-theme="sea"] .letter:nth-of-type(5n+4) { --c: var(--t4); --d: var(--t4d); }
+[data-theme="sea"] .letter:nth-of-type(5n) { --c: var(--t5); --d: var(--t5d); }
+[data-theme="sea"] .letter.active { background: var(--c); color: #fff; box-shadow: 0 4px 0 var(--d); }
+
+/* ---------- دکمه‌ها ---------- */
+[data-theme="sea"] .tool {
+  border: 0;
+  border-radius: 18px;
+  min-height: 52px;
+  padding: 10px 16px;
+  background: #2fc4b2;
+  color: #fff;
+  --lip: #1e9787;
+  box-shadow: 0 5px 0 var(--lip);
+}
+[data-theme="sea"] .tool svg { width: 24px; height: 24px; }
+[data-theme="sea"] #hintLetterBtn { background: #ffd34a; color: #5a3d10; --lip: #d99a00; }
+[data-theme="sea"] .mode-kids #hintLetterBtn .cost { display: none; }
+[data-theme="sea"] .mode-kids #hintLetterBtn { flex-direction: row; gap: 8px; padding: 10px 18px; border-radius: 18px; }
+[data-theme="sea"] .mode-kids #hintLetterBtn::before { content: "کمک! یه حرف"; font-family: var(--display); font-weight: 400; font-size: 18px; line-height: 1; white-space: nowrap; }
+[data-theme="sea"] .mode-kids .tools .tool.shuffle { border-radius: 18px; padding: 12px 14px; }
+
+/* ---------- کارت‌ها و پنجره‌ها ---------- */
+[data-theme="sea"] .sheet { background: rgba(10, 50, 100, 0.4); }
+[data-theme="sea"] .card {
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: inset 0 0 0 4px #bfeaff, 0 8px 0 #1f7fc0, 0 18px 40px rgba(10, 50, 100, 0.3);
+}
+[data-theme="sea"] .card-title, [data-theme="sea"] .meaning-word { color: #ff6b8b; }
+[data-theme="sea"] .card-btn { border-radius: 18px; background: #2fc4b2; font-family: var(--display); font-weight: 400; font-size: 20px; }
+[data-theme="sea"] .menu-btn { border: 0; border-radius: 20px; background: #fff; }
+[data-theme="sea"] .menu-btn.primary { background: #2fc4b2; }
+[data-theme="sea"] .confetti { width: 11px; height: 11px; border-radius: 50%; }
+
+/* ---------- دنیای کودک در این ظاهر ---------- */
+[data-theme="sea"] .kw-home { background: #fff; color: #ff6b8b; box-shadow: 0 5px 0 #9fdcf7; }
+[data-theme="sea"] .kw-stars { background: #fff; box-shadow: 0 5px 0 #ffe08a; }
+[data-theme="sea"] .kw-title,
+[data-theme="sea"] .kw-cheer { text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff; }
+[data-theme="sea"] .kw-ask { color: #17334d; text-shadow: 0 0 6px #fff, 0 0 2px #fff; }
+[data-theme="sea"] .kw-stage { gap: 14px; padding-top: 6px; }
+[data-theme="sea"] .sea-tank-btn ~ .kw-title { display: none; }
+[data-theme="sea"] .kw-menu { gap: 12px; }
+[data-theme="sea"] .kw-game { padding: 14px 8px 12px; }
+[data-theme="sea"] .kw-game span { font-size: 46px; }
+@media (max-height: 700px) {
+  [data-theme="sea"] .sea-tank-btn { max-width: 250px; }
+  [data-theme="sea"] .kw-game { padding: 10px 8px 8px; }
+  [data-theme="sea"] .kw-game span { font-size: 40px; }
+}
+[data-theme="sea"] .kw-themes-note { opacity: 1; color: #fff; text-shadow: 0 1px 2px rgba(10, 50, 100, 0.5); }
+[data-theme="sea"] .kw-slot { background: rgba(255, 255, 255, 0.85); border-color: #9fdcf7; }
+[data-theme="sea"] .kw-slot.on { border-color: #2fc4b2; background: #2fc4b2; }
+
+/* آکواریوم بالای فهرست بازی‌ها و در صفحه‌ی برد */
+.sea-tank { display: block; width: 100%; height: auto; }
+.sea-tank-btn {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  padding: 6px 6px 4px;
+  border: 0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 6px 0 #1f7fc0;
+  cursor: pointer;
+  font: inherit;
+  color: #17334d;
+  animation: pop 0.4s ease;
+}
+.sea-tank-btn .sea-tank { border-radius: 16px; }
+.sea-tank-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #1f7fc0; }
+.sea-tank-cap { display: block; padding: 4px 6px 2px; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 17px; line-height: 1.5; color: #ff6b8b; }
+.sea-win {
+  width: min(330px, 88vw);
+  padding: 6px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 6px 0 #1f7fc0, 0 14px 30px rgba(10, 50, 100, 0.25);
+  animation: pop 0.45s ease;
+}
+.sea-win .sea-tank { border-radius: 16px; }
+.kw-word.sea-joined { font-size: 30px; line-height: 1.5; max-width: 92vw; text-align: center; color: #ff6b8b; text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff; }
+.sea-tank .sea-swim { animation: sea-bob 2.6s ease-in-out infinite; }
+.sea-tank .sea-sit { animation: sea-sit 3s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.sea-tank .sea-glow { animation: sea-glow 2s ease-in-out infinite alternate; }
+@keyframes sea-glow { from { opacity: 0.3; } to { opacity: 1; } }
+.sea-tank .sea-q { animation: sea-bob 2.4s ease-in-out infinite; }
+.sea-tank .sea-new { transform-box: fill-box; transform-origin: 50% 50%; animation: sea-arrive 1.1s cubic-bezier(.3, 1.4, .5, 1) 0.35s both; }
+@keyframes sea-bob { 50% { transform: translateY(-2.4px); } }
+@keyframes sea-sit { 50% { transform: scale(1.04, 0.97); } }
+@keyframes sea-arrive {
+  0% { transform: translateX(-70px) scale(0.5); opacity: 0; }
+  65% { transform: translateX(4px) scale(1.12); opacity: 1; }
+  100% { transform: none; }
+}
+
+/* ---------- آموزش: «هشتی» ---------- */
+[data-theme="sea"] .tour-card {
+  background: #fff;
+  color: #17334d;
+  border: 3px solid #bfeaff;
+  border-radius: 26px;
+  box-shadow: 0 6px 0 #1f7fc0, 0 16px 40px rgba(10, 50, 100, 0.4);
+}
+[data-theme="sea"] .tour-text { font-size: 17px; font-weight: 700; }
+[data-theme="sea"] .tour-next {
+  border-radius: 16px;
+  background: #2fc4b2;
+  box-shadow: 0 4px 0 #1e9787;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 19px;
+}
+[data-theme="sea"] .tour-next:active { box-shadow: 0 1px 0 #1e9787; }
+[data-theme="sea"] .tour-skip { border-radius: 16px; border-color: #bfeaff; color: #4f6f8a; }
+[data-theme="sea"] .tour-dots i { background: #bfeaff; }
+[data-theme="sea"] .tour-dots i.on { background: #ff6b8b; }
+[data-theme="sea"] .tour-hole { box-shadow: 0 0 0 9999px rgba(8, 40, 80, 0.6), 0 0 0 4px #bfeaff, 0 0 24px 8px rgba(127, 224, 255, 0.6); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-rays, .sea-weed, .sea-school, .sea-bubble, .sea-pal, .sea-tank .sea-swim, .sea-tank .sea-sit, .sea-tank .sea-q, .sea-pal .tk-eyes { animation: none; }
+  .sea-bubble { display: none; }
+}

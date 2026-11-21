@@ -521,8 +521,9 @@ wheelSheet.querySelector("[data-close]").onclick = () => wheelSheet.classList.ad
 let wheelTurn = 0;
 let spinning = false;
 
+// گردونه در بخش بزرگسال است؛ ظاهرهای مخصوص کودک (kids) آنجا امتحانی باز نمی‌شوند
 function lockedThemes() {
-  return THEMES.filter((t) => t.product && !save.owned.includes(t.id));
+  return THEMES.filter((t) => t.product && !t.kids && !save.owned.includes(t.id));
 }
 
 function openWheel() {

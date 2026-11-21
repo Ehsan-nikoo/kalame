@@ -1,0 +1,330 @@
+/* ظاهر «کاشی‌کاری»: دیوار کاشی هفت‌رنگ (لاجوردی، فیروزه‌ای، شیری و اُخرایی)، شمسه‌ی کاشی و خانه‌های
+   خاکی که با هر کلمه کاشی لعاب‌دار می‌شوند. همه چیز تخت و آرام، بدون حالت کارتونی. */
+
+:root[data-theme="tile"] {
+  --bg: #12305a;
+  --surface: rgba(10, 30, 60, 0.6);
+  --ink: #f3ead6;
+  --muted: #b9c6d6;
+  --accent: #e8b94a;
+  --accent-ink: #1a1408;
+  --accent-soft: rgba(232, 185, 74, 0.14);
+  --tint: rgba(42, 159, 179, 0.18);
+  --edge: rgba(232, 185, 74, 0.4);
+  --wrong: #ff9e8c;
+  --line: #e8b94a;
+  --coin: #e8b94a;
+  --lip: rgba(6, 18, 40, 0.75);
+  --lip-primary: #9a6f1c;
+  --lip-glow: rgba(42, 159, 179, 0.35);
+  --cobalt: #1d4a86;
+  --turq: #2a9fb3;
+  --ivory: #efe3c6;
+  --ochre: #d9a441;
+  --complete-delay: 1400;
+  --conf-0: #2a9fb3;
+  --conf-1: #1d4a86;
+  --conf-2: #efe3c6;
+  --conf-3: #e8b94a;
+  --khatam: url("tile/khatam.svg");
+}
+
+/* دیوار: کاشی ستاره و چلیپا، با سایه‌ی تیره که وسط صفحه را خواناتر می‌کند */
+[data-theme="tile"] body {
+  background-color: #12305a;
+  background-image:
+    radial-gradient(120% 75% at 50% 48%, rgba(10, 26, 52, 0.72) 30%, rgba(8, 20, 40, 0.5) 70%, rgba(6, 14, 30, 0.7) 100%),
+    var(--khatam);
+  background-size: 100% 100%, 64px 64px;
+}
+/* حاشیه‌ی کاشی دور صفحه: نوار فیروزه‌ای با کتیبه‌ی شیری و دو خط اخرایی */
+.tile-frame {
+  position: fixed;
+  inset: 5px;
+  border: 1.5px solid #d9a441;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: inset 0 0 0 1px rgba(239, 227, 198, 0.35), 0 0 0 1px rgba(6, 14, 30, 0.6);
+}
+.tile-frame::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  padding: 7px;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 5px, rgba(239, 227, 198, 0.55) 5px 6px, transparent 6px 11px),
+    repeating-linear-gradient(-45deg, transparent 0 5px, rgba(239, 227, 198, 0.55) 5px 6px, transparent 6px 11px),
+    #1f8aa0;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.tile-frame::after {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border: 1px solid #d9a441;
+}
+[data-theme="tile"] .screen { padding: calc(env(safe-area-inset-top) + 24px) 22px calc(env(safe-area-inset-bottom) + 24px); }
+
+/* ---------- منو ---------- */
+[data-theme="tile"] .logo {
+  color: #efe3c6;
+  font-size: 80px;
+  text-shadow: 0 1px 0 #c7b48c, 0 2px 0 #a8936a, 0 3px 0 #1d4a86, 0 4px 0 #17396b, 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+[data-theme="tile"] .logo::after {
+  content: "";
+  display: block;
+  width: 168px;
+  height: 16px;
+  margin: -6px auto 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 168 16'%3E%3Cpath d='M2 8H64M104 8H166' stroke='%23d9a441' stroke-width='1.2'/%3E%3Cpath d='M84 0l3 5 5-1-1 5 5 3-5 3 1 5-5-1-3 5-3-5-5 1 1-5-5-3 5-3-1-5 5 1z' transform='translate(0 -4) scale(1 1)' fill='%232a9fb3' stroke='%23efe3c6' stroke-width='.8'/%3E%3Ccircle cx='84' cy='8' r='2' fill='%23d9a441'/%3E%3Ccircle cx='68' cy='8' r='2' fill='%23efe3c6'/%3E%3Ccircle cx='100' cy='8' r='2' fill='%23efe3c6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[data-theme="tile"] .home-sub { color: #e8b94a; }
+[data-theme="tile"] .scene-caption { color: #efe3c6; font-weight: 700; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.home-tile { filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45)); }
+
+/* ---------- نگاره‌ی سه‌بعدی شاهنامه در قاب تذهیب ---------- */
+.shn-frame {
+  position: relative;
+  padding: 7px;
+  margin-top: 14px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(90deg, #d9a441 0 2px, transparent 2px 10px) 0 0 / 100% 2px no-repeat,
+    linear-gradient(#1d3a7a, #142c5e);
+  box-shadow: inset 0 0 0 1.5px #d9a441, inset 0 0 0 5px #1d3a7a, inset 0 0 0 6px #efe3c6, 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+.shn-view { position: relative; width: 100%; aspect-ratio: 1 / 0.62; border-radius: 3px; overflow: hidden; background: linear-gradient(#e3b24f, #f7e6b6); box-shadow: 0 0 0 1px #d9a441; touch-action: pan-y; }
+.shn-canvas { display: block; width: 100% !important; height: 100% !important; cursor: grab; }
+.shn-canvas:active { cursor: grabbing; }
+.shn-title {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 0 18px 2px;
+  font-family: "Nastaliq", serif;
+  font-size: 15px;
+  line-height: 2;
+  color: #f0cd6e;
+  background: linear-gradient(#1d3a7a, #142c5e);
+  border-radius: 14px / 50%;
+  box-shadow: inset 0 0 0 1.2px #d9a441, inset 0 0 0 3.5px #1d3a7a, inset 0 0 0 4.3px #efe3c6, 0 3px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.shn-line { margin: 10px 4px 2px; font-size: 13px; line-height: 1.9; color: #d6dde6; text-align: center; }
+.tile-done .shn-frame { margin: 8px 0 10px; }
+.home-tile.shn-frame { margin-top: 24px; }
+.home-tile .shn-view { aspect-ratio: 1 / 0.5; }
+[data-theme="tile"] .screen-title,
+[data-theme="tile"] .card-title { color: #e8b94a; }
+
+/* دکمه‌ها: کاشی لاجوردی با لبه‌ی اخرایی و برق لعاب */
+[data-theme="tile"] .menu-btn,
+[data-theme="tile"] .icon-btn,
+[data-theme="tile"] .coins,
+[data-theme="tile"] .level-label,
+[data-theme="tile"] .tool {
+  background:
+    radial-gradient(ellipse 90% 50% at 30% 0%, rgba(255, 255, 255, 0.16), transparent 70%),
+    linear-gradient(#21508f, #183e72 60%, #143561);
+  border-color: rgba(217, 164, 65, 0.7);
+  color: #efe3c6;
+}
+[data-theme="tile"] .menu-btn,
+[data-theme="tile"] .icon-btn,
+[data-theme="tile"] .tool {
+  box-shadow: 0 3px 0 #0b1f3c, 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(239, 227, 198, 0.18);
+}
+[data-theme="tile"] .menu-btn { border-radius: 10px; }
+[data-theme="tile"] .menu-btn::after { inset: 4px; border-radius: 7px; border: 1px solid rgba(42, 159, 179, 0.45); }
+[data-theme="tile"] .menu-btn.primary,
+[data-theme="tile"] .card-btn {
+  background:
+    radial-gradient(ellipse 80% 55% at 30% 0%, rgba(255, 255, 255, 0.32), transparent 60%),
+    linear-gradient(#3fb7c6, #2a9fb3 50%, #1c8197);
+  border-color: #d9a441;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(6, 30, 50, 0.55);
+  --ring: inset 0 0 0 1.5px #efe3c6, inset 0 0 0 3px rgba(23, 57, 107, 0.4);
+}
+[data-theme="tile"] .menu-btn.primary::after,
+[data-theme="tile"] .card-btn::after { border: none; }
+[data-theme="tile"] .tool { --lip: #0b1f3c; }
+[data-theme="tile"] .icon-btn,
+[data-theme="tile"] .coins { border-width: 1px; }
+[data-theme="tile"] .coin-icon {
+  border-radius: 3px;
+  transform: rotate(45deg) scale(0.86);
+  background: radial-gradient(circle, #fff3c8 0 18%, #e8b94a 22% 62%, #a8781e 66%);
+  box-shadow: 0 0 0 1px #8a6216;
+}
+
+/* اسم بنا زیر شماره‌ی مرحله */
+[data-theme="tile"] .level-label { color: #b9c6d6; border-radius: 10px; }
+[data-theme="tile"] .level-label.has-name { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 12px; line-height: 1.3; }
+[data-theme="tile"] .level-label .ll-num { font-size: 11px; opacity: 0.85; }
+[data-theme="tile"] .level-label .ll-name { font-family: var(--display); font-weight: 400; font-size: 17px; color: #e8b94a; }
+[data-theme="tile"] .level-label .ll-name::before { content: none; }
+
+/* ---------- جدول: خانه‌های خالی گِل پخته (بیسکویت کاشی)، پر که شد کاشی لعاب‌دار ---------- */
+[data-theme="tile"] .cell { border-radius: 4px; font-weight: 800; }
+[data-theme="tile"] .cell.slot {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 240, 220, 0.18), transparent 60%),
+    linear-gradient(#c98d63, #b4774f);
+  box-shadow: inset 0 0 0 1px rgba(80, 40, 20, 0.45), inset 0 2px 3px rgba(255, 230, 200, 0.25), 0 2px 0 rgba(6, 14, 30, 0.55);
+}
+[data-theme="tile"] .cell.filled {
+  --c1: #3fb7c6; --c2: #1c8197;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 30% 18%, rgba(255, 255, 255, 0.42), transparent 70%),
+    linear-gradient(145deg, var(--c1), var(--c2));
+  color: #fffaf0;
+  text-shadow: 0 1px 1px rgba(5, 25, 45, 0.6);
+  box-shadow: inset 0 0 0 1.5px #efe3c6, inset 0 0 0 2.5px rgba(217, 164, 65, 0.8), 0 2px 0 rgba(6, 14, 30, 0.6);
+  animation: tile-set 0.55s cubic-bezier(.2, .9, .3, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+/* هفت‌رنگ: یک در میان لاجوردی، تا جدول مثل دیوار کاشی نقش بگیرد */
+[data-theme="tile"] .cell:nth-child(3n+2).filled { --c1: #2c63aa; --c2: #17396b; }
+[data-theme="tile"] .cell:nth-child(7n+4).filled { --c1: #f4ead2; --c2: #dccaa0; color: #17396b; text-shadow: none; }
+[data-theme="tile"] .cell.again { animation: tile-tap 0.45s ease; }
+@keyframes tile-set {
+  0% { transform: translateY(-10px) scale(1.12); opacity: 0; box-shadow: 0 14px 18px rgba(0, 0, 0, 0.35); }
+  60% { transform: translateY(1px) scale(0.98); opacity: 1; }
+  100% { transform: none; }
+}
+@keyframes tile-tap { 40% { transform: scale(1.08); filter: brightness(1.2); } }
+/* برقی که از روی لعاب رد می‌شود */
+[data-theme="tile"] .cell.tile-glint::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.75) 48%, transparent 60%);
+  transform: translateX(-120%);
+  animation: tile-glint 0.8s ease-out var(--g, 0ms) both;
+  pointer-events: none;
+}
+@keyframes tile-glint { to { transform: translateX(120%); } }
+
+/* ---------- پیش‌نمایش و پیام‌ها ---------- */
+[data-theme="tile"] .preview { border-radius: 8px; }
+[data-theme="tile"] .preview.show { background: rgba(10, 30, 60, 0.85); color: #efe3c6; box-shadow: inset 0 0 0 1px rgba(217, 164, 65, 0.6); }
+[data-theme="tile"] .preview.right { background: #2a9fb3; color: #fff; box-shadow: inset 0 0 0 1.5px #efe3c6; }
+[data-theme="tile"] .preview.wrong { background: rgba(10, 30, 60, 0.85); color: #ff9e8c; }
+[data-theme="tile"] .preview.bonus { background: #e8b94a; color: #2a1c05; }
+[data-theme="tile"] .preview.note { color: #efe3c6; }
+[data-theme="tile"] .praise {
+  color: #efe3c6;
+  font-size: 48px;
+  text-shadow: 0 1px 0 #c7b48c, 0 2px 0 #1d4a86, 0 3px 0 #17396b, 0 0 22px rgba(42, 159, 179, 0.8);
+}
+
+/* ---------- دایره‌ی حروف: شمسه‌ی کاشی ---------- */
+[data-theme="tile"] .wheel { background: none; box-shadow: none; }
+[data-theme="tile"] .wheel.tile-shake { animation: tile-shake 0.4s ease; }
+@keyframes tile-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.tile-panel { position: absolute; inset: -5%; }
+.tile-panel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5)); }
+[data-theme="tile"] .wheel-lines polyline { stroke-width: 4; }
+[data-theme="tile"] .wheel-lines { filter: drop-shadow(0 0 2px rgba(10, 20, 40, 0.9)); }
+/* حرف‌ها: کاشی هشت‌ضلعی لعاب‌دار لاجوردی با لبه‌ی آجری؛ گرفته که شد، زرد اخرایی */
+[data-theme="tile"] .letter {
+  width: 25%;
+  height: 25%;
+  border-radius: 0;
+  clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%);
+  background:
+    radial-gradient(ellipse 70% 45% at 32% 20%, rgba(255, 255, 255, 0.45), transparent 70%),
+    radial-gradient(circle, #2c63aa 0 58%, #1d4a86 60% 74%, #efe3c6 75% 80%, #9a5232 81%);
+  color: #fffaf0;
+  font-weight: 800;
+  text-shadow: 0 1px 1px rgba(5, 15, 35, 0.7);
+}
+[data-theme="tile"] .letter.active {
+  background:
+    radial-gradient(ellipse 70% 45% at 32% 20%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(circle, #f0c460 0 58%, #d9a441 60% 74%, #efe3c6 75% 80%, #9a5232 81%);
+  color: #17396b;
+  text-shadow: none;
+}
+
+/* ---------- پایان مرحله ---------- */
+[data-theme="tile"] .overlay,
+[data-theme="tile"] .sheet { background: radial-gradient(ellipse at 50% 40%, rgba(10, 30, 60, 0.55), rgba(4, 10, 24, 0.82)); }
+[data-theme="tile"] .card {
+  background:
+    radial-gradient(130% 90% at 50% 0%, rgba(42, 159, 179, 0.18), transparent 60%),
+    linear-gradient(#17396b, #112c55);
+  color: #efe3c6;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1.5px #d9a441, inset 0 0 0 7px #1f8aa0, inset 0 0 0 8.5px #efe3c6, 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+[data-theme="tile"] .card-text,
+[data-theme="tile"] .meaning-text { color: #d6dde6; }
+[data-theme="tile"] .meaning-word { color: #e8b94a; }
+[data-theme="tile"] .card-link { color: #b9c6d6; }
+[data-theme="tile"] .confetti { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 1px; }
+
+/* ---------- فهرست‌ها و پنجره‌ها ---------- */
+[data-theme="tile"] .tcard,
+[data-theme="tile"] .ach,
+[data-theme="tile"] .reward-day {
+  background: linear-gradient(rgba(33, 80, 143, 0.75), rgba(20, 53, 97, 0.85));
+  border: 1px solid rgba(217, 164, 65, 0.55);
+  color: #efe3c6;
+}
+[data-theme="tile"] .tcard,
+[data-theme="tile"] .ach { border-radius: 8px; box-shadow: inset 0 0 0 3px rgba(10, 30, 60, 0.6), inset 0 0 0 4px rgba(42, 159, 179, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3); }
+[data-theme="tile"] .tcard.selected { border-color: #e8b94a; box-shadow: inset 0 0 0 3px rgba(10, 30, 60, 0.6), inset 0 0 0 4px #2a9fb3, 0 0 0 2px #e8b94a, 0 0 18px rgba(232, 185, 74, 0.35); }
+[data-theme="tile"] .reward-day { border-radius: 6px; }
+[data-theme="tile"] .reward-day.today { border-color: #e8b94a; box-shadow: 0 0 0 2px #e8b94a, 0 0 16px rgba(232, 185, 74, 0.35); }
+[data-theme="tile"] .ach.ready { box-shadow: 0 0 0 2px #e8b94a, 0 0 16px rgba(232, 185, 74, 0.35); }
+[data-theme="tile"] .ach-icon { border-radius: 6px; background: linear-gradient(145deg, #3fb7c6, #1c8197); color: #fff; box-shadow: inset 0 0 0 1.5px #efe3c6; }
+[data-theme="tile"] .ach.done .ach-icon { background: radial-gradient(circle at 35% 30%, #fff1c6, #e8b94a 55%, #a8781e); color: #2a1c05; }
+[data-theme="tile"] .ach-bar,
+[data-theme="tile"] .chest-bar { background: rgba(0, 0, 0, 0.3); }
+[data-theme="tile"] .ach-bar span,
+[data-theme="tile"] .chest-bar span { background: linear-gradient(90deg, #1c8197, #3fb7c6); opacity: 1; }
+[data-theme="tile"] .meaning + .meaning,
+[data-theme="tile"] .level-words .meaning + .meaning { border-top: 1px solid rgba(217, 164, 65, 0.35); }
+[data-theme="tile"] .level-words { border-color: rgba(217, 164, 65, 0.45); }
+[data-theme="tile"] { --chest-wood: #6b4a2a; --chest-wood-2: #3e2a14; --chest-band: #d9a441; }
+
+/* نقشه‌ی مرحله‌ها */
+[data-theme="tile"] .lv { background: linear-gradient(#21508f, #17396b); color: #efe3c6; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(217, 164, 65, 0.6); }
+[data-theme="tile"] .lv.done { background: linear-gradient(145deg, #3fb7c6, #1c8197); box-shadow: inset 0 0 0 1.5px #efe3c6, inset 0 0 0 2.5px #d9a441; }
+[data-theme="tile"] .lv.current { box-shadow: 0 0 0 3px #e8b94a, 0 0 16px rgba(232, 185, 74, 0.45); }
+[data-theme="tile"] .map-road { stroke: rgba(239, 227, 198, 0.25); }
+[data-theme="tile"] .map-stitch { stroke: #d9a441; }
+[data-theme="tile"] .map-done { stroke: #2a9fb3; }
+[data-theme="tile"] .map-label { color: #e8b94a; background: rgba(10, 30, 60, 0.85); border-color: rgba(217, 164, 65, 0.6); }
+[data-theme="tile"] .map-marker { background: #e8b94a; }
+
+/* ---------- آموزش: «استاد کاشی‌کار» ---------- */
+[data-theme="tile"] .tour-card {
+  background: linear-gradient(#17396b, #112c55);
+  color: #efe3c6;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1.5px #d9a441, inset 0 0 0 6px #1f8aa0, inset 0 0 0 7.5px #efe3c6, 0 16px 40px rgba(0, 0, 0, 0.55);
+  padding-top: 20px;
+}
+[data-theme="tile"] .tour-next { border-radius: 8px; background: linear-gradient(#3fb7c6, #1c8197); box-shadow: inset 0 0 0 1px #efe3c6, 0 3px 0 #0b1f3c; }
+[data-theme="tile"] .tour-skip { border-radius: 8px; color: #b9c6d6; border-color: rgba(217, 164, 65, 0.5); background: transparent; }
+[data-theme="tile"] .tour-dots i { background: rgba(239, 227, 198, 0.25); }
+[data-theme="tile"] .tour-dots i.on { background: #e8b94a; }
+[data-theme="tile"] .tour-hole { box-shadow: 0 0 0 9999px rgba(4, 12, 28, 0.72), 0 0 0 2.5px #e8b94a, 0 0 22px 6px rgba(42, 159, 179, 0.55); }
+[data-theme="tile"] .tour-kalami .tk-tile { animation: tile-turn 14s linear infinite; transform-origin: 32px 32px; }
+@keyframes tile-turn { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="tile"] .tour-kalami .tk-tile { animation: none; }
+}

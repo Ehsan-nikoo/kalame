@@ -101,6 +101,15 @@ const TOUR_THEMES = {
       <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
       ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
   },
+  // کاشی‌کاری: «استاد کاشی‌کار»؛ به جای چهره، یک کاشی معرق هشت‌ضلعی که نقش وسطش آرام می‌چرخد (این ظاهر کارتونی نیست)
+  tile: {
+    hi: "آفرین! من استاد کاشی‌کارم؛ با هر کلمه، یه تیکه از نگاره‌ی شاهنامه رنگ می‌گیره.",
+    go: "بریم سر کار!",
+    svg: `<polygon points="59.7,43.5 43.5,59.7 20.5,59.7 4.3,43.5 4.3,20.5 20.5,4.3 43.5,4.3 59.7,20.5" fill="#b8693e"/><polygon points="55.7,41.8 41.8,55.7 22.2,55.7 8.3,41.8 8.3,22.2 22.2,8.3 41.8,8.3 55.7,22.2" fill="#e2b04a"/><polygon points="54.5,41.3 41.3,54.5 22.7,54.5 9.5,41.3 9.5,22.7 22.7,9.5 41.3,9.5 54.5,22.7" fill="#1d4a86"/>
+      <g class="tk-tile"><polygon points="36.2,17.5 34.1,21.1 29.9,21.1 27.8,17.5 29.9,13.9 34.1,13.9" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="36.2,46.5 34.1,50.1 29.9,50.1 27.8,46.5 29.9,42.9 34.1,42.9" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="48.8,24.7 46.7,28.3 42.5,28.3 40.4,24.7 42.5,21.1 46.7,21.1" fill="#efe3c6" stroke="#241a14" stroke-width=".5"/><polygon points="23.6,24.7 21.5,28.3 17.3,28.3 15.2,24.7 17.3,21.1 21.5,21.1" fill="#efe3c6" stroke="#241a14" stroke-width=".5"/><polygon points="48.8,39.3 46.7,42.9 42.5,42.9 40.4,39.3 42.5,35.7 46.7,35.7" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="23.6,39.3 21.5,42.9 17.3,42.9 15.2,39.3 17.3,35.7 21.5,35.7" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="39.9,35.3 35.3,39.9 28.7,39.9 24.1,35.3 24.1,28.7 28.7,24.1 35.3,24.1 39.9,28.7" fill="#efe3c6" stroke="#241a14" stroke-width=".6"/>
+      <g fill="#1f7d66"><circle cx="32" cy="29" r="2.2"/><circle cx="35" cy="32" r="2.2"/><circle cx="32" cy="35" r="2.2"/><circle cx="29" cy="32" r="2.2"/></g><circle cx="32" cy="32" r="1.6" fill="#c9862f"/></g>
+      <ellipse cx="22" cy="17" rx="9" ry="4" fill="#fff" opacity=".22" transform="rotate(-35 22 17)"/>`,
+  },
   // مزرعه‌ی شاد (بخش کودک): «جوجو»، جوجه‌ی زرد مزرعه؛ همین جوجو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
   toon: {
     hi: "آفرین! 🐥 من جوجوام، از مزرعه اومدم پیشت.",
@@ -113,6 +122,32 @@ const TOUR_THEMES = {
       ${TK_EYES(34, 7.5)}
       <path d="M27.5 42q4.5-3.4 9 0q-4.5 4.6-9 0Z" fill="#ff8a3a"/>
       ${TK_CHEEKS(42, 13.5)}`,
+  },
+  // زیر دریا (بخش کودک): «هشتی»، هشت‌پای کوچولوی بنفش؛ همین هشتی گوشه‌ی صفحه‌ی بازی هم شنا می‌کند
+  sea: {
+    hi: "آفرین! 🐙 من هشتی‌ام، از ته دریا اومدم پیشت.",
+    go: "بریم زیر آب!",
+    svg: `<g fill="none" stroke="#a77ce8" stroke-width="5" stroke-linecap="round">
+        <path d="M17 40q-8 8 -5 15q2 4 6 1"/><path d="M24 44q-3 9 -1 13q2 3 5 0"/><path d="M32 45v10q0 4 3 3"/>
+        <path d="M40 44q3 9 1 13q-2 3 -5 0"/><path d="M47 40q8 8 5 15q-2 4 -6 1"/></g>
+      <g fill="#ffd0f0"><circle cx="13" cy="51" r="1.2"/><circle cx="24" cy="54" r="1.2"/><circle cx="40" cy="54" r="1.2"/><circle cx="51" cy="51" r="1.2"/></g>
+      <path d="M12 34c0-14 9-24 20-24s20 10 20 24c0 7-9 11-20 11s-20-4-20-11Z" fill="#b98cf2"/>
+      <ellipse cx="24" cy="19" rx="6" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-25 24 19)"/>
+      <g fill="#9a6ae0"><circle cx="40" cy="17" r="2.2"/><circle cx="45" cy="23" r="1.5"/><circle cx="20" cy="27" r="1.3"/></g>
+      ${TK_EYES(31, 7.5)}${TK_SMILE(39)}${TK_CHEEKS(37, 13.5)}
+      <g fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"><circle cx="54" cy="12" r="3"/><circle cx="58" cy="5" r="1.8"/></g>`,
+  },  // سفر فضایی (بخش کودک): «زیپو»، آدم‌فضایی سبز با دو شاخک؛ همین زیپو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
+  space: {
+    hi: "آفرین! 👽 من زیپوام، از یه سیاره‌ی دور اومدم پیشت.",
+    go: "بریم فضا!",
+    svg: `<g class="zp-ant" stroke="#58d97a" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M24 16q-4 -7 -8 -9"/><path d="M40 16q4 -7 8 -9"/></g>
+      <circle cx="16" cy="7" r="3.6" fill="#ffd34a"/><circle cx="48" cy="7" r="3.6" fill="#ffd34a"/>
+      <path d="M22 56v4h6M42 56v4h-6" stroke="#3fb862" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <ellipse cx="12" cy="42" rx="4" ry="6" fill="#58d97a" transform="rotate(30 12 42)"/><ellipse cx="52" cy="42" rx="4" ry="6" fill="#58d97a" transform="rotate(-30 52 42)"/>
+      <path d="M12 36c0-13 9-22 20-22s20 9 20 22c0 13-9 22-20 22s-20-9-20-22Z" fill="#7cf08a"/>
+      <path d="M17 46h30q-2 9 -15 10q-13 -1 -15 -10z" fill="#9a7cff"/><circle cx="32" cy="50" r="2.4" fill="#ffd34a"/>
+      <ellipse cx="22" cy="23" rx="5" ry="3" fill="#fff" opacity=".4" transform="rotate(-30 22 23)"/>
+      ${TK_EYES(32, 8)}${TK_SMILE(40)}${TK_CHEEKS(38, 14)}`,
   },
 };
 
