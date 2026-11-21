@@ -1,13 +1,71 @@
 // ظاهر «سفر فضایی» (فقط بخش کودک، پولی): آسمان بنفش پرستاره، سیاره‌های خندان و موشک.
-// هر مرحله‌ی چرخ کلمه‌ی بچه‌ها موشک را به یک سیاره‌ی تازه می‌رساند؛ هر کهکشان ۵ سیاره دارد و بعد کهکشان تازه شروع می‌شود.
+// هر مرحله‌ی چرخ کلمه‌ی بچه‌ها موشک را به یک سیاره‌ی تازه (۱۶ جور) می‌رساند؛ هر کهکشان ۵ سیاره دارد و بعد کهکشان تازه شروع می‌شود.
+// ۴۰ کهکشان با اسم، رنگ آسمان، شکل مسیر و تزئین خودشان (دنباله‌دار، رنگین‌کمان، ایستگاه فضایی، ...).
 // «زیپو» (همان راهنمای آموزش در tour.js) گوشه‌ی صفحه‌ی بازی می‌ایستد و با هر کلمه بالا می‌پرد.
 // مثل مزرعه‌ی شاد، دو رویداد مخصوص بخش کودک را هم دارد (kids.js): kidsmenu و kidswin.
 (function () {
   "use strict";
 
   const PARTS = 5;
-  const GALAXIES = ["کهکشان آب‌نباتی", "کهکشان ستاره‌ها", "کهکشان شکلاتی", "کهکشان رنگین‌کمان", "کهکشان بستنی", "کهکشان ابری"];
-  const galaxyName = (n) => GALAXIES[n % GALAXIES.length];
+  // هر کهکشان: [اسم، رنگ آسمان، تزئین، شکل مسیر]
+  const GALAXIES = [
+    ["کهکشان آب‌نباتی", "candy", "comet", 0], ["کهکشان ستاره‌ها", "night", "stars", 1], ["کهکشان شکلاتی", "orange", "asteroids", 2],
+    ["کهکشان رنگین‌کمان", "violet", "rainbow", 3], ["کهکشان بستنی", "mint", "moon", 0], ["کهکشان ابری", "deep", "clouds", 1],
+    ["کهکشان راه شیری", "night", "milky", 2], ["کهکشان پاستیلی", "pink", "ufo", 3], ["کهکشان نارنجی", "orange", "sun", 0],
+    ["کهکشان یخی", "deep", "comet", 1], ["کهکشان بنفشه", "violet", "swirl", 2], ["کهکشان شب‌تاب", "teal", "stars", 3],
+    ["کهکشان دنباله‌دار", "candy", "comet", 2], ["کهکشان ماه‌های خندان", "night", "moon", 3], ["کهکشان حبابی", "teal", "bubbles", 0],
+    ["کهکشان گردباد", "violet", "swirl", 1], ["کهکشان فیروزه‌ای", "teal", "station", 2], ["کهکشان توت‌فرنگی", "pink", "rainbow", 1],
+    ["کهکشان لیمویی", "mint", "sun", 3], ["کهکشان نعنایی", "mint", "asteroids", 0], ["کهکشان عسلی", "orange", "ufo", 1],
+    ["کهکشان شهاب‌ها", "deep", "meteors", 3], ["کهکشان بادکنکی", "pink", "bubbles", 2], ["کهکشان موسیقی", "violet", "notes", 0],
+    ["کهکشان اسباب‌بازی", "candy", "station", 3], ["کهکشان پشمکی", "pink", "clouds", 0], ["کهکشان کیکی", "orange", "moon", 2],
+    ["کهکشان خواب‌آلود", "night", "clouds", 3], ["کهکشان پروانه‌ای", "candy", "swirl", 1], ["کهکشان الماسی", "deep", "stars", 0],
+    ["کهکشان سیبی", "mint", "comet", 2], ["کهکشان دونات", "pink", "asteroids", 3], ["کهکشان بلوری", "teal", "meteors", 1],
+    ["کهکشان آتش‌بازی", "night", "fireworks", 2], ["کهکشان طلایی", "orange", "stars", 1], ["کهکشان ژله‌ای", "violet", "bubbles", 3],
+    ["کهکشان آدم‌فضایی‌ها", "teal", "ufo", 0], ["کهکشان قطب‌نما", "deep", "station", 1], ["کهکشان نوتلا", "orange", "notes", 2],
+    ["کهکشان رویایی", "candy", "fireworks", 0],
+  ].map(([name, sky, deco, path]) => ({ name, sky, deco, path }));
+  const galaxyOf = (n) => GALAXIES[n % GALAXIES.length];
+  const galaxyName = (n) => galaxyOf(n).name;
+  // آسمان: [بالا، پایین، مه‌رنگ ۱، مه‌رنگ ۲، میانه (برای پس‌زمینه‌ی صفحه)]
+  const SKIES = {
+    candy: ["#22195a", "#5a3fb0", "#ff8fcf", "#5fd1ff", "#33237c"],
+    night: ["#05071a", "#1c2350", "#9fb0ff", "#ffffff", "#10153a"],
+    orange: ["#2a1440", "#b8583a", "#ffd34a", "#ff8fcf", "#5a2450"],
+    violet: ["#1a0f3a", "#6a3ab8", "#c9a8ff", "#ff8fcf", "#3a2278"],
+    mint: ["#0f2a44", "#2f8a7a", "#c8ffe0", "#ffe27a", "#1a5060"],
+    deep: ["#0b1438", "#24408a", "#5fd1ff", "#9a7cff", "#152a60"],
+    pink: ["#3a1650", "#a8407a", "#ffb3d9", "#ffd34a", "#6a2468"],
+    teal: ["#0b2a3a", "#1f7a8a", "#7cf08a", "#5fd1ff", "#13505e"],
+  };
+  // شکل مسیر موشک روی نقشه‌ی ۲۰۰×۱۰۰
+  const PATHS = [
+    [[24, 70], [62, 40], [100, 68], [138, 38], [176, 64]],
+    [[22, 78], [58, 62], [98, 50], [138, 40], [176, 26]],
+    [[24, 34], [60, 66], [100, 76], [140, 66], [176, 34]],
+    [[26, 60], [64, 30], [104, 46], [146, 72], [178, 42]],
+  ];
+  // تزئین هر کهکشان روی نقشه (c: رنگ‌های آسمان)
+  const DECO = {
+    comet: (c) => `<g transform="translate(160 18) rotate(20)"><path d="M0 0l-30 -4l30 4l-28 4z" fill="${c[2]}" opacity=".5"/><circle r="3.4" fill="#fff"/></g>`,
+    stars: () => [[30, 14], [92, 20], [150, 86], [188, 50], [118, 88]].map(([x, y], i) =>
+      `<path class="space-tw" style="animation-delay:${-i * 0.5}s" transform="translate(${x} ${y})" d="M0 -4q.8 3.2 4 4q-3.2 .8 -4 4q-.8 -3.2 -4 -4q3.2 -.8 4 -4z" fill="#fff6c2"/>`).join(""),
+    asteroids: () => `<g fill="#9a8a7a">${[[86, 10, 3], [100, 14, 2], [112, 9, 2.6], [126, 15, 1.8], [140, 10, 2.4], [70, 14, 1.6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")}</g>`,
+    rainbow: () => `<g fill="none" stroke-width="2.4" opacity=".8">${["#ff5f6d", "#ffb23a", "#ffd34a", "#58d97a", "#3fc4ff", "#9a7cff"].map((c, i) =>
+      `<path d="M${120 + i * 3} 100a${40 - i * 3} ${40 - i * 3} 0 0 1 ${80 - i * 6} 0" stroke="${c}"/>`).join("")}</g>`,
+    moon: () => `<g transform="translate(176 20)"><circle r="10" fill="#fff3c8"/><circle cx="3" cy="-3" r="2" fill="#f0dca0"/><circle cx="-4" cy="3" r="1.4" fill="#f0dca0"/>
+      ${"<circle cx='-3' cy='-1' r='.9' fill='#1d1a33'/><circle cx='3' cy='-1' r='.9' fill='#1d1a33'/><path d='M-2 2.4q2 1.6 4 0' stroke='#1d1a33' stroke-width='.7' fill='none'/>"}</g>`,
+    clouds: () => [[40, 90, 1], [150, 92, 1.3], [100, 8, 0.9]].map(([x, y, s]) => `<g transform="translate(${x} ${y}) scale(${s})" fill="#fff" opacity=".25"><ellipse rx="14" ry="5"/><ellipse cx="6" cy="-3" rx="8" ry="5"/></g>`).join(""),
+    milky: () => `<path d="M-10 90Q60 40 210 10" stroke="#fff" stroke-width="18" opacity=".08" fill="none"/><path d="M-10 90Q60 40 210 10" stroke="#fff" stroke-width="6" opacity=".1" fill="none"/>`,
+    ufo: () => `<g class="space-ufo-mini" transform="translate(168 86)"><ellipse cy="-3" rx="5" ry="4.6" fill="#9fe6ff" opacity=".85"/><ellipse rx="11" ry="3.4" fill="#c9c3e8"/><g fill="#ffd34a"><circle cx="-6" cy="1" r="1"/><circle cy="1.6" r="1"/><circle cx="6" cy="1" r="1"/></g></g>`,
+    sun: () => `<g transform="translate(180 16)"><circle r="16" fill="#ffd34a" opacity=".2"/><circle r="9" fill="#ffd34a"/><circle r="6" fill="#ffe98a"/></g>`,
+    swirl: (c) => `<g transform="translate(170 80)" fill="none" stroke="${c[2]}" stroke-width="1.6" opacity=".55"><path d="M0 0a3 3 0 0 1 6 0a6 6 0 0 1 -12 0a9 9 0 0 1 18 0a12 12 0 0 1 -24 0"/></g>`,
+    bubbles: (c) => [[40, 14, 4], [170, 84, 5], [186, 20, 3], [110, 90, 3.4]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c[2]}" fill-opacity=".15" stroke="${c[2]}" stroke-opacity=".6" stroke-width=".8"/>`).join(""),
+    station: () => `<g transform="translate(170 86) rotate(-12)"><rect x="-4" y="-3" width="8" height="6" rx="1" fill="#e8e4ff"/><g fill="#3fc4ff" stroke="#c9c3e8" stroke-width=".4"><rect x="-16" y="-2.4" width="10" height="4.8"/><rect x="6" y="-2.4" width="10" height="4.8"/></g><circle r="1.4" fill="#ff5f6d"/></g>`,
+    meteors: () => [[150, 10], [176, 26], [120, 6]].map(([x, y]) => `<g transform="translate(${x} ${y})"><path d="M0 0l-16 8" stroke="#fff" stroke-width="1.2" opacity=".6" stroke-linecap="round"/><circle r="1.6" fill="#ffe98a"/></g>`).join(""),
+    notes: () => [[40, 16], [168, 84], [184, 22]].map(([x, y], i) => `<g transform="translate(${x} ${y})" fill="${["#ffd34a", "#ff8fcf", "#7cf08a"][i]}"><ellipse cx="-2" cy="4" rx="2.6" ry="2"/><path d="M0.4 4v-10l5 2v3l-5 -2" /></g>`).join(""),
+    fireworks: () => [[170, 22, "#ff8fcf"], [36, 86, "#ffd34a"], [130, 86, "#7cf08a"]].map(([x, y, c]) =>
+      `<g transform="translate(${x} ${y})" stroke="${c}" stroke-width="1.1" stroke-linecap="round">${Array.from({ length: 8 }, (_, i) => `<path d="M0 0l0 -6" transform="rotate(${i * 45}) translate(0 -2)"/>`).join("")}</g>`).join(""),
+  };
 
   const EYE = (x, y, r = 1.5) =>
     `<circle cx="${x}" cy="${y}" r="${r}" fill="#1d1a33"/><circle cx="${x + r * 0.35}" cy="${y - r * 0.38}" r="${r * 0.38}" fill="#fff"/>`;
@@ -41,8 +99,22 @@
         `<g transform="translate(${x} ${y})" fill="${c}"><circle cx="-1.1" r="1"/><circle cx="1.1" r="1"/><circle cy="-1.1" r="1"/><circle cy="1.1" r="1"/><circle r=".7" fill="#ffb23a"/></g>`).join("")}</g>${SHINE}${FACE}` },
     { name: "سیاره‌ی ابری", svg: (clip) => `<circle r="11" fill="#d9cfff"/>
       <g clip-path="url(#${clip})" fill="#fff" opacity=".9"><ellipse cx="-4" cy="-7" rx="7" ry="2.4"/><ellipse cx="5" cy="7" rx="7" ry="2.2"/><ellipse cx="6" cy="-4" rx="4" ry="1.4"/></g>${SHINE}${FACE}` },
+    { name: "سیاره‌ی هندوانه‌ای", svg: (clip) => `<circle r="11" fill="#58c46a"/>
+      <g clip-path="url(#${clip})" fill="#3a9a4c">${[-8, -3, 2, 7].map((x) => `<path d="M${x} -12q2.4 12 0 24h1.8q2.4 -12 0 -24z"/>`).join("")}</g>${SHINE}${FACE}` },
+    { name: "سیاره‌ی آتش‌فشانی", svg: (clip) => `<circle r="11" fill="#7a4a5a"/>
+      <g clip-path="url(#${clip})" stroke="#ff8a3a" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M-12 -4q5 2 8 -2t8 1t8 -2"/><path d="M-10 8q4 -3 8 0t8 -1"/></g>
+      <path d="M2 -11l2 -5l2 5z" fill="#ffd34a"/>${SHINE}${FACE}` },
+    { name: "سیاره‌ی الماسی", svg: () => `<path d="M0 -12l10 6v12l-10 6l-10 -6v-12z" fill="#5fe0e8"/>
+      <path d="M0 -12l10 6l-10 6l-10 -6z" fill="#a8f4f8"/><path d="M0 0v12" stroke="#3ab8c8" stroke-width=".8"/>${FACE}` },
+    { name: "سیاره‌ی ژله‌ای", svg: (clip) => `<circle r="11" fill="#ff6fc1" opacity=".85"/><circle r="11" fill="none" stroke="#ff9ad5" stroke-width="1.4"/>
+      <g fill="#fff" opacity=".6"><circle cx="-5" cy="-6" r="1.4"/><circle cx="6" cy="6" r="1"/><circle cx="7" cy="-4" r=".8"/></g>${SHINE}${FACE}` },
+    { name: "سیاره‌ی شیری", svg: (clip) => `<circle r="11" fill="#fff8ee"/>
+      <g clip-path="url(#${clip})" fill="#5a3a2a"><path d="M-12 -2q4 -4 8 -1q-2 4 -8 3z"/><path d="M4 4q5 -2 8 2v4h-6q-3 -3 -2 -6z"/><path d="M2 -11q4 1 4 4q-4 1 -6 -2z"/></g>${SHINE}${FACE}` },
+    { name: "خورشید کوچولو", svg: () => `<g stroke="#ffb23a" stroke-width="2.2" stroke-linecap="round">${Array.from({ length: 8 }, (_, i) => `<path d="M0 -13v-3" transform="rotate(${i * 45})"/>`).join("")}</g>
+      <circle r="11" fill="#ffd34a"/>${SHINE}${FACE}` },
   ];
-  const planetOf = (gal, i) => PLANETS[(gal * 3 + i) % PLANETS.length];
+  // هر کهکشان پنج سیاره‌ی پشت سر هم از فهرست؛ کهکشان بعدی از سیاره‌ی بعدی شروع می‌کند
+  const planetOf = (gal, i) => PLANETS[(gal * PARTS + i) % PLANETS.length];
 
   // موشک کوچک، رو به بالا، دور (۰،۰)
   const ROCKET = `<g class="space-flame"><path d="M-3 9q3 9 6 0z" fill="#ffb23a"/><path d="M-1.6 9q1.6 5 3.2 0z" fill="#fff3a6"/></g>
@@ -52,13 +124,12 @@
     <circle cy="-1" r="3" fill="#5fd1ff" stroke="#3a7fd8" stroke-width="1.2"/><circle cx="-1" cy="-2" r=".9" fill="#fff"/>
     <path d="M-2 9v-3h4v3" fill="#c9c3e8"/>`;
 
-  // جای سیاره‌ها روی نقشه‌ی ۲۰۰×۱۰۰
-  const SLOTS = [[24, 70], [62, 40], [100, 68], [138, 38], [176, 64]];
 
   let uid = 0;
   // نقشه‌ی کهکشان با count سیاره‌ی اول؛ سیاره‌ی fresh تازه پیدا شده و موشک از سیاره‌ی قبلی به آن می‌رود
   function mapSVG(gal, count, fresh) {
     const k = "sp" + ++uid;
+    const g = galaxyOf(gal), c = SKIES[g.sky], SLOTS = PATHS[g.path];
     const path = SLOTS.map(([x, y], i) => (i ? `Q${(SLOTS[i - 1][0] + x) / 2} ${i % 2 ? y - 6 : y + 6} ${x} ${y}` : `M${x} ${y}`)).join(" ");
     const parts = SLOTS.map(([x, y], i) => {
       if (i >= count) {
@@ -81,12 +152,12 @@
       <defs>
         <clipPath id="${k}c"><rect width="200" height="100" rx="14"/></clipPath>
         <clipPath id="${k}p"><circle r="11"/></clipPath>
-        <linearGradient id="${k}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22195a"/><stop offset="1" stop-color="#5a3fb0"/></linearGradient>
+        <linearGradient id="${k}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>
       </defs>
       <g clip-path="url(#${k}c)">
         <rect width="200" height="100" fill="url(#${k}s)"/>
-        <ellipse cx="150" cy="80" rx="70" ry="30" fill="#ff8fcf" opacity=".12"/><ellipse cx="40" cy="20" rx="60" ry="24" fill="#5fd1ff" opacity=".1"/>
-        ${stars}
+        <ellipse cx="150" cy="80" rx="70" ry="30" fill="${c[2]}" opacity=".14"/><ellipse cx="40" cy="20" rx="60" ry="24" fill="${c[3]}" opacity=".12"/>
+        ${stars}${DECO[g.deco](c)}
         <path d="${path}" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="1 4" stroke-linecap="round" fill="none"/>
         ${parts}${rocket}
       </g>
@@ -107,9 +178,9 @@
     return `<svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs>
         <linearGradient id="${id}-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#1a1247"/><stop offset=".5" stop-color="#33237c"/><stop offset=".85" stop-color="#5c40b4"/></linearGradient>
-        <radialGradient id="${id}-neb" r=".5"><stop offset="0" stop-color="#ff8fcf" stop-opacity=".35"/><stop offset="1" stop-color="#ff8fcf" stop-opacity="0"/></radialGradient>
-        <radialGradient id="${id}-neb2" r=".5"><stop offset="0" stop-color="#5fd1ff" stop-opacity=".28"/><stop offset="1" stop-color="#5fd1ff" stop-opacity="0"/></radialGradient>
+          <stop offset="0" style="stop-color:var(--sp-s0,#1a1247)"/><stop offset=".5" style="stop-color:var(--sp-s4,#33237c)"/><stop offset=".85" style="stop-color:var(--sp-s1,#5c40b4)"/></linearGradient>
+        <radialGradient id="${id}-neb" r=".5"><stop offset="0" style="stop-color:var(--sp-s2,#ff8fcf)" stop-opacity=".35"/><stop offset="1" style="stop-color:var(--sp-s2,#ff8fcf)" stop-opacity="0"/></radialGradient>
+        <radialGradient id="${id}-neb2" r=".5"><stop offset="0" style="stop-color:var(--sp-s3,#5fd1ff)" stop-opacity=".28"/><stop offset="1" style="stop-color:var(--sp-s3,#5fd1ff)" stop-opacity="0"/></radialGradient>
         <clipPath id="${id}-rp"><circle r="40"/></clipPath>
       </defs>
       <rect width="400" height="800" fill="url(#${id}-sky)"/>
@@ -137,6 +208,18 @@
       ${crater(70, 700, 22)}${crater(250, 690, 14)}${crater(340, 742, 26)}${crater(150, 766, 18)}${crater(30, 780, 10)}
       <g transform="translate(206 676)"><path d="M0 0v-46" stroke="#e8e4ff" stroke-width="3"/><path d="M1.5 -46h26l-6 8l6 8h-26z" fill="#ff5f6d"/><circle cx="12" cy="-38" r="3.6" fill="#ffd34a"/></g>
     </svg>`;
+  }
+
+  // کهکشانی که الان گشته می‌شود (از روی همه‌ی مرحله‌های چرخ کلمه‌ی بچه‌ها)
+  const curGal = () => Math.floor(((typeof kwState === "function" && kwState().lv) || 0) / PARTS);
+  // آسمان پس‌زمینه‌ی صفحه‌ی بازی و دنیای کودک هم رنگ کهکشان فعلی می‌شود
+  function tint(gal) {
+    const c = SKIES[galaxyOf(gal).sky], st = document.documentElement.style;
+    c.forEach((v, i) => st.setProperty(`--sp-s${i}`, v));
+  }
+  function untint() {
+    const st = document.documentElement.style;
+    [0, 1, 2, 3, 4].forEach((i) => st.removeProperty(`--sp-s${i}`));
   }
 
   const PAL = () => (typeof TOUR_THEMES === "object" && TOUR_THEMES.space ? TOUR_THEMES.space.svg : "");
@@ -174,7 +257,8 @@
   }
 
   defineTheme("space", {
-    name: (level) => galaxyName(Math.floor(level / PARTS)),
+    // اسم مرحله همان کهکشانی است که در فهرست بازی‌های کودک گشته می‌شود
+    name: () => galaxyName(curGal()),
 
     setup() {
       const bg = document.createElement("div");
@@ -192,11 +276,16 @@
         kbg.innerHTML = sceneSVG("pk");
         kw.prepend(kbg);
       }
-      return () => document.querySelectorAll(".space-bg, .space-pal, .space-kw, .space-spark").forEach((el) => el.remove());
+      tint(curGal());
+      return () => {
+        untint();
+        document.querySelectorAll(".space-bg, .space-pal, .space-kw, .space-spark").forEach((el) => el.remove());
+      };
     },
 
     on: {
       level() {
+        tint(curGal());
         pal("hi");
       },
       found(d) {
@@ -217,6 +306,7 @@
       kidsmenu(d) {
         const done = d.lv || 0;
         const gal = Math.floor(done / PARTS), count = done % PARTS;
+        tint(gal);
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "space-map-btn";

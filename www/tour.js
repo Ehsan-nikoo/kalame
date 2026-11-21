@@ -101,15 +101,14 @@ const TOUR_THEMES = {
       <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
       ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
   },
-  // کاشی‌کاری: «استاد کاشی‌کار»؛ به جای چهره، شمسه‌ی کاشی که آرام می‌چرخد (این ظاهر کارتونی نیست)
+  // کاشی‌کاری: «استاد کاشی‌کار»؛ به جای چهره، یک کاشی معرق هشت‌ضلعی که نقش وسطش آرام می‌چرخد (این ظاهر کارتونی نیست)
   tile: {
     hi: "آفرین! من استاد کاشی‌کارم؛ با هر کلمه، یه کاشی سر جاش می‌شینه.",
     go: "بریم سر کار!",
-    svg: `<circle cx="32" cy="32" r="30" fill="#d9a441"/><circle cx="32" cy="32" r="29" fill="#1d4a86"/>
-      <g class="tk-tile"><polygon points="32.0,5.0 37.2,12.7 45.5,8.6 46.1,17.9 55.4,18.5 51.3,26.8 59.0,32.0 51.3,37.2 55.4,45.5 46.1,46.1 45.5,55.4 37.2,51.3 32.0,59.0 26.8,51.3 18.5,55.4 17.9,46.1 8.6,45.5 12.7,37.2 5.0,32.0 12.7,26.8 8.6,18.5 17.9,17.9 18.5,8.6 26.8,12.7" fill="#2a9fb3" stroke="#efe3c6" stroke-width="1" stroke-linejoin="round"/>
-      <circle cx="32" cy="32" r="18" fill="#efe3c6" stroke="#d9a441" stroke-width="1"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(0 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(45 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(90 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(135 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(180 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(225 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(270 32 32)"/><ellipse cx="32" cy="24.5" rx="2" ry="4.2" fill="#2a9fb3" transform="rotate(315 32 32)"/>
-      <circle cx="32" cy="32" r="4" fill="#d9a441"/></g>
-      <ellipse cx="22" cy="18" rx="9" ry="4.5" fill="#fff" opacity=".22" transform="rotate(-35 22 18)"/>`,
+    svg: `<polygon points="59.7,43.5 43.5,59.7 20.5,59.7 4.3,43.5 4.3,20.5 20.5,4.3 43.5,4.3 59.7,20.5" fill="#b8693e"/><polygon points="55.7,41.8 41.8,55.7 22.2,55.7 8.3,41.8 8.3,22.2 22.2,8.3 41.8,8.3 55.7,22.2" fill="#e2b04a"/><polygon points="54.5,41.3 41.3,54.5 22.7,54.5 9.5,41.3 9.5,22.7 22.7,9.5 41.3,9.5 54.5,22.7" fill="#1d4a86"/>
+      <g class="tk-tile"><polygon points="36.2,17.5 34.1,21.1 29.9,21.1 27.8,17.5 29.9,13.9 34.1,13.9" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="36.2,46.5 34.1,50.1 29.9,50.1 27.8,46.5 29.9,42.9 34.1,42.9" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="48.8,24.7 46.7,28.3 42.5,28.3 40.4,24.7 42.5,21.1 46.7,21.1" fill="#efe3c6" stroke="#241a14" stroke-width=".5"/><polygon points="23.6,24.7 21.5,28.3 17.3,28.3 15.2,24.7 17.3,21.1 21.5,21.1" fill="#efe3c6" stroke="#241a14" stroke-width=".5"/><polygon points="48.8,39.3 46.7,42.9 42.5,42.9 40.4,39.3 42.5,35.7 46.7,35.7" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="23.6,39.3 21.5,42.9 17.3,42.9 15.2,39.3 17.3,35.7 21.5,35.7" fill="#2a9fb3" stroke="#241a14" stroke-width=".5"/><polygon points="39.9,35.3 35.3,39.9 28.7,39.9 24.1,35.3 24.1,28.7 28.7,24.1 35.3,24.1 39.9,28.7" fill="#efe3c6" stroke="#241a14" stroke-width=".6"/>
+      <g fill="#1f7d66"><circle cx="32" cy="29" r="2.2"/><circle cx="35" cy="32" r="2.2"/><circle cx="32" cy="35" r="2.2"/><circle cx="29" cy="32" r="2.2"/></g><circle cx="32" cy="32" r="1.6" fill="#c9862f"/></g>
+      <ellipse cx="22" cy="17" rx="9" ry="4" fill="#fff" opacity=".22" transform="rotate(-35 22 17)"/>`,
   },
   // مزرعه‌ی شاد (بخش کودک): «جوجو»، جوجه‌ی زرد مزرعه؛ همین جوجو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
   toon: {

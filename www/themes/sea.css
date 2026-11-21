@@ -288,6 +288,8 @@
 .kw-word.sea-joined { font-size: 30px; line-height: 1.5; max-width: 92vw; text-align: center; color: #ff6b8b; text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff; }
 .sea-tank .sea-swim { animation: sea-bob 2.6s ease-in-out infinite; }
 .sea-tank .sea-sit { animation: sea-sit 3s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.sea-tank .sea-glow { animation: sea-glow 2s ease-in-out infinite alternate; }
+@keyframes sea-glow { from { opacity: 0.3; } to { opacity: 1; } }
 .sea-tank .sea-q { animation: sea-bob 2.4s ease-in-out infinite; }
 .sea-tank .sea-new { transform-box: fill-box; transform-origin: 50% 50%; animation: sea-arrive 1.1s cubic-bezier(.3, 1.4, .5, 1) 0.35s both; }
 @keyframes sea-bob { 50% { transform: translateY(-2.4px); } }
