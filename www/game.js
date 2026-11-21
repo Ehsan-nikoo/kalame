@@ -6,8 +6,8 @@
 
 const COINS_START = 50;        // هدیه‌ی شروع بازی
 const COINS_PER_LEVEL = 10;    // فقط بار اولی که یک مرحله تمام می‌شود
-const COST_HINT_LETTER = 15;   // باز کردن یک خانه
-const COST_HINT_WORD = 30;     // باز کردن یک کلمه‌ی کامل
+const COST_HINT_LETTER = 25;   // باز کردن یک خانه
+const COST_HINT_WORD = 40;     // باز کردن یک کلمه‌ی کامل
 // صندوق کلمه‌ها: هر کلمه‌ی درستی که در جدول نیست به صندوق می‌رود؛ هر بار که صندوق پر شود، باز می‌شود و سکه می‌دهد
 const CHEST_SIZE = 10;
 const CHEST_REWARD = 15;
@@ -15,7 +15,7 @@ const CHEST_REWARD = 15;
 const ACH_REWARDS = [10, 20, 30, 40, 50, 75, 100];
 // جایزه‌ی روزانه: روز اول تا هفتمِ آمدن پشت سر هم به بازی؛ بعد از روز هفتم دوباره از روز اول.
 // اگر یک روز نیاید، از روز اول شروع می‌شود. میانگین هفته حدود ۱۷ سکه در روز است،
-// یعنی بیشتر از یک راهنمای «یک حرف» (۱۵ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
+// یعنی نزدیک به یک راهنمای «یک حرف» (۲۵ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
 const DAILY_REWARDS = [10, 10, 15, 15, 20, 20, 30];
 // بسته‌های فروشگاه سکه. id باید دقیقاً همان «شناسه‌ی محصول» باشد که در پنل کافه‌بازار و مایکت
 // (از نوع «مصرف‌شدنی») ساخته‌اید. قیمت را خود فروشگاه می‌دهد و اینجا نوشته نمی‌شود.
@@ -90,15 +90,18 @@ function readExtras(data) {
   };
 }
 
+// ظاهر بازیکن تازه (بدون صفحه‌ی انتخاب ظاهر در شروع؛ اول صفحه‌ی کودک/بزرگسال می‌آید)
+const DEFAULT_THEME = "ink";
+
 function loadSave() {
-  const fresh = { theme: null, unlocked: 0, coins: COINS_START, partial: {}, daily: { last: null, streak: 0 }, tips: {}, ...readExtras({}) };
+  const fresh = { theme: DEFAULT_THEME, unlocked: 0, coins: COINS_START, partial: {}, daily: { last: null, streak: 0 }, tips: {}, ...readExtras({}) };
   try {
     const data = JSON.parse(localStorage.getItem(SAVE_KEY));
     if (data && Number.isInteger(data.unlocked) && data.unlocked >= 0) {
       const daily = data.daily && typeof data.daily === "object" ? data.daily : {};
       return {
         ...readExtras(data),
-        theme: typeof data.theme === "string" ? data.theme : null,
+        theme: typeof data.theme === "string" ? data.theme : DEFAULT_THEME,
         unlocked: data.unlocked,
         coins: Number.isInteger(data.coins) && data.coins >= 0 ? data.coins : COINS_START,
         partial: data.partial && typeof data.partial === "object" ? data.partial : {},

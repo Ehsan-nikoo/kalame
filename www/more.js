@@ -269,7 +269,7 @@ function deliverMore(purchase, fromEl) {
 // ۴. محافظ رکورد: اگر فقط دیروز نیامده، با سکه رکورد روزهای پشت سر هم را نجات می‌دهد
 // ---------------------------------------------------------------------------
 
-const STREAK_SAVE_COST = 40;
+const STREAK_SAVE_COST = 50;
 
 const streakSheet = makeSheet("streakSheet", `
   <div class="streak-fire" aria-hidden="true">🔥</div>

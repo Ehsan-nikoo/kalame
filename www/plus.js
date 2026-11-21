@@ -12,8 +12,8 @@
 // ۱. کمک‌های تازه
 // ---------------------------------------------------------------------------
 
-const COST_HINT_TARGET = 20; // یک خانه، هر جا که بازیکن بخواهد
-const COST_HINT_ROCKET = 45; // چند خانه‌ی تصادفی با هم
+const COST_HINT_TARGET = 30; // یک خانه، هر جا که بازیکن بخواهد
+const COST_HINT_ROCKET = 55; // چند خانه‌ی تصادفی با هم
 const ROCKET_CELLS = 5;
 
 const TARGET_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
