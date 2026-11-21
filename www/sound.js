@@ -204,6 +204,16 @@
       }
     },
 
+    // تخت جمشید: دو ضربه‌ی تیشه روی سنگ، و بعد طنین بم یک زنگ مفرغی
+    persepolis(t, len, lift) {
+      noise(t, { dur: 0.04, vol: 0.3, type: "bandpass", freq: 1900, q: 6 });
+      noise(t + 0.11, { dur: 0.04, vol: 0.26, type: "bandpass", freq: 2300, q: 6 });
+      const tt = t + 0.2;
+      const bronze = [[1, 1, 1], [2.4, 0.3, 0.6], [3.9, 0.18, 0.4], [5.6, 0.08, 0.25]];
+      bell(tt, 196 * lift, bronze, { dur: 1.4, vol: 0.2 });
+      if (len >= 4) bell(tt + 0.16, 294 * lift, bronze, { dur: 1.1, vol: 0.13 });
+    },
+
     // ساده: یک «دینگ» دو نتی تمیز
     plain(t, len, lift) {
       tone(t, 660 * lift, { type: "sine", dur: 0.25, vol: 0.22 });
