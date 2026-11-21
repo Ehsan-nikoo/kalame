@@ -288,7 +288,7 @@ function rvEnd() {
 // ---------------------------------------------------------------------------
 // هر شنبه جدول تازه؛ برای همه‌ی بازیکن‌ها یکسان. سرنخ‌ها معنی کلمه‌ها در words.txt است.
 
-const CW_REWARD = 50;
+const CW_REWARD = 30;
 const CW_HINT = 20;
 const cwWeek = () => Math.floor((rvToday() - 2) / 7); // روز ۲ (۱۹۷۰/۰۱/۰۳) شنبه است
 const cwCache = {};

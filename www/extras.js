@@ -95,16 +95,16 @@ window.addEventListener("hashchange", () => {
 // ---------------------------------------------------------------------------
 
 const MISSIONS = [
-  { id: "words15", ev: "found", goal: 15, reward: 15, text: "۱۵ کلمه پیدا کن" },
-  { id: "words30", ev: "found", goal: 30, reward: 25, text: "۳۰ کلمه پیدا کن" },
-  { id: "levels2", ev: "level", goal: 2, reward: 15, text: "۲ مرحله رو تموم کن" },
-  { id: "levels4", ev: "level", goal: 4, reward: 25, text: "۴ مرحله رو تموم کن" },
-  { id: "nohint", ev: "nohint", goal: 1, reward: 20, text: "یه مرحله رو بدون راهنما تموم کن" },
-  { id: "bonus", ev: "bonus", goal: 1, reward: 15, text: "یه کلمه برای صندوق پیدا کن" },
-  { id: "long", ev: "long", goal: 2, reward: 15, text: "۲ کلمه‌ی ۵ حرفی یا بلندتر پیدا کن" },
-  { id: "daily", ev: "daily", goal: 1, reward: 20, text: "مرحله‌ی روزانه رو حل کن" },
-  { id: "chain", ev: "chain", goal: 1, reward: 20, text: "یه زنجیره‌ی ۵ تایی بساز" },
-  { id: "golden", ev: "golden", goal: 1, reward: 20, text: "یه کلمه‌ی طلایی پیدا کن" },
+  { id: "words15", ev: "found", goal: 15, reward: 8, text: "۱۵ کلمه پیدا کن" },
+  { id: "words30", ev: "found", goal: 30, reward: 12, text: "۳۰ کلمه پیدا کن" },
+  { id: "levels2", ev: "level", goal: 2, reward: 8, text: "۲ مرحله رو تموم کن" },
+  { id: "levels4", ev: "level", goal: 4, reward: 12, text: "۴ مرحله رو تموم کن" },
+  { id: "nohint", ev: "nohint", goal: 1, reward: 10, text: "یه مرحله رو بدون راهنما تموم کن" },
+  { id: "bonus", ev: "bonus", goal: 1, reward: 8, text: "یه کلمه برای صندوق پیدا کن" },
+  { id: "long", ev: "long", goal: 2, reward: 8, text: "۲ کلمه‌ی ۵ حرفی یا بلندتر پیدا کن" },
+  { id: "daily", ev: "daily", goal: 1, reward: 10, text: "مرحله‌ی روزانه رو حل کن" },
+  { id: "chain", ev: "chain", goal: 1, reward: 10, text: "یه زنجیره‌ی ۵ تایی بساز" },
+  { id: "golden", ev: "golden", goal: 1, reward: 10, text: "یه کلمه‌ی طلایی پیدا کن" },
 ];
 
 // سه مأموریت امروز؛ برای همه‌ی بازیکن‌ها در یک روز یکسان و هر کدام از یک نوع
@@ -239,7 +239,7 @@ const VERSES = [
   { poet: "خیام", text: "این قافله‌ی عمر عجب می‌گذرد / دریاب دمی که با طرب می‌گذرد", word: "قافله" },
   { poet: "حافظ", text: "صبا به لطف بگو آن غزال رعنا را / که سر به کوه و بیابان تو داده‌ای ما را", word: "غزال" },
 ];
-const VERSE_REWARD = 30;
+const VERSE_REWARD = 15;
 
 const verseSheet = makeSheet("verseSheet", `
   <div class="card-title">مصراع فصل</div>
@@ -389,7 +389,7 @@ function offerVerse(level) {
 // ۳. کلمه‌ی طلایی: هر ۵ مرحله یک بار یکی از کلمه‌ها سکه‌ی بیشتری دارد
 // ---------------------------------------------------------------------------
 
-const GOLDEN_REWARD = 15;
+const GOLDEN_REWARD = 10;
 let goldenWord = null;
 
 function pickGolden(level) {
@@ -429,7 +429,7 @@ function goldenAfterHint() {
 // ---------------------------------------------------------------------------
 
 const CHAIN_SIZE = 5;
-const CHAIN_REWARD = 5;
+const CHAIN_REWARD = 2;
 let chain = 0;
 
 const chainEl = document.createElement("div");
@@ -482,14 +482,14 @@ function chainBreak() {
 
 // w: وزن شانس؛ جمع وزن‌ها ۶٫۲۵ است، پس وزن ۱ یعنی ۱۶٪، ۰٫۵ یعنی ۸٪ و ۰٫۲۵ یعنی ۴٪
 const WHEEL = [
-  { kind: "coins", n: 10, label: "۱۰", w: 1 },
+  { kind: "coins", n: 5, label: "۵", w: 1 },
   { kind: "hint", n: 2, label: "۲ راهنما", w: 1 },
-  { kind: "coins", n: 30, label: "۳۰", w: 0.5 },
+  { kind: "coins", n: 15, label: "۱۵", w: 0.5 },
   { kind: "trial", label: "یه روز ظاهر", w: 0.5 },
-  { kind: "coins", n: 20, label: "۲۰", w: 1 },
-  { kind: "coins", n: 50, label: "۵۰", w: 0.25 },
+  { kind: "coins", n: 10, label: "۱۰", w: 1 },
+  { kind: "coins", n: 25, label: "۲۵", w: 0.25 },
   { kind: "hint", n: 1, label: "۱ راهنما", w: 1 },
-  { kind: "coins", n: 15, label: "۱۵", w: 1 },
+  { kind: "coins", n: 8, label: "۸", w: 1 },
 ];
 
 // روزی یک بار (اعلانش در daily.js، ساعت WHEEL_HOUR)
@@ -579,7 +579,7 @@ function winWheel(seg) {
     result.textContent = `${faDigits(seg.n)} راهنمای رایگان گرفتی!`;
     updateCoins();
   } else {
-    const n = seg.kind === "coins" ? seg.n : 40; // اگر همه‌ی ظاهرها خریده شده باشند
+    const n = seg.kind === "coins" ? seg.n : 20; // اگر همه‌ی ظاهرها خریده شده باشند
     result.textContent = `${faDigits(n)} سکه بردی!`;
     giveCoins(n, $("luckSpin"));
   }
