@@ -236,12 +236,16 @@ button { font-family: inherit; cursor: pointer; }
   text-shadow: 0 2px 0 #6c4fe0, 0 -2px 0 #6c4fe0, 2px 0 0 #6c4fe0, -2px 0 0 #6c4fe0;
   box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #8a74e8;
 }
+/* شاهنامه: شمسه‌ی تذهیب با نگاره‌ی رستم سوار بر رخش (ساخته‌شده از همان نقش‌های themes/shahnameh-art.js) */
 .tc-tile .tcard-art {
-  background: radial-gradient(circle, transparent 0 58%, rgba(10, 26, 52, 0.25) 75%), url("themes/tile/khatam.svg") 50% 50% / 30px 30px, #17396b;
-  color: #efe3c6; text-shadow: 0 1px 0 #1d4a86, 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px #12305a;
-  box-shadow: inset 0 0 0 2px #d9a441, inset 0 0 0 5px #1f8aa0, inset 0 0 0 6px #efe3c6, 0 3px 8px rgba(18, 48, 90, 0.4);
-  border-radius: 8px;
+  width: 92px;
+  height: 92px;
+  margin: -10px 0 -6px;
+  background: url("themes/tile/shahnameh-card.png") center / contain no-repeat;
+  border-radius: 0;
+  filter: drop-shadow(0 3px 5px rgba(18, 48, 90, 0.4));
 }
+.tc-tile .tcard-art::before { content: none; }
 .tc-plain .tcard-art { background: linear-gradient(180deg, #ffffff, #efebe2); color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3, 0 2px 6px rgba(47, 58, 58, 0.12); }
 
 /* ---------- منوی اصلی ---------- */

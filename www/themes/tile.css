@@ -259,10 +259,10 @@
 .tile-panel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5)); }
 [data-theme="tile"] .wheel-lines polyline { stroke-width: 4; }
 [data-theme="tile"] .wheel-lines { filter: drop-shadow(0 0 2px rgba(10, 20, 40, 0.9)); }
-/* حرف‌ها: مهره‌ی کاغذ نخودی با حلقه‌ی طلا و لاجورد روی شمسه؛ گرفته که شد، طلایی با حرف شنگرفی */
+/* حرف‌ها (کمی کوچک‌تر از معمول تا شمسه پیدا باشد): مهره‌ی کاغذ نخودی با حلقه‌ی طلا و لاجورد روی شمسه؛ گرفته که شد، طلایی با حرف شنگرفی */
 [data-theme="tile"] .letter {
-  width: 25%;
-  height: 25%;
+  width: 21%;
+  height: 21%;
   background:
     radial-gradient(ellipse 70% 45% at 32% 20%, rgba(255, 255, 255, 0.5), transparent 70%),
     radial-gradient(circle, #f7ecd0 0 60%, #e8d3a0 66%);
