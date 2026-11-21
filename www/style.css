@@ -212,6 +212,36 @@ button { font-family: inherit; cursor: pointer; }
   text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
   box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #ffc9a8;
 }
+.tc-sea .tcard-art {
+  background:
+    radial-gradient(circle at 74% 30%, transparent 0 7%, rgba(255, 255, 255, 0.9) 7.5% 9.5%, transparent 10%),
+    radial-gradient(circle at 84% 14%, transparent 0 4%, rgba(255, 255, 255, 0.85) 4.5% 6.5%, transparent 7%),
+    radial-gradient(ellipse 80% 30% at 50% 108%, #ffe2a6 0 70%, transparent 71%),
+    radial-gradient(ellipse 18% 34% at 18% 88%, #ff7fa8 0 60%, transparent 62%),
+    linear-gradient(#7fe0ff, #2a93d8);
+  color: #ff6b8b; font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400;
+  text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
+  box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #9fdcf7;
+}
+.tc-space .tcard-art {
+  background:
+    radial-gradient(circle at 22% 22%, #fff 0 1.4%, transparent 2%),
+    radial-gradient(circle at 80% 70%, #fff 0 1.2%, transparent 1.8%),
+    radial-gradient(circle at 60% 18%, #fff 0 1%, transparent 1.6%),
+    radial-gradient(circle at 78% 26%, #ffab6b 0 13%, transparent 14%),
+    radial-gradient(ellipse 30% 8% at 78% 26%, transparent 0 60%, #c9a8ff 62% 100%, transparent 100%),
+    radial-gradient(ellipse 80% 26% at 50% 106%, #c9b8ff 0 70%, transparent 71%),
+    linear-gradient(#1a1247, #5c40b4);
+  color: #ffd34a; font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400;
+  text-shadow: 0 2px 0 #6c4fe0, 0 -2px 0 #6c4fe0, 2px 0 0 #6c4fe0, -2px 0 0 #6c4fe0;
+  box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #8a74e8;
+}
+.tc-tile .tcard-art {
+  background: radial-gradient(circle, transparent 0 58%, rgba(10, 26, 52, 0.25) 75%), url("themes/tile/khatam.svg") 50% 50% / 30px 30px, #17396b;
+  color: #efe3c6; text-shadow: 0 1px 0 #1d4a86, 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px #12305a;
+  box-shadow: inset 0 0 0 2px #d9a441, inset 0 0 0 5px #1f8aa0, inset 0 0 0 6px #efe3c6, 0 3px 8px rgba(18, 48, 90, 0.4);
+  border-radius: 8px;
+}
 .tc-plain .tcard-art { background: linear-gradient(180deg, #ffffff, #efebe2); color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3, 0 2px 6px rgba(47, 58, 58, 0.12); }
 
 /* ---------- منوی اصلی ---------- */
@@ -2108,6 +2138,25 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
   --gm-blob-op: 0.6;
   --gm-float: #3f8a5a;
   --gm-radius: 22px;
+}
+[data-theme="tile"] {
+  --gm-glass: rgba(20, 53, 97, 0.62);
+  --gm-edge: rgba(217, 164, 65, 0.7);
+  --gm-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  --gm-chip: rgba(42, 159, 179, 0.22);
+  --gm-chip-ink: #efe3c6;
+  --gm-primary: linear-gradient(135deg, rgba(63, 183, 198, 0.95), rgba(28, 129, 151, 0.95));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(239, 227, 198, 0.75);
+  --gm-cta-bg: #e8b94a;
+  --gm-cta-ink: #2a1c05;
+  --gm-sheen: rgba(255, 255, 255, 0.16);
+  --gm-blob1: #2a9fb3;
+  --gm-blob2: #1d4a86;
+  --gm-blob3: #d9a441;
+  --gm-blob-op: 0.35;
+  --gm-float: #e8b94a;
+  --gm-radius: 10px;
 }
 [data-theme="ink"] {
   --gm-glass: rgba(255, 250, 235, 0.5);
