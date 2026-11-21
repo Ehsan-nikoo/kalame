@@ -1,4 +1,4 @@
-// «تخت جمشید» — بناهای هخامنشی، سه‌بعدی (three.js).
+// «تخت جمشید» — ۴۰ بنای ایران باستان (هخامنشی، اشکانی و ساسانی)، سه‌بعدی (three.js).
 // هر بنا (کاخ، دروازه، آرامگاه، کتیبه) در ۶ مرحله ساخته می‌شود: زمین و کوه، صفه و پلکان، پایه‌ها،
 // ستون‌ها و دیوارها، سرستون‌ها و بام، و در آخر بنا جان می‌گیرد (سربازان جاویدان، درفش، پرنده، آب و آتش).
 // بخش‌هایی که هنوز ساخته نشده‌اند مثل «نقشه‌ی معمار» کم‌رنگ با خط‌های قلم دیده می‌شوند.
@@ -162,6 +162,14 @@
         }
       } else if (kind === "servants") {
         for (let x = 40; x < w; x += 64) relief(c, new Path2D(BEARER), x, h - 34 - ((x / 64) % 2) * 0, 1.3, false, L, S);
+      } else if (kind === "horsemen" || kind === "triumph") {
+        // دو سوار روبه‌روی هم (تاج‌ستانی) یا سوار پیروز و زانوزده
+        for (let x = 0; x < w; x += 512) {
+          relief(c, new Path2D(HORSE), x + 150, h - 34, 1.9, false, L, S);
+          relief(c, new Path2D(RIDER), x + 150, h - 34 - 104, 1.6, false, L, S);
+          if (kind === "horsemen") { relief(c, new Path2D(HORSE), x + 370, h - 34, 1.9, true, L, S); relief(c, new Path2D(RIDER), x + 370, h - 34 - 104, 1.6, true, L, S); }
+          else { relief(c, new Path2D(KNEEL), x + 300, h - 34, 2.2, true, L, S); relief(c, new Path2D(GUARD), x + 400, h - 34, 1.5, true, L, S); }
+        }
       } else if (kind === "cuneiform") {
         c.fillStyle = "rgba(55,40,28,.7)";
         const r = rnd(8);
@@ -174,6 +182,47 @@
       }
     });
   }
+  // آجر پخته‌ی ساسانی و اشکانی
+  function brickCanvas(base = "#c99a68") {
+    return cv(256, 256, (c, w, h) => {
+      c.fillStyle = "#e0c9a4"; c.fillRect(0, 0, w, h);
+      const r = rnd(61);
+      for (let y = 0, row = 0; y < h; y += 12, row++) for (let x = row % 2 ? -16 : 0; x < w; x += 32) {
+        const k = 0.88 + r() * 0.2; c.fillStyle = base; c.globalAlpha = k > 1 ? 1 : k; c.fillRect(x + 1, y + 1, 30, 10);
+      }
+      c.globalAlpha = 1;
+      for (let i = 0; i < 500; i++) { c.fillStyle = `rgba(80,50,30,${r() * 0.2})`; c.fillRect(r() * w, r() * h, 2, 2); }
+    });
+  }
+  // لاشه‌سنگ و ملات گچ (بناهای فیروزآباد)
+  function rubbleCanvas() {
+    return cv(256, 256, (c, w, h) => {
+      c.fillStyle = "#d8ccb4"; c.fillRect(0, 0, w, h);
+      const r = rnd(71);
+      for (let i = 0; i < 90; i++) { const x = r() * w, y = r() * h, rw = 12 + r() * 22, rh = 8 + r() * 12; c.fillStyle = ["#b8a888", "#a8987a", "#c4b494", "#9c8c70"][(r() * 4) | 0]; c.beginPath(); c.ellipse(x, y, rw / 2, rh / 2, r() * 0.6, 0, 7); c.fill(); c.strokeStyle = "rgba(60,48,34,.35)"; c.stroke(); }
+    });
+  }
+  // نمای آجری با ردیف طاقچه‌های کور (طاق کسری)
+  function arcadeCanvas() {
+    return cv(512, 512, (c, w, h) => {
+      c.drawImage(brickCanvas("#c49464"), 0, 0, 256, 256); c.drawImage(brickCanvas("#c49464"), 256, 0, 256, 256); c.drawImage(brickCanvas("#c49464"), 0, 256, 256, 256); c.drawImage(brickCanvas("#c49464"), 256, 256, 256, 256);
+      const rows = [[30, 120, 8, 40], [170, 110, 10, 32], [300, 90, 16, 20], [410, 80, 16, 20]];
+      rows.forEach(([y, hh, n, gap]) => {
+        const aw = (w - gap * (n + 1)) / n;
+        for (let i = 0; i < n; i++) {
+          const x = gap + i * (aw + gap);
+          c.fillStyle = "rgba(60,36,20,.55)"; c.beginPath(); c.moveTo(x, y + hh); c.lineTo(x, y + aw / 2); c.arc(x + aw / 2, y + aw / 2, aw / 2, Math.PI, 0); c.lineTo(x + aw, y + hh); c.fill();
+          c.strokeStyle = "rgba(255,230,190,.35)"; c.lineWidth = 2; c.stroke();
+        }
+        c.fillStyle = "rgba(255,230,190,.25)"; c.fillRect(0, y + hh + 4, w, 4);
+      });
+    });
+  }
+  // اسب از نیم‌رخ (نقش‌های ساسانی)
+  const HORSE = "M-40 -42 C-40 -58 -10 -62 14 -58 C22 -72 30 -84 40 -86 L48 -82 L52 -74 L43 -71 C38 -62 34 -52 30 -46 L28 -24 L33 0 L26 0 L21 -22 L-24 -22 L-29 0 L-36 0 L-34 -26 C-40 -30 -42 -36 -40 -42 Z M-40 -48 C-52 -46 -58 -34 -56 -18 L-50 -18 C-50 -32 -46 -40 -40 -44 Z";
+  // شاه ساسانی سوار: نیم‌تنه، تاج کنگره‌دار و گوی بالای آن، نوارهای پرّان
+  const RIDER = "M-6 -40 L6 -40 L8 -26 C14 -24 16 -18 14 -10 L10 0 L-12 0 L-14 -12 C-16 -20 -12 -26 -6 -28 Z M-6 -54 L-6 -42 L6 -42 L6 -54 L3 -50 L0 -56 L-3 -50 Z M0 -66 A6 6 0 1 1 0.1 -66 Z M-8 -46 C-20 -48 -26 -44 -30 -38 L-26 -36 C-22 -42 -16 -44 -8 -42 Z";
+  const KNEEL = "M-4 -36 L6 -36 L7 -28 C10 -26 12 -20 10 -14 L18 -2 L14 0 L4 -8 L-8 0 L-12 -2 L-6 -14 C-8 -20 -8 -26 -4 -28 Z M-2 -46 A6 6 0 1 1 -1.9 -46 Z";
   function rosette(c, x, y, r, fill, line) {
     c.save(); c.translate(x, y);
     c.fillStyle = fill; c.strokeStyle = line; c.lineWidth = 1;
@@ -235,6 +284,28 @@
       c.fillStyle = S; c.fillRect(296, 70, 18, 46); c.fillRect(290, 66, 30, 6); c.fillRect(288, 112, 34, 6);
       c.fillStyle = "#e0a04a"; c.beginPath(); c.moveTo(298, 64); c.quadraticCurveTo(305, 40, 312, 64); c.fill();
       wingedDisc(c, 256, 46, 1, L);
+    });
+  }
+  // فرشته‌ی چهاربال دروازه‌ی پاسارگاد (نقش ایستاده روی ستون سنگی)
+  function geniusCanvas() {
+    return cv(256, 512, (c, w, h) => {
+      c.drawImage(stoneCanvas(STONE, 81), 0, 0, 256, 256); c.drawImage(stoneCanvas(STONE, 82), 0, 256, 256, 256);
+      const L = "#ddd0b2", S = "rgba(55,40,28,.75)";
+      c.save(); c.translate(128, 470);
+      // بال‌ها: دو رو به بالا و دو رو به پایین
+      for (const [a, len] of [[-2.3, 150], [-0.85, 150], [2.5, 120], [0.65, 120]]) {
+        c.save(); c.rotate(a + Math.PI / 2);
+        const wp = new Path2D(`M0 -200 C30 -200 ${len * 0.5} -230 ${len} -250 C${len * 0.6} -190 30 -170 0 -170 Z`);
+        c.translate(1.6, 1.6); c.fillStyle = S; c.fill(wp); c.translate(-1.6, -1.6); c.fillStyle = L; c.fill(wp);
+        c.strokeStyle = S; c.lineWidth = 1; for (let k = 20; k < len; k += 14) { c.beginPath(); c.moveTo(k * 0.9, -200 - k * 0.2); c.lineTo(k * 0.9, -180 - k * 0.1); c.stroke(); }
+        c.restore();
+      }
+      c.restore();
+      relief(c, new Path2D("M-12 -150 L12 -150 L14 -136 C24 -132 26 -124 24 -110 L22 -40 L26 0 L-26 0 L-22 -40 L-24 -110 C-26 -124 -22 -132 -12 -136 Z M-6 -176 C4 -178 12 -170 10 -160 L8 -150 L-10 -150 C-14 -160 -14 -172 -6 -176 Z"), 128, 470, 2.0, false, L, S);
+      // تاج سه‌گانه با شاخ‌ها
+      c.fillStyle = S; c.fillRect(110, 108, 36, 6);
+      for (const dx of [-12, 0, 12]) { c.fillStyle = L; c.beginPath(); c.ellipse(128 + dx, 92, 6, 16, 0, 0, 7); c.fill(); c.strokeStyle = S; c.stroke(); }
+      c.strokeStyle = S; c.lineWidth = 3; c.beginPath(); c.moveTo(100, 112); c.quadraticCurveTo(90, 96, 104, 90); c.moveTo(156, 112); c.quadraticCurveTo(166, 96, 152, 90); c.stroke();
     });
   }
   function bannerCanvas() {
@@ -321,14 +392,65 @@
     { name: "باغ پاسارگاد", sky: "noon", ground: "green", mt: "far", build: "garden",
       line: "نخستین چهارباغ ایرانی: جوی‌های سنگی، حوضچه‌ها و ردیف سروها جلوی کاخ کوروش.",
       parts: ["دشت مرغاب", "جوی‌های سنگی", "پایه‌ی ستون‌ها", "ستون‌های کاخ", "بام و ایوان", "جان گرفتن باغ"] },
+    { name: "دروازه‌ی پاسارگاد", sky: "dawn", ground: "green", mt: "far", build: "gateR",
+      line: "بر درگاه کاخ دروازه‌ی پاسارگاد، فرشته‌ای چهاربال با تاج مصری نقش شده؛ نگهبان سرزمین کوروش." },
+    { name: "کاخ بار عام کوروش", sky: "day", ground: "green", mt: "far", build: "palaceS",
+      line: "تالار بلند کوروش با ستون‌های سنگ سفید بر پایه‌های سنگ سیاه، و ایوان‌هایی گرداگردش." },
+    { name: "تل تخت", sky: "dusk", ground: "dry", mt: "far", build: "tallTakht",
+      parts: ["دشت مرغاب", "تپه و سکوی سنگی", "پلکان", "باروی خشتی", "برج‌ها و کاخ", "جان گرفتن بنا"],
+      line: "کوروش بر تپه‌ای در پاسارگاد سکویی سنگی برپا کرد که بعدها دژ و گنجینه‌ی شهر شد." },
+    { name: "آتشدان‌های پاسارگاد", sky: "dawn", ground: "green", mt: "far", build: "altars",
+      parts: ["دشت مرغاب", "سکوی پله‌ای", "پایه‌ی آتشدان‌ها", "آتشدان‌ها و پلکان", "آتش مقدس", "جان گرفتن بنا"],
+      line: "در محوطه‌ی مقدس پاسارگاد، دو سکوی سنگی سفید بود که آتش مقدس را بر آن نیایش می‌کردند." },
     { name: "کاخ آپادانای شوش", sky: "day", ground: "green", mt: "far", build: "susa",
       line: "کاخ زمستانی داریوش در شوش، با آجرهای لعابی که کمانداران جاویدان و شیرها را رنگارنگ نشان می‌دهند." },
+    { name: "دروازه‌ی داریوش در شوش", sky: "noon", ground: "dry", mt: "far", build: "susaGate",
+      line: "دروازه‌ای بزرگ به سوی کاخ‌های شوش، و تندیس سنگی داریوش که کنارش ایستاده بود." },
+    { name: "کاخ شاوور", sky: "dusk", ground: "green", mt: "far", build: "shaur",
+      line: "اردشیر دوم کنار رود شاوور کاخی با دیوارهای سرخ و تالار ستون‌دار ساخت؛ بیرون از باروی شوش." },
     { name: "کتیبه‌ی بیستون", sky: "dawn", ground: "green", mt: "cliff", build: "bisotun",
       line: "داریوش داستان پادشاهی‌اش را به سه زبان بر صخره‌ی بیستون نوشت، بالای راه کهن همدان به بابل.",
       parts: ["زمین و دامنه", "دیواره‌ی صخره", "سکوی نقش", "کتیبه‌ها", "نقش داریوش", "جان گرفتن بنا"] },
     { name: "گنج‌نامه", sky: "day", ground: "green", mt: "cliff", build: "ganjnameh",
       line: "دو کتیبه‌ی داریوش و خشایارشا بر صخره‌ای در دامنه‌ی الوند، کنار آبشار؛ مردم آن را نقشه‌ی گنج می‌پنداشتند.",
       parts: ["زمین و دامنه", "صخره", "قاب کتیبه‌ها", "خط میخی", "آبشار", "جان گرفتن بنا"] },
+    { name: "نسا، پایتخت اشکانیان", sky: "dusk", ground: "dry", mt: "far", build: "nisa",
+      parts: ["زمین و کوه", "تپه‌ی ارگ", "باروی خشتی", "برج‌ها و تالارها", "گنبد و بام", "جان گرفتن بنا"],
+      line: "نخستین پایتخت اشکانیان؛ ارگی بر تپه با باروی خشتی پرنده و تالارهای گرد و چهارگوش." },
+    { name: "معبد آناهیتا در کنگاور", sky: "day", ground: "green", mt: "rahmat", build: "kangavar",
+      parts: ["زمین و کوه", "سکوی سنگی", "پلکان و پایه‌ها", "ستون‌ها و نیایشگاه", "سرستون و بام", "جان گرفتن بنا"],
+      line: "بر سکویی بزرگ با ستون‌های ستبر سنگی، نیایشگاهی برای آناهیتا، ایزدبانوی آب‌ها." },
+    { name: "کاخ اشکانی و ایوان", sky: "noon", ground: "dry", mt: "far", build: "iwanP",
+      parts: ["زمین و کوه", "پی و سکو", "پایه‌ی دیوارها", "دیوارها و ستونک‌ها", "طاق‌ها و نما", "جان گرفتن بنا"],
+      line: "اشکانیان ایوان را پدید آوردند: تالاری با طاق بلند که یک سویش رو به حیاط باز است." },
+    { name: "ارگ بم", sky: "dusk", ground: "dry", mt: "far", build: "bam",
+      parts: ["زمین و کوه", "تپه و پی", "باروی شهر", "خانه‌های گنبدی", "ارگ حاکم‌نشین", "جان گرفتن بنا"],
+      line: "بزرگ‌ترین بنای خشتی جهان که ریشه‌اش به روزگار اشکانیان می‌رسد؛ شهری یکپارچه از گل." },
+    { name: "شهر گور", sky: "day", ground: "green", mt: "rahmat", build: "gur",
+      parts: ["زمین و خندق", "راه‌ها و پی", "باروی گرد", "منار و چهارطاق", "گنبد و بام", "جان گرفتن شهر"],
+      line: "اردشیر بابکان شهری کاملاً گرد ساخت با چهار دروازه و مناری بلند در مرکز؛ امروز فیروزآباد." },
+    { name: "قلعه‌ی دختر", sky: "dawn", ground: "dry", mt: "rahmat", build: "dokhtar", parts: ["زمین و کوه", "پی و سکو", "دیوارها", "طاق‌ها", "گنبدها و بام", "جان گرفتن بنا"],
+      line: "دژ اردشیر بر ستیغ کوهی بالای تنگه‌ی فیروزآباد، با برج‌های گرد و تالاری گنبددار." },
+    { name: "کاخ اردشیر", sky: "day", ground: "green", mt: "rahmat", build: "ardashir", parts: ["زمین و چشمه", "پی و سکو", "دیوارها", "ایوان", "سه گنبد", "جان گرفتن بنا"],
+      line: "کاخ اردشیر کنار چشمه‌ای زلال: ایوانی بلند و سه تالار گنبددار، از نخستین گنبدهای بزرگ ایران." },
+    { name: "نقش پیروزی شاپور", sky: "dusk", ground: "green", mt: "cliff", build: "shapurRelief",
+      parts: ["زمین و دامنه", "دیواره‌ی صخره", "قاب نقش‌ها", "نقش پیروزی", "نقش تاج‌ستانی", "جان گرفتن بنا"],
+      line: "شاپور یکم پیروزی‌اش بر امپراتور روم را بر صخره‌های تنگ چوگان نقش کرد: والرین زانو زده در برابر شاه سوار." },
+    { name: "معبد آناهیتای بیشاپور", sky: "noon", ground: "green", mt: "rahmat", build: "bishapur",
+      parts: ["زمین و کوه", "پی سنگی", "دیوارها", "آب‌راهه و سرگاوها", "یادمان دو ستون", "جان گرفتن بنا"],
+      line: "نیایشگاه سنگی شاپور در بیشاپور که آب رود از راهروهای زیرینش می‌گذشت." },
+    { name: "طاق کسری", sky: "dusk", ground: "dry", mt: "far", build: "kasra", parts: ["زمین و دشت", "پی آجری", "دیوارهای پایین", "دیوارهای بلند", "طاق بزرگ و نما", "جان گرفتن بنا"],
+      line: "بلندترین طاق آجری جهان کهن در تیسفون؛ ایوان بار شاهنشاهان ساسانی." },
+    { name: "تخت سلیمان", sky: "day", ground: "green", mt: "rahmat", build: "soleyman", parts: ["زمین و دریاچه", "سکوی بیضی", "بارو", "برج‌ها و آتشکده", "گنبد آذرگشنسپ", "جان گرفتن بنا"],
+      line: "آتشکده‌ی آذرگشنسپ کنار دریاچه‌ای جوشان؛ شاهان ساسانی پیاده به زیارتش می‌آمدند." },
+    { name: "چهارطاقی نیاسر", sky: "dawn", ground: "green", mt: "rahmat", build: "niasar", parts: ["زمین و کوه", "تپه و پلکان", "سکو", "چهار طاق", "گنبد", "جان گرفتن بنا"],
+      line: "آتشکده‌ای کوچک با چهار طاق و یک گنبد بر تپه‌ای نزدیک آبشار نیاسر کاشان." },
+    { name: "پل‌بند شوشتر", sky: "day", ground: "green", mt: "far", build: "shushtar", parts: ["زمین و رود", "صخره و آسیاب‌ها", "پایه‌های پل", "طاق‌های پل", "آبشارها", "جان گرفتن بنا"],
+      line: "سامانه‌ی آبی شوشتر: پل‌بندی بر رود کارون و آبشارهایی که آسیاب‌ها را می‌چرخاندند." },
+    { name: "دیوار گرگان", sky: "dawn", ground: "green", mt: "far", build: "gorgan", parts: ["زمین و کانال", "پی دیوار", "دیوار آجری", "برج‌ها", "دژ سربازان", "جان گرفتن بنا"],
+      line: "دیوار آجری دویست کیلومتری با بیش از سی دژ، که مرز شمالی ایران ساسانی را نگه می‌داشت." },
+    { name: "طاق بستان", sky: "dusk", ground: "green", mt: "cliff", build: "bostan", parts: ["زمین و کوه", "دیواره‌ی صخره", "ایوان کوچک", "ایوان بزرگ", "نقش‌ها و حوض", "جان گرفتن بنا"],
+      line: "ایوان‌هایی که در دل کوه کرمانشاه تراشیده شده‌اند، با نقش تاج‌ستانی و خسرو سوار بر شبدیز." },
     { name: "جشن نوروز", sky: "night", ground: "plain", mt: "rahmat", build: "nowruz",
       line: "در جشن نوروز، فرستادگان از همه‌جا می‌آمدند و تخت جمشید با مشعل‌ها و درفش‌ها روشن می‌شد." },
   ];
@@ -393,10 +515,17 @@
       green2: lam({ color: 0x55743e }),
       trunk: lam({ color: 0x5a3e28 }),
       feather: lam({ map: tex(featherCanvas()), side: THREE.DoubleSide }),
-      water: keep(new THREE.MeshPhongMaterial({ color: 0x6f9fb8, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.9 })),
+      water: keep(new THREE.MeshPhongMaterial({ color: 0x3f7d9c, specular: 0x9fc4d6, shininess: 70, transparent: true, opacity: 0.92 })),
+      white: lam({ map: tex(stoneCanvas("#e9e2d0", 6)) }),
+      brick: lam({ map: tex(brickCanvas()) }),
+      rubble: lam({ map: tex(rubbleCanvas()) }),
+      mud: lam({ map: tex(plasterCanvas("#c4955f")) }),
+      vault: lam({ map: tex(brickCanvas("#b88a5a")), side: THREE.DoubleSide }),
+      vaultP: lam({ map: tex(plasterCanvas("#e4d6bc")), side: THREE.DoubleSide }),
+      gypsum: lam({ map: tex(plasterCanvas("#e4d6bc")) }),
     };
     const reliefMats = {};
-    const reliefMat = (kind) => reliefMats[kind] || (reliefMats[kind] = lam({ map: tex(kind === "throne" ? throneCanvas() : kind.startsWith("glaze") ? glazeCanvas(kind.slice(6)) : reliefCanvas(kind)) }));
+    const reliefMat = (kind) => reliefMats[kind] || (reliefMats[kind] = lam({ map: tex(kind === "throne" ? throneCanvas() : kind === "genius" ? geniusCanvas() : kind === "arcade" ? arcadeCanvas() : kind.startsWith("glaze") ? glazeCanvas(kind.slice(6)) : reliefCanvas(kind)) }));
 
     // ---------- هندسه: همه‌ی تکه‌های یک بخش با یک ماده در یک mesh ادغام می‌شوند (سبک برای گوشی) ----------
     const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -471,15 +600,16 @@
       }
     }
     // ستون کامل؛ بخش‌ها: پایه pb، بدنه ps، سرستون pc. H بلندی تا زیر سرستون. برمی‌گرداند بلندی بالای سرستون
-    function column(x, y, z, H, cap = "bull", { pb = 2, ps = 3, pc = 4, r = 0.24, ry = 0, tall = true } = {}) {
-      put(pb, "stone2", boxGeo(1.0 * r * 4.2, 0.12, 1.0 * r * 4.2), mtx([x, y + 0.06, z]));
-      put(pb, "stone", lotusBase, mtx([x, y + 0.12, z], [0, 0, 0], [r * 4, r * 4, r * 4]));
-      put(pb, "stone", torus, mtx([x, y + 0.12 + 0.6 * r * 4, z], [Math.PI / 2, 0, 0], [r * 4, r * 4, r * 4]));
+    // bm و sm: ماده‌ی پایه و بدنه (پاسارگاد: پایه‌ی سنگ سیاه و ستون سفید)
+    function column(x, y, z, H, cap = "bull", { pb = 2, ps = 3, pc = 4, r = 0.24, ry = 0, tall = true, bm = "stone", sm = "stone" } = {}) {
+      put(pb, bm === "stone" ? "stone2" : bm, boxGeo(1.0 * r * 4.2, 0.12, 1.0 * r * 4.2), mtx([x, y + 0.06, z]));
+      put(pb, bm, lotusBase, mtx([x, y + 0.12, z], [0, 0, 0], [r * 4, r * 4, r * 4]));
+      put(pb, bm, torus, mtx([x, y + 0.12 + 0.6 * r * 4, z], [Math.PI / 2, 0, 0], [r * 4, r * 4, r * 4]));
       const by = y + 0.12 + 0.66 * r * 4, sh = H - (by - y);
       const key = r.toFixed(2) + "/" + sh.toFixed(2);
-      put(ps, "stone", shaftCache[key] || (shaftCache[key] = flutedShaft(r, sh)), mtx([x, by + sh / 2, z]));
+      put(ps, sm, shaftCache[key] || (shaftCache[key] = flutedShaft(r, sh)), mtx([x, by + sh / 2, z]));
       let top = y + H;
-      if (cap === "simple") { put(pc, "stone", bellGeo, mtx([x, top, z], [0, 0, 0], [r * 3.4, r * 2, r * 3.4])); top += 0.3; box(pc, "stone", r * 5, 0.2, r * 5, x, top, z); return top + 0.2; }
+      if (cap === "simple") { put(pc, sm, bellGeo, mtx([x, top, z], [0, 0, 0], [r * 3.4, r * 2, r * 3.4])); top += 0.3; box(pc, sm, r * 5, 0.2, r * 5, x, top, z); return top + 0.2; }
       if (tall) {
         put(pc, "stone", bellGeo, mtx([x, top, z], [0, 0, 0], [r * 3.6, r * 3, r * 3.6]));
         top += 0.7 * r * 3;
@@ -608,6 +738,112 @@
       put(p, "rock", g, mtx([x, 0, z - d - 0.3]));
     }
     // آتشدان سنگی
+    // ---------- معماری اشکانی و ساسانی ----------
+    // دیوار با دهانه‌های طاق‌دار: openings = [[cx, پهنا, بلندی پاکار, خیز]]؛ خیز بیشتر از نیم‌پهنا یعنی طاق تخم‌مرغی
+    function archWall(p, mk, x, y, z, w, h, d, openings, ry = 0) {
+      const sh = new THREE.Shape();
+      sh.moveTo(-w / 2, 0);
+      openings.slice().sort((a, b) => a[0] - b[0]).forEach(([cx, aw, spring, rise]) => {
+        sh.lineTo(cx - aw / 2, 0); sh.lineTo(cx - aw / 2, spring);
+        sh.absellipse(cx, spring, aw / 2, rise ?? aw / 2, Math.PI, 0, true);
+        sh.lineTo(cx + aw / 2, 0);
+      });
+      sh.lineTo(w / 2, 0); sh.lineTo(w / 2, h); sh.lineTo(-w / 2, h); sh.closePath();
+      const g = scaleUV(new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: false, curveSegments: 12 }), 0.45, 0.45);
+      g.translate(0, 0, -d / 2);
+      put(p, mk, g, mtx([x, y, z], [0, ry, 0]));
+    }
+    // طاق آهنگ (نیم‌استوانه) رو به z، به درازای L
+    function vault(p, mk, x, y, z, aw, rise, L, ry = 0) {
+      const g = new THREE.CylinderGeometry(aw / 2, aw / 2, L, 18, 1, true, Math.PI / 2, Math.PI);
+      g.rotateX(Math.PI / 2); g.scale(1, rise / (aw / 2), 1);
+      put(p, mk, scaleUV(g, 2, L * 0.4), mtx([x, y, z], [0, ry, 0]));
+    }
+    // ایوان: نمای طاق‌دار، دو دیوار کناری، طاق و دیوار ته با در؛ بلندی h، پهنای دهانه aw
+    function iwan(pW, pV, mk, x, y, z, w, h, aw, spring, rise, depth, vm = "vault") {
+      archWall(pV, mk, x, y, z, w, h, 0.5, [[0, aw, spring, rise]]);
+      for (const sd of [-1, 1]) box(pW, mk, (w - aw) / 2, h, depth, x + sd * (w + aw) / 4, y, z - 0.25 - depth / 2);
+      vault(pV, vm, x, y + spring, z - 0.25 - depth / 2, aw, rise, depth);
+      box(pW, mk, aw, spring, 0.3, x, y, z - 0.25 - depth + 0.15);
+      archWall(pV, mk, x, y + spring, z - 0.25 - depth + 0.15, aw, rise + 0.05, 0.3, []);
+      doorFrame(pW, x, y, z - depth + 0.0, aw * 0.3, Math.min(spring * 0.8, 1.6), 0, "dark", 0.1);
+      box(pV, mk, w, 0.3, depth + 0.5, x, y + h, z - depth / 2);
+    }
+    // گنبد روی گریو
+    function dome(p, mk, x, y, z, r, rise = 1.1) {
+      put(p, mk, new THREE.CylinderGeometry(r, r, r * 0.35, 18), mtx([x, y + r * 0.175, z]));
+      const g = new THREE.SphereGeometry(r, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2); g.scale(1, rise, 1);
+      put(p, mk, scaleUV(g, 2, 1), mtx([x, y + r * 0.35, z]));
+    }
+    // برج گرد با کنگره
+    function tower(p, mk, x, y, z, r, h, merl = true, pm = p) {
+      put(p, mk, scaleUV(new THREE.CylinderGeometry(r, r * 1.1, h, 16), 2 * r, h * 0.5), mtx([x, y + h / 2, z]));
+      if (merl) { const n = Math.max(6, Math.round(r * 9)); for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; put(pm, mk, merlonGeo, mtx([x + Math.sin(a) * r * 0.92, y + h, z + Math.cos(a) * r * 0.92], [0, a, 0], [0.3, 0.3, 0.3])); } }
+    }
+    // باروی گرد یا بیضی با برج‌ها؛ gaps زاویه‌ی دروازه‌ها (رادیان)
+    function ringWall(p, mk, cx, cz, rx, rz, h, t, n = 36, gaps = [], pT = p, towers = 0, y = 0) {
+      for (let i = 0; i < n; i++) {
+        const a0 = (i / n) * Math.PI * 2, a1 = ((i + 1) / n) * Math.PI * 2, am = (a0 + a1) / 2;
+        if (gaps.some((g) => Math.abs(Math.atan2(Math.sin(am - g), Math.cos(am - g))) < 0.12)) continue;
+        const x0 = cx + Math.sin(a0) * rx, z0 = cz + Math.cos(a0) * rz, x1 = cx + Math.sin(a1) * rx, z1 = cz + Math.cos(a1) * rz;
+        const L = Math.hypot(x1 - x0, z1 - z0) + 0.04;
+        put(p, mk, boxGeo(L, h, t), mtx([(x0 + x1) / 2, y + h / 2, (z0 + z1) / 2], [0, Math.atan2(-(z1 - z0), x1 - x0), 0]));
+      }
+      for (let i = 0; i < towers; i++) { const a = (i / towers) * Math.PI * 2 + 0.15; tower(pT, mk, cx + Math.sin(a) * rx, y, cz + Math.cos(a) * rz, 0.38, h + 0.5, true); }
+    }
+    // تپه‌ی صاف‌سر برای دژها و آتشکده‌ها
+    function mesa(p, x, z, w, h, d, mk = "rock") {
+      const sh = new THREE.Shape(); const r = rnd(w * 7 + h);
+      sh.moveTo(-w / 2, 0); sh.lineTo(-w / 2 + w * 0.12, h * (0.6 + r() * 0.2)); sh.lineTo(-w / 2 + w * 0.2, h); sh.lineTo(w / 2 - w * 0.22, h); sh.lineTo(w / 2 - w * 0.1, h * (0.55 + r() * 0.2)); sh.lineTo(w / 2, 0); sh.closePath();
+      const g = scaleUV(new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: true, bevelSize: 0.3, bevelThickness: 0.4, bevelSegments: 2 }), 0.12, 0.12);
+      put(p, mk, g, mtx([x, 0, z - d / 2]));
+    }
+    // چهارطاقی: چهار پایه و چهار طاق و گنبد
+    function chartaqi(pW, pD, mk, x, y, z, s) {
+      const t = s * 0.22, h = s * 0.85;
+      for (const [dx, dz, ry] of [[0, s / 2 - t / 2, 0], [0, -s / 2 + t / 2, 0], [s / 2 - t / 2, 0, Math.PI / 2], [-s / 2 + t / 2, 0, Math.PI / 2]]) archWall(pW, mk, x + dx, y, z + dz, s, h, t, [[0, s * 0.5, h * 0.42, s * 0.3]], ry);
+      box(pD, mk, s, s * 0.12, s, x, y + h, z);
+      dome(pD, mk, x, y + h + s * 0.12, z, s * 0.42, 1.15);
+    }
+    // پل یا سد با دهانه‌های طاق‌دار، از x0 تا x1
+    function bridge(p, mk, x0, x1, y, z, h, n, t) {
+      const w = x1 - x0, step = w / n, ops = [];
+      for (let i = 0; i < n; i++) ops.push([-w / 2 + step * (i + 0.5), step * 0.6, h * 0.25, step * 0.3]);
+      archWall(p, mk, (x0 + x1) / 2, y, z, w, h, t, ops);
+      for (let i = 1; i < n; i++) put(p, mk, boxGeo(0.4, h * 0.45, 0.4), mtx([x0 + step * i, y + h * 0.22, z + t / 2 + 0.05], [0, Math.PI / 4, 0]));
+    }
+    // تندیس ایستاده روی پایه
+    function statue(p, x, y, z, s = 1) {
+      box(p, "stone2", 0.8 * s, 0.7 * s, 0.6 * s, x, y, z);
+      put(p, "stone", new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 1.1 * s, 12), mtx([x, y + 1.25 * s, z]));
+      put(p, "stone", new THREE.SphereGeometry(0.13 * s, 10, 8), mtx([x, y + 1.95 * s, z]));
+      put(p, "stone", new THREE.CylinderGeometry(0.12 * s, 0.11 * s, 0.18 * s, 10), mtx([x, y + 2.12 * s, z]));
+    }
+    function river(p, z, w, y = 0.03) {
+      const m = waterPlane(p, 0, y, z, 26, w);
+      box(p, "stone2", 26, 0.06, 0.2, 0, 0, z + w / 2 + 0.1); box(p, "stone2", 26, 0.06, 0.2, 0, 0, z - w / 2 - 0.1);
+      return m;
+    }
+    // نخل: تنه‌ی کمی کج و برگ‌های آویخته
+    const leafGeo = (() => { const g = new THREE.ConeGeometry(0.16, 1.2, 4); g.translate(0, 0.6, 0); return g; })();
+    function palm(p, x, z, h = 2.4) {
+      put(p, "trunk", new THREE.CylinderGeometry(0.07, 0.11, h, 7), mtx([x, h / 2, z], [0, 0, 0.06]));
+      for (let i = 0; i < 9; i++) put(p, "green2", leafGeo, mtx([x - h * 0.06, h, z], [0, (i / 9) * Math.PI * 2, 1.75 + (i % 2) * 0.3], [0.4, 1, 1]));
+    }
+    // آبشار: صفحه‌ی لرزان (در حلقه‌ی نمایش با نام fall تکان می‌خورد)
+    let fallMat = null;
+    function fall(p, x, y, z, w, h) {
+      fallMat = fallMat || keep(new THREE.MeshPhongMaterial({ color: 0xdfeef4, transparent: true, opacity: 0.8, shininess: 100 }));
+      const m = new THREE.Mesh(keep(new THREE.PlaneGeometry(w, h, 1, 12)), fallMat);
+      m.position.set(x, y + h / 2, z); m.name = "fall"; m.userData.noEdges = 1;
+      obj(p, m); return m;
+    }
+    // دریاچه یا حوض گرد
+    function lake(p, x, z, rx, rz, y = 0.05) {
+      const m = new THREE.Mesh(keep(new THREE.CircleGeometry(1, 40)), MAT.water);
+      m.rotation.x = -Math.PI / 2; m.scale.set(rx, rz, 1); m.position.set(x, y, z); m.name = "water"; m.userData.noEdges = 1;
+      obj(p, m); return m;
+    }
     function altar(p, x, z, y = 0) { box(p, "stone", 0.5, 0.18, 0.5, x, y, z); box(p, "stone", 0.32, 0.6, 0.32, x, y + 0.18, z); box(p, "stone", 0.6, 0.16, 0.6, x, y + 0.78, z); return y + 0.94; }
 
     // جان گرفتن: درفش، سرباز، پرنده، آتش، آب
@@ -998,6 +1234,398 @@
         march(5, [[-8, 0, 3.2], [8, 0, 3.2]], 4, 0.6);
         birds(5);
       },
+      // ---------- پاسارگاد ----------
+      // دروازه‌ی پاسارگاد: تالار هشت‌ستون، گاوهای آدم‌سر و سنگ فرشته‌ی چهاربال
+      gateR() {
+        box(1, "stone2", 10, 0.2, 6.2, 0, 0, -2.4);
+        const y = 0.2;
+        let top = 0;
+        for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) top = column(-1.8 + i * 1.2, y, -1.7 - j * 1.5, 3.0, "simple", { r: 0.18, bm: "dark", sm: "white" });
+        const ch = top - y;
+        wall(3, -4.6, 4.6, -4.6, y, ch, 0.45, [[0, 1.2, 2.4]], "mud");
+        for (const sd of [-1, 1]) { wallZ(3, -4.6, 0.2, sd * 4.6, y, ch, 0.45, "mud"); box(3, "mud", 1.6, ch, 0.45, sd * 3.6, y, 0.0); }
+        doorFrame(2, 0, y, 0.0, 2.6, 2.6, 0, "dark", 0.5);
+        for (const sd of [-1, 1]) lamassu(4, sd * 1.9, y, 1.1, 0.5, true);
+        roof(4, 0, -2.2, 9.4, 4.8, top, { mk: "mud" });
+        // سنگ فرشته‌ی چهاربال
+        box(2, "stone2", 1.3, 0.3, 0.7, -6.4, 0, 0.6);
+        box(3, "stone", 1.1, 2.6, 0.45, -6.4, 0.3, 0.6);
+        panel(4, "genius", -6.4, 0.45, 0.84, 1.0, 2.2, 0, 1);
+        for (const x of [5.8, 6.8, -7.6]) cypress(5, x, 1.4 + (x > 0 ? 0 : 0.6), 2.0);
+        birds(5); march(5, [[-8, 0, 2.6], [0, 0, 2.2], [0, y, 0.2], [0, y, -3.6]], 5, 0.6);
+      },
+      // کاخ بار عام: تالار بلند ستون سفید با ایوان‌های گرداگرد
+      palaceS() {
+        box(1, "stone2", 14, 0.25, 8.0, 0, 0, -2.4);
+        const y = 0.25;
+        let tH = 0, tP = 0;
+        for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) tH = column(-1.8 + i * 1.2, y, -1.9 - j * 1.5, 3.8, "simple", { r: 0.21, bm: "dark", sm: "white" });
+        const ch = tH - y;
+        wall(3, -3.2, 3.2, -4.4, y, ch, 0.45, [[0, 1.1, 2.4]], "mud");
+        for (const sd of [-1, 1]) { wallZ(3, -4.4, -0.8, sd * 3.2, y, ch, 0.45, "mud"); doorFrame(2, sd * 3.2, y, -2.6, 1.0, 2.2, Math.PI / 2, "dark", 0.5); }
+        // ایوان جلو و کناره‌ها با ستون‌های کوتاه‌تر
+        for (let i = 0; i < 11; i++) tP = column(-5.5 + i * 1.1, y, 0.6, 2.2, "simple", { r: 0.13, bm: "dark", sm: "white" });
+        for (const sd of [-1, 1]) for (let k = 0; k < 4; k++) column(sd * 5.5, y, -0.6 - k * 1.1, 2.2, "simple", { r: 0.13, bm: "dark", sm: "white" });
+        roof(4, 0, -2.6, 6.8, 4.0, tH, { mk: "mud" });
+        roof(4, 0, 0.6, 11.4, 1.0, tP, { merl: false, mk: "mud", eave: 0.2 });
+        for (const sd of [-1, 1]) roof(4, sd * 5.5, -2.0, 1.0, 4.2, tP, { merl: false, mk: "mud", eave: 0.2 });
+        for (const x of [-7.6, -6.8, 6.8, 7.6]) cypress(5, x, 2.0, 1.8);
+        banner(5, -2.2, tH + 0.5, -0.8, 1.2); banner(5, 2.2, tH + 0.5, -0.8, 1.2);
+        birds(5); march(5, [[-8, 0, 2.4], [8, 0, 2.4]], 6, 0.6);
+      },
+      // تل تخت: سکوی سنگ‌چین بر تپه و دژ خشتی رویش
+      tallTakht() {
+        mesa(1, 0, -3.6, 16, 2.2, 4.4, "rock");
+        const top = 2.5;
+        box(1, "ashlar", 9.6, top, 1.4, -0.4, 0, -0.9);
+        box(1, "stone2", 9.7, 0.08, 1.5, -0.4, top - 0.08, -0.9);
+        stairs(2, 5.0, 2.6, 1.3, top, 2.6, 0, "stone2");
+        box(2, "stone2", 1.6, top, 1.2, 5.0, 0, -0.6);
+        // بارو و برج‌ها
+        const zf = -0.5, zb = -5.0;
+        box(3, "mud", 9.0, 1.3, 0.4, -0.4, top, zf);
+        box(3, "mud", 9.0, 1.3, 0.4, -0.4, top, zb);
+        for (const sd of [-1, 1]) wallZ(3, zb, zf, -0.4 + sd * 4.5, top, 1.3, 0.4, "mud");
+        for (const [x, z] of [[-4.9, zf], [4.1, zf], [-4.9, zb], [4.1, zb], [-0.4, zf]]) tower(4, "mud", x, top, z, 0.5, 2.0, true);
+        merlons(4, "mud", -4.4, zf + 0.1, 3.6, zf + 0.1, top + 1.3, 0.34);
+        // کاخ و انبار گنجینه در دژ
+        box(4, "mud", 3.0, 1.8, 2.0, -1.2, top, -3.2);
+        roof(4, -1.2, -3.2, 3.0, 2.0, top + 1.8, { mk: "mud", eave: 0.12 });
+        box(4, "mud", 1.6, 1.4, 1.6, 2.2, top, -3.4);
+        banner(5, -4.9, top + 2.0, zf, 1.4); banner(5, 4.1, top + 2.0, zf, 1.4);
+        march(5, [[-8, 0, 2.6], [3, 0, 2.6], [5, 0, 2.4], [5, top, -0.2]], 5, 0.6);
+        birds(5); pine(5, -7.4, 2.0); pine(5, 7.6, 2.4);
+      },
+      // محوطه‌ی مقدس: سکوی پله‌ای و دو آتشدان سنگ سفید
+      altars() {
+        let y = 0;
+        [[11, 0.5], [9, 0.45], [7, 0.4]].forEach(([w, h]) => { box(1, "rubble", w, h, 3.6, 0, y, -5.0); y += h; });
+        for (const [x, st] of [[-2.2, true], [2.2, false]]) {
+          box(2, "white", 2.4, 0.45, 2.4, x, 0, -1.0);
+          box(3, "white", 2.0, 2.4, 2.0, x, 0.45, -1.0);
+          box(3, "white", 2.2, 0.2, 2.2, x, 2.85, -1.0);
+          if (st) stairs(3, x, -1.0 + 1.0 + 2.0, 0.9, 2.85, 2.0, 0, "white");
+        }
+        const ay = altar(4, 2.2, -1.0, 3.05);
+        box(4, "white", 1.2, 0.14, 1.2, -2.2, 3.05, -1.0);
+        flames(5, 2.2, ay, -1.0, 1.0);
+        for (let x = -7.6; x <= 7.6; x += 1.4) if (Math.abs(x) > 4) cypress(5, x, 1.8, 1.8);
+        march(5, [[-8, 0, 2.8], [-2.2, 0, 2.4], [-2.2, 0, 2.0], [-2.2, 3.0, 0.0]], 4, 0.55);
+        birds(5); pine(5, -6.4, -3.0); pine(5, 6.8, -3.2);
+      },
+      // ---------- شوش ----------
+      // دروازه‌ی داریوش: ساختمانی چهارگوش با درگاه بزرگ و تندیس شاه
+      susaGate() {
+        box(1, "stone2", 13, 0.5, 6.4, 0, 0, -2.4);
+        stairs(1, 0, 1.6, 3.0, 0.5, 0.8);
+        const y = 0.5, h = 3.6;
+        wall(2, -4.4, 4.4, 0.4, y, 1.4, 0.8, [], "brick");
+        wall(3, -4.4, 4.4, 0.4, y + 1.4, h - 1.4, 0.8, [], "brick");
+        box(2, "brick", 8.8, h, 0.8, 0, y, -4.6);
+        for (const sd of [-1, 1]) box(3, "brick", 1.0, h, 5.8, sd * 3.9, y, -2.1);
+        // درگاه: شکاف در دیوار جلو
+        box(2, "dark", 1.6, 2.8, 0.06, 0, y, 0.82);
+        doorFrame(2, 0, y, 0.84, 1.6, 2.8, 0, "dark", 0.14);
+        for (const sd of [-1, 1]) { box(3, "brick", 1.4, h + 0.8, 1.4, sd * 5.0, y, -0.2); panel(4, "glaze:archers", sd * 5.0, y + 1.0, 0.51, 1.3, 1.1, 0, 1); }
+        panel(4, "glaze:lions", 0, y + h - 0.7, 0.81, 6.6, 0.6, 0, 2);
+        roof(4, 0, -2.1, 8.8, 5.4, y + h, { mk: "brick" });
+        for (const sd of [-1, 1]) merlons(4, "brick", sd * 5.7, 0.5, sd * 4.3, 0.5, y + h + 0.8, 0.34);
+        statue(4, -1.9, y, 1.3, 0.9);
+        banner(5, -5.0, y + h + 0.8, -0.2, 1.4); banner(5, 5.0, y + h + 0.8, -0.2, 1.4);
+        march(5, [[-8, 0, 2.6], [0, 0, 2.6], [0, y, 0.9], [0, y, -1.0]], 5, 0.6);
+        palm(5, -7.2, 1.6, 2.6); palm(5, -6.4, 2.6, 2.2); palm(5, 7.0, 2.0, 2.6); birds(5);
+      },
+      // کاخ شاوور: تالار ستون‌دار با دیوار سرخ کنار رود
+      shaur() {
+        river(1, 2.4, 1.6);
+        box(1, "stone2", 12, 0.3, 6.6, 0, 0, -2.8);
+        const y = 0.3;
+        let top = 0;
+        for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) top = column(-3.5 + i * 1.4, y, -1.2 - j * 1.3, 2.4, "bull", { r: 0.15 });
+        const ch = top - y;
+        wall(3, -4.8, 4.8, -5.2, y, ch, 0.45, [[0, 1.0, 2.0]], "red");
+        for (const sd of [-1, 1]) { wallZ(3, -5.2, 0.4, sd * 4.8, y, ch, 0.45, "red"); }
+        box(3, "red", 2.2, ch, 0.45, -3.8, y, 0.2); box(3, "red", 2.2, ch, 0.45, 3.8, y, 0.2);
+        roof(4, 0, -2.4, 9.8, 5.8, top, { mk: "plaster" });
+        for (const sd of [-1, 1]) tower(4, "red", sd * 5.4, y, 0.3, 0.55, ch + 0.6, true);
+        palm(5, -7.0, 0.6, 2.6); palm(5, -6.2, -1.0, 2.2); palm(5, 6.6, 0.4, 2.4); palm(5, 7.4, -1.4, 2.8);
+        banner(5, -5.4, y + ch + 0.6, 0.3, 1.3); banner(5, 5.4, y + ch + 0.6, 0.3, 1.3);
+        march(5, [[-8, 0, 1.2], [8, 0, 1.2]], 5, 0.55); birds(5);
+      },
+      // ---------- اشکانی ----------
+      // نسا: ارگ بر تپه با باروی پربرج، تالار چهارگوش و تالار گرد
+      nisa() {
+        const t = 1.2;
+        box(1, "mud", 15, t - 0.4, 7.6, 0, 0, -2.8);
+        box(1, "mud", 14, 0.4, 7.0, 0, t - 0.4, -2.8);
+        stairs(1, -3.0, 2.1, 1.2, t, 1.1, 0, "mud");
+        ringWall(2, "mud", 0, -2.8, 6.6, 3.3, 1.2, 0.5, 40, [Math.PI - 0.45], 3, 14, t);
+        // تالار چهارگوش با چهار ستون
+        const sx = -1.6, sz = -3.2, sh = 2.6;
+        let ct = 0;
+        for (const dx of [-0.8, 0.8]) for (const dz of [-0.8, 0.8]) { put(3, "brick", new THREE.CylinderGeometry(0.28, 0.32, sh, 12), mtx([sx + dx, t + sh / 2, sz + dz])); ct = t + sh; }
+        wall(3, sx - 2.0, sx + 2.0, sz - 2.0, t, sh, 0.4, [], "mud");
+        wallZ(3, sz - 2.0, sz + 2.0, sx - 2.0, t, sh, 0.4, "mud"); wallZ(3, sz - 2.0, sz + 2.0, sx + 2.0, t, sh, 0.4, "mud");
+        wall(3, sx - 2.0, sx + 2.0, sz + 2.0, t, sh, 0.4, [[0, 1.0, 2.0]], "mud");
+        roof(4, sx, sz, 4.0, 4.0, ct, { mk: "mud", eave: 0.12 });
+        // تالار گرد گنبددار
+        put(3, "mud", scaleUV(new THREE.CylinderGeometry(1.4, 1.5, 2.2, 22), 4, 1), mtx([3.2, t + 1.1, -3.2]));
+        doorFrame(3, 3.2, t, -1.72, 0.7, 1.4, 0, "dark", 0.12);
+        dome(4, "mud", 3.2, t + 2.2, -3.2, 1.45, 0.8);
+        banner(5, -3.0, t + 1.7, 0.4, 1.3); banner(5, 3.0, t + 1.7, 0.4, 1.3);
+        march(5, [[-8, 0, 2.6], [-3, 0, 2.5], [-3, t, 0.8], [-1.6, t, -0.6]], 5, 0.55);
+        birds(5); pine(5, -7.6, 2.0); pine(5, 7.4, 2.4);
+      },
+      // کنگاور: سکوی بزرگ سنگی، پلکان دوگانه و ردیف ستون‌های ستبر
+      kangavar() {
+        const y = 1.3;
+        terrace(1, 0, -2.6, 17, 6.4, y);
+        for (const sd of [-1, 1]) stairs(2, sd * 1.4, 1.9, 1.4, y, 1.4);
+        let top = 0;
+        for (let i = 0; i < 13; i++) { const x = -7.2 + i * 1.2; if (Math.abs(x) < 0.7) continue; top = column(x, y, 0.1, 2.1, "simple", { r: 0.24, pb: 2, ps: 3, pc: 4, sm: "white", bm: "white" }); }
+        for (const sd of [-1, 1]) for (let k = 1; k < 5; k++) column(sd * 7.8, y, 0.1 - k * 1.2, 2.1, "simple", { r: 0.24, pb: 2, ps: 3, pc: 4, sm: "white", bm: "white" });
+        box(4, "stone", 16.4, 0.3, 0.7, 0, top, 0.1);
+        for (const sd of [-1, 1]) box(4, "stone", 0.7, 0.3, 5.0, sd * 7.8, top, -2.2);
+        // نیایشگاه
+        wall(3, -2.6, 2.6, -2.2, y, 2.4, 0.5, [[0, 1.0, 1.8]], "ashlar");
+        box(3, "ashlar", 5.2, 2.4, 2.4, 0, y, -3.6);
+        roof(4, 0, -3.3, 5.2, 2.6, y + 2.4, { mk: "stone", eave: 0.15 });
+        // حوض آب آناهیتا
+        box(4, "stone2", 3.2, 0.12, 1.2, 0, y, -0.9);
+        waterPlane(5, 0, y + 0.13, -0.9, 3.0, 1.0);
+        flames(5, -2.2, y, -1.2, 0.7); flames(5, 2.2, y, -1.2, 0.7);
+        march(5, [[-8, 0, 3.0], [-1.4, 0, 2.6], [-1.4, y, 0.4], [1.4, y, 0.4], [1.4, 0, 2.6], [8, 0, 3.0]], 6, 0.55);
+        birds(5); pine(5, -8.4, 2.6); pine(5, 8.4, 2.8);
+      },
+      // کاخ اشکانی: نمای سه‌ایوانی با ستونک‌ها
+      iwanP() {
+        box(1, "stone2", 14, 0.3, 7.0, 0, 0, -2.6);
+        const y = 0.3;
+        box(2, "gypsum", 13.0, 1.4, 4.0, 0, y, -4.0);
+        box(2, "gypsum", 1.0, 1.4, 3.4, -6.0, y, -0.8); box(2, "gypsum", 1.0, 1.4, 3.4, 6.0, y, -0.8);
+        iwan(3, 4, "gypsum", 0, y, -0.3, 5.0, 5.0, 3.0, 2.6, 1.6, 3.4, "vaultP");
+        for (const sd of [-1, 1]) {
+          iwan(3, 4, "gypsum", sd * 4.2, y, -0.6, 3.4, 3.8, 2.0, 2.0, 1.0, 2.8, "vaultP");
+          box(3, "gypsum", 1.2, 3.8, 3.4, sd * 6.5, y, -2.2);
+          // ستونک‌های چسبیده به نما
+          for (const dx of [-1.55, 1.55]) put(3, "stone", new THREE.CylinderGeometry(0.13, 0.15, 3.4, 10), mtx([sd * 4.2 + dx, y + 1.7, -0.25]));
+        }
+        for (const dx of [-2.35, 2.35]) put(3, "stone", new THREE.CylinderGeometry(0.16, 0.18, 4.6, 10), mtx([dx, y + 2.3, 0.05]));
+        box(4, "stone", 5.2, 0.25, 0.7, 0, y + 4.75, -0.3);
+        for (const sd of [-1, 1]) box(4, "stone", 3.6, 0.22, 0.7, sd * 4.2, y + 3.6, -0.6);
+        merlons(4, "gypsum", -2.5, 0.0, 2.5, 0.0, y + 5.3, 0.36);
+        // سرهای سنگی بالای طاق
+        for (const dx of [-1.0, 0, 1.0]) put(4, "stone", new THREE.SphereGeometry(0.16, 10, 8), mtx([dx, y + 4.45, 0.0]));
+        banner(5, -6.5, y + 3.8, -1.2, 1.4); banner(5, 6.5, y + 3.8, -1.2, 1.4);
+        march(5, [[-8, 0, 2.6], [0, 0, 2.2], [0, y, 0.4], [0, y, -2.6]], 5, 0.6);
+        birds(5); palm(5, -7.6, 1.6, 2.4); palm(5, 7.4, 2.0, 2.6);
+      },
+      // ارگ بم: باروی گرد شهر، خانه‌های گنبدی و ارگ بر تپه
+      bam() {
+        mesa(1, 2.6, -4.2, 8, 2.0, 3.0, "mud");
+        const ht = 2.3;
+        ringWall(2, "mud", 0, -2.6, 7.6, 3.8, 1.1, 0.45, 44, [0], 2, 12);
+        // خانه‌ها
+        const r = rnd(41);
+        for (let i = 0; i < 16; i++) {
+          const x = -6 + (i % 6) * 1.6 + r() * 0.3, z = -0.2 - Math.floor(i / 6) * 1.5 - r() * 0.3;
+          if (x > 0.5 && z < -2.4) continue;
+          const w = 1.0 + r() * 0.3, h = 0.8 + r() * 0.5;
+          box(3, "mud", w, h, 1.0, x, 0, z);
+          if (i % 2) dome(3, "mud", x, h, z, 0.4, 0.9); else box(3, "mud", w + 0.06, 0.12, 1.06, x, h, z);
+        }
+        // ارگ حاکم‌نشین
+        box(4, "mud", 4.6, 1.0, 0.35, 2.6, ht, -2.9);
+        for (const x of [0.4, 4.8]) tower(4, "mud", x, ht, -2.9, 0.45, 1.5, true);
+        box(4, "mud", 1.6, 2.6, 1.6, 2.4, ht, -4.4);
+        merlons(4, "mud", 1.6, -3.6, 3.2, -3.6, ht + 2.6, 0.3);
+        box(4, "mud", 1.0, 1.6, 1.0, 3.9, ht, -4.6); dome(4, "mud", 3.9, ht + 1.6, -4.6, 0.45, 0.9);
+        palm(5, -7.0, 2.2, 2.4); palm(5, -5.8, 2.8, 2.0); palm(5, 6.6, 2.4, 2.6); palm(5, 7.4, 1.6, 2.2);
+        march(5, [[-2, 0, 3.0], [0, 0, 1.6], [0, 0, 0.6], [-4, 0, 0.6]], 4, 0.5);
+        banner(5, 2.4, ht + 2.6, -4.4, 1.2); birds(5);
+      },
+      // ---------- ساسانی ----------
+      // شهر گور: خندق گرد، بارو، منار مرکزی و چهارطاق
+      gur() {
+        const cz = -2.4;
+        const moat = new THREE.Mesh(keep(new THREE.RingGeometry(1, 1.07, 64)), MAT.water);
+        moat.rotation.x = -Math.PI / 2; moat.scale.set(7.6, 3.9, 1); moat.position.set(0, 0.04, cz); moat.name = "water"; moat.userData.noEdges = 1;
+        obj(1, moat);
+        for (const a of [0, Math.PI / 2]) box(1, "stone2", Math.abs(Math.cos(a)) * 14.6 + 0.6, 0.04, Math.abs(Math.sin(a)) * 7.4 + 0.6, 0, 0, cz);
+        ringWall(2, "rubble", 0, cz, 7.0, 3.5, 1.0, 0.5, 48, [0, Math.PI / 2, Math.PI, -Math.PI / 2]);
+        for (const a of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) for (const s of [-1, 1]) tower(3, "rubble", Math.sin(a + s * 0.16) * 7.0, 0, cz + Math.cos(a + s * 0.16) * 3.5, 0.4, 1.4, true);
+        // منار (تربال)
+        box(3, "rubble", 1.4, 4.2, 1.4, -1.0, 0, cz - 0.4);
+        for (let k = 0; k < 4; k++) box(3, "stone2", 1.5, 0.12, 0.2, -1.0, 0.6 + k * 0.95, cz + 0.32 - (k % 2) * 0.1);
+        box(4, "rubble", 1.0, 0.8, 1.0, -1.0, 4.2, cz - 0.4);
+        chartaqi(3, 4, "rubble", 1.6, 0, cz - 0.2, 2.0);
+        flames(5, 1.6, 0.2, cz - 0.2, 0.6);
+        march(5, [[0, 0, 3.2], [0, 0, 1.4], [0, 0, -0.4], [-2.6, 0, -0.6]], 5, 0.5);
+        birds(5); for (const x of [-7.8, 7.8]) pine(5, x, 2.2);
+      },
+      // قلعه‌ی دختر: دژی بر ستیغ کوه با برج‌های گرد، ایوان و تالار گنبددار
+      dokhtar() {
+        mesa(1, 0.6, -3.6, 14, 2.4, 3.6, "rock");
+        mesa(1, -4.6, -0.6, 6, 1.1, 2.6, "rock");
+        const t1 = 2.7, t0 = 1.4;
+        // دیوار و برج‌های پایین
+        box(2, "rubble", 3.0, 1.0, 0.4, -4.8, t0, 0.4);
+        for (const x of [-6.2, -3.4]) tower(2, "rubble", x, t0, 0.4, 0.42, 1.5, true);
+        stairs(2, -1.6, 1.6, 0.8, t0, 1.4, 0, "rubble");
+        // دیوارهای بالا
+        box(2, "rubble", 7.6, 1.2, 0.45, 0.6, t1, -1.8);
+        for (const x of [-3.2, 4.4]) tower(3, "rubble", x, t1, -1.8, 0.5, 2.0, true, 4);
+        iwan(3, 4, "rubble", 0.6, t1, -2.4, 3.4, 3.0, 2.0, 1.7, 1.0, 1.8, "vaultP");
+        box(3, "rubble", 3.0, 1.8, 2.4, 0.6, t1, -5.0);
+        dome(4, "rubble", 0.6, t1 + 1.8, -5.0, 1.1, 1.0);
+        banner(5, -3.2, t1 + 2.0, -1.8, 1.3); banner(5, 4.4, t1 + 2.0, -1.8, 1.3);
+        march(5, [[-8, 0, 2.8], [-2, 0, 2.6], [-1.6, 0, 1.8], [-1.6, t0, 0.2], [-5.6, t0, 0.0]], 5, 0.5);
+        birds(5); pine(5, 6.8, 1.0); pine(5, 7.6, 2.0); pine(5, -7.8, 2.6);
+      },
+      // کاخ اردشیر: حوض چشمه، ایوان بلند و سه گنبد
+      ardashir() {
+        lake(1, 0, 1.9, 3.4, 0.9, 0.06);
+        box(1, "stone2", 7.2, 0.05, 2.0, 0, 0, 1.9);
+        box(1, "rubble", 13.6, 0.3, 5.4, 0, 0, -3.0);
+        const y = 0.3;
+        box(2, "gypsum", 12.4, 2.6, 2.6, 0, y, -4.2);
+        for (const sd of [-1, 1]) {
+          archWall(2, "gypsum", sd * 4.4, y, -0.6, 4.0, 3.2, 0.6, [[-1.0, 0.8, 1.6, 0.4], [1.0, 0.8, 1.6, 0.4]]);
+          box(2, "dark", 3.8, 2.2, 0.05, sd * 4.4, y, -0.95);
+          box(3, "gypsum", 4.0, 0.9, 2.6, sd * 4.4, y + 3.2 - 0.9, -2.0);
+          box(3, "gypsum", 0.6, 3.2, 3.0, sd * 6.1, y, -2.2);
+        }
+        iwan(3, 4, "gypsum", 0, y, -0.6, 4.8, 4.6, 2.8, 2.6, 1.5, 2.8, "vaultP");
+        for (const x of [-3.6, 0, 3.6]) dome(4, "gypsum", x, y + 2.6, -4.2, 1.25, 1.05);
+        cypress(5, -7.4, 1.6); cypress(5, 7.4, 1.6); cypress(5, -6.6, 2.4, 1.8); cypress(5, 6.6, 2.4, 1.8);
+        march(5, [[-8, 0, 3.2], [-3.8, 0, 3.0], [0, 0, 0.6], [0, y, -1.6]], 5, 0.55);
+        birds(5);
+      },
+      // نقش پیروزی شاپور: صخره‌ی تنگ چوگان با نقش‌ها و رود
+      shapurRelief() {
+        cliff(1, 0, -1.8, 18, 7.0, 2.4, 21);
+        const z = -1.78;
+        box(2, "stone", 5.0, 2.8, 0.14, -2.6, 0.9, z); box(2, "stone2", 5.2, 0.18, 0.4, -2.6, 0.75, z + 0.1);
+        box(2, "stone", 4.2, 2.4, 0.14, 3.4, 1.3, z); box(2, "stone2", 4.4, 0.18, 0.4, 3.4, 1.15, z + 0.1);
+        panel(3, "triumph", -2.6, 0.95, z + 0.08, 4.8, 2.4, 0, 0.5);
+        panel(4, "horsemen", 3.4, 1.35, z + 0.08, 4.0, 2.0, 0, 0.5);
+        river(4, 1.6, 1.2);
+        march(5, [[-8, 0, 3.0], [8, 0, 3.0]], 5, 0.55);
+        birds(5); pine(5, -7.4, 0.2); pine(5, 7.0, 0.4); cypress(5, -6.6, 3.2); palm(5, 6.4, 3.0, 2.2);
+      },
+      // نیایشگاه آناهیتا در بیشاپور: چهارگوش سنگی، آب‌راهه و سرگاوها
+      bishapur() {
+        box(1, "ashlar", 7.2, 0.35, 7.2, -1.2, 0, -2.8);
+        const y = 0.35, h = 2.6;
+        wall(2, -4.6, 2.2, -6.2, y, h, 0.5, [], "ashlar");
+        for (const x of [-4.6, 2.2]) wallZ(2, -6.2, 0.6, x, y, h, 0.5, "ashlar");
+        wall(2, -4.6, 2.2, 0.6, y, 1.0, 0.5, [], "ashlar");
+        box(3, "ashlar", 1.6, h - 1.0, 0.5, -3.6, y + 1.0, 0.6); box(3, "ashlar", 1.6, h - 1.0, 0.5, 1.2, y + 1.0, 0.6);
+        doorFrame(3, -1.2, y + 1.0, 0.6, 2.6, h - 1.0 - 0.5, 0, "stone2", 0.56);
+        // آب‌راهه درون و سرگاوهای سنگی بالای دیوار
+        box(3, "stone2", 4.6, 0.1, 4.6, -1.2, y, -2.8);
+        waterPlane(3, -1.2, y + 0.12, -2.8, 4.2, 4.2);
+        for (const [x, z, ry] of [[-4.6, -1.0, Math.PI / 2], [-4.6, -4.4, Math.PI / 2], [2.2, -1.0, -Math.PI / 2], [2.2, -4.4, -Math.PI / 2]]) protome(4, "stone", "bull", x, y + h - 0.2, z, 0.9, 1, ry + Math.PI);
+        box(4, "stone2", 7.4, 0.2, 0.6, -1.2, y + h, -6.2);
+        // یادمان دو ستون شاپور
+        for (const x of [5.2, 6.4]) column(x, 0, -1.4, 3.4, "simple", { r: 0.2, pb: 4, ps: 4, pc: 4 });
+        statue(4, 5.8, 0, 0.4, 0.7);
+        palm(5, -7.2, 1.6, 2.4); palm(5, 7.8, 2.4, 2.6); cypress(5, 4.4, 2.4);
+        march(5, [[-8, 0, 2.8], [-1.2, 0, 2.6], [-1.2, y, 0.8]], 4, 0.55); birds(5);
+      },
+      // طاق کسری: ایوان بزرگ آجری با دو بال طاقچه‌دار
+      kasra() {
+        box(1, "brick", 16, 0.25, 5.0, 0, 0, -2.6);
+        const y = 0.25;
+        for (const sd of [-1, 1]) box(2, "brick", 4.8, 2.0, 0.9, sd * 5.1, y, -1.4);
+        for (const sd of [-1, 1]) box(3, "brick", 4.8, 3.2, 0.9, sd * 5.1, y + 2.0, -1.4);
+        iwan(3, 4, "brick", 0, y, -1.2, 5.4, 6.6, 3.6, 1.0, 4.6, 4.2, "vault");
+        for (const sd of [-1, 1]) panel(4, "arcade", sd * 5.1, y, -0.94, 4.8, 5.2, 0, 1);
+        for (const sd of [-1, 1]) box(4, "brick", 0.6, 5.2, 0.9, sd * 7.8, y, -1.4);
+        palm(5, -7.6, 1.6, 2.8); palm(5, -6.6, 2.6, 2.2); palm(5, 6.8, 2.2, 2.6); palm(5, 7.8, 1.2, 3.0);
+        banner(5, -1.6, y, 0.4, 2.0); banner(5, 1.6, y, 0.4, 2.0);
+        march(5, [[-8, 0, 2.6], [0, 0, 2.0], [0, y, -0.6], [0, y, -3.6]], 6, 0.6); birds(5);
+      },
+      // تخت سلیمان: دریاچه، باروی بیضی با برج‌ها و آتشکده
+      soleyman() {
+        put(1, "stone2", new THREE.CylinderGeometry(1, 1, 0.3, 48), mtx([0, 0.15, -2.6], [0, 0, 0], [7.4, 1, 3.9]));
+        lake(1, -0.6, -1.4, 2.2, 1.1, 0.33);
+        ringWall(2, "rubble", 0, -2.6, 7.0, 3.6, 1.4, 0.5, 48, [0], 3, 0, 0.3);
+        for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2 + 0.22; tower(3, "rubble", Math.sin(a) * 7.0, 0.3, -2.6 + Math.cos(a) * 3.6, 0.36, 1.8, true, 3); }
+        chartaqi(3, 4, "rubble", 1.0, 0.3, -4.4, 2.2);
+        for (const sd of [-1, 1]) box(3, "rubble", 1.6, 2.0, 2.2, 1.0 + sd * 2.0, 0.3, -4.4);
+        iwan(3, 4, "rubble", -3.4, 0.3, -4.0, 2.6, 2.6, 1.6, 1.4, 0.8, 1.6, "vaultP");
+        flames(5, 1.0, 0.5, -4.4, 0.6);
+        march(5, [[0, 0, 3.4], [0, 0, 1.4], [0, 0.3, 0.6], [2.2, 0.3, -1.6]], 5, 0.5);
+        birds(5); pine(5, -8.2, 2.0); pine(5, 8.2, 2.2);
+      },
+      // چهارطاقی نیاسر: چهارطاق بر تپه و آبشار کنارش
+      niasar() {
+        mesa(1, -1.2, -2.6, 10, 1.4, 4.4, "rock");
+        const top = 1.7;
+        stairs(1, -1.2, 2.2, 1.2, top, 2.2, 0, "rubble");
+        cliff(1, 6.4, -2.8, 5.0, 4.4, 2.0, 25);
+        box(2, "rubble", 4.0, 0.3, 4.0, -1.2, top, -2.6);
+        chartaqi(3, 4, "rubble", -1.2, top + 0.3, -2.6, 3.0);
+        fall(4, 5.4, 0.2, -2.6, 0.7, 3.8);
+        lake(4, 5.4, -1.6, 1.4, 0.8, 0.05);
+        flames(5, -1.2, top + 0.4, -2.6, 0.7);
+        march(5, [[-8, 0, 3.0], [-1.2, 0, 2.6], [-1.2, top, 0.2]], 4, 0.5);
+        birds(5); pine(5, -7.0, 1.6); pine(5, -6.0, 2.4); pine(5, 3.2, 2.0); cypress(5, 7.6, 1.4);
+      },
+      // پل‌بند شوشتر: رود رو به بیننده، پل‌بند طاق‌دار، صخره و آبشارهای آسیاب
+      shushtar() {
+        waterPlane(1, 0, 0.04, -2.0, 5.0, 16);
+        for (const sd of [-1, 1]) box(1, "stone2", 0.3, 0.12, 16, sd * 2.65, 0, -2.0);
+        cliff(2, -6.0, -2.6, 7.0, 3.4, 2.0, 27);
+        for (const x of [-7.6, -6.2, -4.8]) { box(2, "mud", 1.0, 0.9, 0.9, x, 0, -1.6); dome(4, "mud", x, 0.9, -1.6, 0.36, 0.9); }
+        for (let i = 0; i < 6; i++) box(2, "stone", 0.5, 1.0, 1.1, -3.0 + i * 1.2, 0, -1.2);
+        bridge(3, "stone", -3.6, 4.0, 0, -1.2, 2.0, 6, 0.9);
+        box(3, "stone2", 7.8, 0.12, 1.0, 0.2, 2.0, -1.2);
+        for (const x of [-7.2, -5.8, -4.6]) { box(4, "dark", 0.4, 0.5, 0.05, x, 2.2, -2.55); fall(4, x, 0.1, -2.5, 0.42, 2.3); }
+        for (const x of [-1.8, 0, 1.8]) fall(4, x, 0.05, -0.68, 0.7, 0.5);
+        palm(5, 5.6, 0.6, 2.6); palm(5, 6.6, -0.8, 2.2); palm(5, 7.4, 1.2, 2.8); palm(5, 4.4, 2.6, 2.2);
+        march(5, [[-3.6, 2.1, -1.2], [4.0, 2.1, -1.2]], 5, 0.5); birds(5);
+      },
+      // دیوار گرگان: دیوار آجری بلند با برج‌ها، کانال، و دژ پشتش
+      gorgan() {
+        river(1, 1.4, 1.0);
+        box(2, "brick", 22, 0.8, 0.9, 0, 0, -0.4);
+        box(3, "brick", 22, 1.2, 0.8, 0, 0.8, -0.4);
+        for (let x = -9; x <= 9; x += 3) tower(4, "brick", x, 0, -0.2, 0.55, 2.6, true);
+        // دژ
+        const fz = -4.0;
+        box(4, "brick", 6.0, 1.6, 0.4, 0.6, 0, fz + 1.6); box(4, "brick", 6.0, 1.6, 0.4, 0.6, 0, fz - 1.6);
+        for (const sd of [-1, 1]) wallZ(4, fz - 1.6, fz + 1.6, 0.6 + sd * 3.0, 0, 1.6, 0.4, "brick");
+        for (const sd of [-1, 1]) for (const sz of [-1, 1]) tower(4, "brick", 0.6 + sd * 3.0, 0, fz + sz * 1.6, 0.4, 2.1, true);
+        for (let i = 0; i < 3; i++) box(4, "mud", 1.4, 0.8, 2.0, -1.0 + i * 1.6, 0, fz);
+        for (let x = -7.6; x <= 7.6; x += 1.9) pine(5, x + 0.4, -6.4 + (Math.abs(x) % 2) * 0.4, 2.0);
+        march(5, [[-10, 2.0, -0.4], [10, 2.0, -0.4]], 6, 0.5);
+        banner(5, -3.0, 2.6, -0.2, 1.3); banner(5, 3.0, 2.6, -0.2, 1.3); birds(5);
+      },
+      // طاق بستان: دو ایوان تراشیده در دل کوه، نقش‌ها و حوض جلو
+      bostan() {
+        cliff(1, 0, -2.0, 18, 6.6, 2.4, 29);
+        const zf = -0.6;
+        // ایوان کوچک
+        archWall(2, "stone", 3.6, 0, zf - 0.4, 2.4, 2.6, 1.0, [[0, 1.6, 1.3, 0.8]]);
+        box(2, "stone2", 1.6, 2.1, 0.05, 3.6, 0, zf - 1.3);
+        panel(2, "guards", 3.6, 0.2, zf - 1.25, 1.5, 0.9, 0, 0.3);
+        // ایوان بزرگ
+        archWall(3, "stone", -1.0, 0, zf, 4.6, 4.4, 1.6, [[0, 3.0, 2.2, 1.5]]);
+        box(3, "stone2", 2.9, 3.6, 0.06, -1.0, 0, zf - 0.78);
+        vault(4, "rock", -1.0, 2.2, zf, 3.0, 1.5, 1.6);
+        panel(4, "horsemen", -1.0, 2.0, zf - 0.72, 2.8, 1.4, 0, 0.5);
+        panel(4, "triumph", -1.0, 0.25, zf - 0.72, 2.8, 1.4, 0, 0.5);
+        box(4, "stone", 4.8, 0.3, 1.7, -1.0, 4.4, zf);
+        // نقش اردشیر دوم بر صخره و حوض
+        box(4, "stone", 3.0, 1.8, 0.12, -6.0, 0.6, -2.0 + 0.04);
+        panel(4, "horsemen", -6.0, 0.7, -1.87, 2.8, 1.4, 0, 0.5);
+        box(4, "stone2", 12, 0.12, 2.4, 0, 0, 1.8);
+        waterPlane(4, 0, 0.13, 1.8, 11.6, 2.0);
+        march(5, [[-8, 0, 3.4], [8, 0, 3.4]], 5, 0.5);
+        birds(5); pine(5, -8.0, 0.6); pine(5, 7.6, 0.4); cypress(5, -7.0, 3.4); cypress(5, 6.6, 3.4);
+      },
       // جشن نوروز: نمای کلی صفه با چند کاخ، شب، مشعل‌ها و فرستادگان
       nowruz() {
         terrace(1, 0, -3.2, 18, 7, T);
@@ -1141,7 +1769,7 @@
           if (m.userData.flame !== undefined) { const p = m.userData.flame; m.scale.y = 1 + Math.sin(s * 9 + p) * 0.14 + Math.sin(s * 13 + p * 2) * 0.06; m.scale.x = 1 + Math.sin(s * 7 + p) * 0.06; m.lookAt(camera.position.x, m.getWorldPosition(tmpV).y, camera.position.z); }
           else if (m.name === "cloth") { const pos = m.geometry.attributes.position; for (let i = 0; i < pos.count; i++) { const x = pos.getX(i); pos.setZ(i, Math.sin(x * 4 - s * 3.2) * 0.08 * x); } pos.needsUpdate = true; }
           else if (m.userData.bird !== undefined) { const i = m.userData.bird; m.position.x += 0.02; if (m.position.x > 10) m.position.x = -10; m.position.y += Math.sin(s * 2 + i) * 0.004; m.scale.y = 0.6 + Math.abs(Math.sin(s * 8 + i)) * 0.6; }
-          else if (m.name === "water") { m.material.color.setHSL(0.55, 0.32, 0.56 + Math.sin(s * 2) * 0.03); }
+          else if (m.name === "water") { m.material.color.setHSL(0.55, 0.42, 0.42 + Math.sin(s * 2) * 0.03, "srgb"); } // HSL در فضای sRGB، نه خطی
           else if (m.name === "fall") { const pos = m.geometry.attributes.position; for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getY(i) * 6 + s * 8) * 0.03); pos.needsUpdate = true; }
         });
         marchers.forEach((m) => {
