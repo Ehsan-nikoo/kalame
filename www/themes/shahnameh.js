@@ -16,92 +16,7 @@
   ];
 
   // x و z جای پیکره روی زمین؛ y ارتفاع از زمین؛ s اندازه؛ f رو به چپ
-  const STORIES = [
-    { name: "زال و سیمرغ", sky: "gold", ground: "green", hills: "peak", props: [["cypress", -7, -2.5], ["blossom", -4.6, -3.4], ["nest", 3.45, -4.75]],
-      a: ["زال", { fig: "zalChild", x: -2.6, z: 1, s: 0.8 }], b: ["سیمرغ", { fig: "simorgh", x: 1.6, y: 2.5, z: 0.4, s: 0.85, f: 1, anim: "fly" }], life: ["clouds", "birds"],
-      line: "سام، زالِ سپیدموی را در البرزکوه رها کرد و سیمرغ او را در آشیانه‌اش پرورد." },
-    { name: "هوشنگ و پیدایش آتش", sky: "dawn", ground: "ochre", hills: "rocks", props: [["chenar", -6.5, -2.6], ["stone", 2.4, 0.4]],
-      a: ["هوشنگ", { fig: "hushang", x: -2.8, z: 1 }], b: ["مار سیاه", { fig: "snake", x: 3.4, y: 0.9, z: 0.6, s: 0.9, f: 1 }], life: ["spark", "clouds"],
-      line: "سنگی که هوشنگ به سوی مار انداخت به سنگ دیگری خورد و از جرقه‌اش آتش پدید آمد؛ جشن سده یادگار آن روز است." },
-    { name: "تهمورث دیوبند", sky: "gold", ground: "sage", hills: "range", props: [["cypress", -7.2, -2.4], ["castle", 5.2, -3.6]],
-      a: ["تهمورث", { fig: "tahmuras", x: -2.4, z: 1 }], b: ["دیو در بند", { fig: "divBrown", x: 2.4, z: 0.6, s: 0.95, f: 1 }], life: ["clouds", "birds"],
-      line: "تهمورث دیوان را به بند کشید و آن‌ها در برابر آزادی، نوشتن را به او آموختند." },
-    { name: "جمشید و نوروز", sky: "blue", ground: "green", hills: "range", props: [["blossom", -6.6, -2.6], ["blossom", 6.6, -2.6]],
-      a: ["جمشید", { fig: "jamshid", x: 0, y: 1.6, z: 0.2, s: 0.95, anim: "float" }], b: ["دیوان تخت‌بر", { fig: "div", x: -3.2, z: 0.8, s: 0.8 }, { fig: "divWhite", x: 3.2, z: 0.8, s: 0.8, f: 1 }], life: ["clouds", "birds", "petals"],
-      line: "جمشید بر تختی نشست که دیوان به آسمان بردند و مردم آن روز را نوروز نامیدند." },
-    { name: "ضحاک ماردوش", sky: "lapis", ground: "lilac", hills: "rocks", props: [["castle", 0, -3.8], ["cypress", -7, -2.4]],
-      a: ["ضحاک", { fig: "zahhak", x: -1.6, z: 0.8 }], b: ["موبد خوابگزار", { fig: "sage", x: 2.8, z: 1.2, f: 1 }], life: ["stars", "torch"],
-      line: "ضحاک خوابی هراسناک دید و موبدان گفتند فریدون روزی تاج و تخت او را خواهد گرفت." },
-    { name: "کاوه‌ی آهنگر", sky: "gold", ground: "ochre", hills: "range", props: [["castle", 4.8, -3.6], ["chenar", -6.8, -2.6]],
-      a: ["کاوه", { fig: "kaveh", x: -1.6, z: 1 }], b: ["درفش کاویانی", { prop: "banner", x: -0.6, z: 0.9 }], life: ["wave", "birds"],
-      line: "کاوه پیش‌بند چرمی آهنگری‌اش را بر سر نیزه کرد و مردم را به برخاستن برابر ضحاک خواند." },
-    { name: "فریدون و ضحاک", sky: "gold", ground: "sage", hills: "damavand", props: [["cypress", -7, -2.4], ["cypress", 7, -2.4]],
-      a: ["فریدون", { fig: "fereydun", x: -2.4, z: 1 }], b: ["ضحاک در بند", { fig: "zahhakBound", x: 3.2, z: 0.2, s: 0.85, f: 1 }], life: ["clouds", "birds"],
-      line: "فریدون با گرز گاوسر بر ضحاک چیره شد و او را در کوه دماوند به بند کشید." },
-    { name: "زال و رودابه", sky: "lapis", ground: "green", hills: "range", props: [["tower", 2.6, -1.4], ["blossom", -6.4, -2.4]],
-      a: ["زال", { fig: "zal", x: -1.6, z: 1.2 }], b: ["رودابه", { fig: "rudabeh", x: 2.6, y: 2.75, z: -0.2, s: 0.55, f: 1 }], life: ["stars", "braid"],
-      line: "رودابه گیسوی بلندش را از بام کاخ پایین انداخت، اما زال با کمند بالا رفت." },
-    { name: "رستم و رخش", sky: "gold", ground: "green", hills: "rocks", props: [["chenar", -6.6, -2.6], ["blossom", 6.4, -3]],
-      a: ["رستم", { fig: "rostamLasso", x: -2.8, z: 1 }], b: ["رخش", { fig: "rakhshStand", x: 2.6, z: 0.4, s: 0.95, f: 1 }], life: ["clouds", "birds"],
-      line: "رستم از میان گله‌ی اسبان، کره‌ی گلرنگی را با کمند گرفت و نامش را رخش گذاشت." },
-    { name: "هفت‌خان: رخش و شیر", sky: "lapis", ground: "sage", hills: "rocks", props: [["chenar", -6.6, -2.6], ["cypress", 6.8, -2.6]],
-      a: ["رخش", { fig: "rakhsh", x: -2.2, z: 1, s: 0.95 }], b: ["شیر", { fig: "lion", x: 3, z: 0.6, s: 1.05, f: 1 }], life: ["stars", "fireflies"],
-      line: "خان یکم: رستم در بیشه خفته بود که شیری آمد و رخشِ وفادار او را از پا درآورد." },
-    { name: "هفت‌خان: میش و چشمه", sky: "dawn", ground: "desert", hills: "dunes", props: [["stone", -6, -2.2]],
-      a: ["رستم", { fig: "rostamSword", x: -2.6, z: 1 }], b: ["میش", { fig: "ram", x: 2.6, z: 0.8, s: 1.2, f: 1 }], life: ["spring", "clouds"],
-      line: "خان دوم: در بیابان بی‌آب، رستم از تشنگی درمانده بود که میشی او را به چشمه رساند." },
-    { name: "هفت‌خان: اژدها", sky: "gold", ground: "sage", hills: "rocks", props: [["rakhshProp", -6.2, -2.4], ["cypress", 7, -2.6]],
-      a: ["رستم", { fig: "rostamSword", x: -2.8, z: 1.2 }], b: ["اژدها", { fig: "dragon", x: 3, z: 0, s: 0.9, f: 1 }], life: ["breath", "clouds"],
-      line: "خان سوم: رخش سه بار رستم را از خواب بیدار کرد تا سرانجام اژدها را دید و با او جنگید." },
-    { name: "هفت‌خان: زن جادو", sky: "dawn", ground: "green", hills: "range", props: [["blossom", -6.4, -2.6], ["chenar", 6.6, -2.8]],
-      a: ["رستم", { fig: "rostamMace", x: -2.4, z: 1 }], b: ["زن جادو", { fig: "witch", x: 2.4, z: 0.8, f: 1 }], life: ["petals", "birds"],
-      line: "خان چهارم: جادوگری به چهره‌ی زنی زیبا پیش رستم آمد، اما با نام یزدان چهره‌ی راستینش آشکار شد." },
-    { name: "هفت‌خان: اولاد", sky: "gold", ground: "green", hills: "range", props: [["chenar", -6.8, -2.8]],
-      a: ["رستم", { fig: "rostamRider", x: -2.2, z: 1, s: 0.95 }], b: ["اولاد", { fig: "olad", x: 3.2, z: 0.6, f: 1 }], life: ["clouds", "birds"],
-      line: "خان پنجم: رستم، اولاد را با کمند گرفت و او راه دیو سپید را نشانش داد." },
-    { name: "هفت‌خان: ارژنگ دیو", sky: "dawn", ground: "ochre", hills: "rocks", props: [["cypress", -7, -2.6]],
-      a: ["رستم", { fig: "rostamRiderSpear", x: -2.4, z: 1, s: 0.95 }], b: ["ارژنگ دیو", { fig: "div", x: 3, z: 0.4, f: 1 }], life: ["dust", "clouds"],
-      line: "خان ششم: رستم، ارژنگ دیو را شکست داد و سپاه دیوان پراکنده شد." },
-    { name: "هفت‌خان: دیو سپید", sky: "lapis", ground: "lilac", hills: "cave", props: [["stone", -6.4, -1.6]],
-      a: ["رستم", { fig: "rostamSword", x: -2.6, z: 1.2 }], b: ["دیو سپید", { fig: "divWhite", x: 2.2, z: -0.6, s: 1.05, f: 1 }], life: ["stars", "torch"],
-      line: "خان هفتم: در غاری تاریک، رستم با دیو سپید جنگید و کاووس و یارانش را از بند رهاند." },
-    { name: "کاووس و پرواز با عقاب‌ها", sky: "blue", ground: "green", hills: "range", props: [["cypress", -7, -2.6], ["blossom", 6.6, -2.8]],
-      a: ["کاووس", { fig: "kavus", x: 0, y: 2.4, z: 0, s: 0.85, anim: "float" }], b: ["چهار عقاب", { fig: "eagle", x: -2.8, y: 4.6, z: -0.4, s: 0.85, anim: "fly" }, { fig: "eagle", x: 2.8, y: 4.6, z: -0.4, s: 0.85, f: 1, anim: "fly" }, { fig: "eagle", x: -2.2, y: 3.4, z: 0.6, s: 0.8, anim: "fly" }, { fig: "eagle", x: 2.2, y: 3.4, z: 0.6, s: 0.8, f: 1, anim: "fly" }], life: ["clouds", "ropes"],
-      line: "کاووس بر تختی نشست که چهار عقاب آن را به آسمان بردند، اما سرانجام در بیشه‌ای فرو افتاد." },
-    { name: "رستم و تهمینه", sky: "lapis", ground: "lilac", hills: "range", props: [["castle", 4.6, -3.6], ["cypress", -7, -2.6]],
-      a: ["رستم", { fig: "rostamMace", x: -2.2, z: 1 }], b: ["تهمینه", { fig: "tahmineh", x: 1.8, z: 1, f: 1 }], life: ["stars", "candle"],
-      line: "در سمنگان، تهمینه شمع به دست به دیدار رستم آمد؛ از آن پیوند، سهراب زاده شد." },
-    { name: "گردآفرید و سهراب", sky: "gold", ground: "ochre", hills: "rocks", props: [["castle", -4.6, -3.6]],
-      a: ["گردآفرید", { fig: "gordafarid", x: -2, z: 1, s: 0.95 }], b: ["سهراب", { fig: "sohrab", x: 3, z: 0.4, s: 0.95, f: 1 }], life: ["dust", "flags"],
-      line: "گردآفرید، دختر دلاور دژ سپید، جامه‌ی رزم پوشید و به نبرد سهراب رفت." },
-    { name: "رستم و سهراب", sky: "dusk", ground: "ochre", hills: "range", props: [["cypress", -7, -2.6], ["cypress", 7, -2.6]],
-      a: ["رستم", { fig: "rostamRiderSpear", x: -2.6, z: 1, s: 0.95 }], b: ["سهراب", { fig: "sohrab", x: 2.6, z: 0.6, s: 0.95, f: 1 }], life: ["dust", "birds"],
-      line: "پدر و پسر یکدیگر را نشناختند و در میدان نبرد رو در روی هم ایستادند." },
-    { name: "گذر سیاوش از آتش", sky: "dusk", ground: "ochre", hills: "rocks", props: [["cypress", -7.4, -2.6]],
-      a: ["سیاوش", { fig: "siavash", x: 0, z: 0.6, s: 0.95, anim: "ride" }], b: ["کوه آتش", { prop: "fire", x: 0, z: 0.6 }], life: ["flames", "sparks"],
-      line: "سیاوش برای نشان دادن بی‌گناهی‌اش، سوار بر شبرنگ از میان کوه آتش گذشت و آسیبی ندید." },
-    { name: "بیژن و منیژه", sky: "lapis", ground: "desert", hills: "dunes", props: [["well", 1.4, 0.2], ["chenar", -6.6, -2.6]],
-      a: ["منیژه", { fig: "manijeh", x: -1.6, z: 1 }], b: ["رستم", { fig: "rostamSword", x: 4, z: 0.4, f: 1 }], life: ["stars", "lift"],
-      line: "بیژن در چاهی زندانی بود و منیژه هر روز برایش نان می‌آورد تا رستم سنگ را از سر چاه برداشت." },
-    { name: "رستم و اکوان دیو", sky: "dawn", ground: "green", hills: "range", props: [["chenar", -6.4, -2.6], ["stone", 6.2, -2]],
-      a: ["رستم", { fig: "rostamMace", x: -2.4, z: 1 }], b: ["اکوان دیو", { fig: "divBrown", x: 2.6, y: 0.6, z: 0, s: 1.05, f: 1, anim: "float" }], life: ["clouds", "birds"],
-      line: "اکوان دیو، زمینی را که رستم بر آن خفته بود از جا کند و او را به دریا انداخت، اما رستم از آب گذشت و او را شکست داد." },
-    { name: "رستم و اسفندیار", sky: "gold", ground: "sage", hills: "peak", props: [["cypress", -7.2, -2.6], ["tamarisk", -4.8, -2.4]],
-      a: ["رستم", { fig: "rostamBow", x: -2.6, z: 1 }], b: ["اسفندیار", { fig: "esfandiyar", x: 2.8, z: 0.4, s: 0.95, f: 1 }], life: ["simorgh", "clouds"],
-      line: "سیمرغ راه چیره شدن بر اسفندیارِ رویین‌تن را با تیری از چوب گز به رستم نشان داد." },
-    { name: "رستم و شغاد", sky: "dusk", ground: "ochre", hills: "rocks", props: [["chenar", 3.6, -0.6], ["pit", -0.6, 0.6]],
-      a: ["رستم", { fig: "rostamBow", x: -3.4, z: 1.2 }], b: ["شغاد", { fig: "shaghad", x: 3.2, z: -0.2, s: 0.9, f: 1 }], life: ["birds", "dust"],
-      line: "شغاد در نخجیرگاه چاه‌هایی پر از نیزه کند؛ رستم در واپسین دم، او را با تیری به درخت دوخت." },
-    { name: "بهرام و تاج میان دو شیر", sky: "gold", ground: "green", hills: "range", props: [["crown", 0.6, -0.6], ["cypress", -7, -2.6], ["cypress", 7, -2.6]],
-      a: ["بهرام", { fig: "bahram", x: -3, z: 1.2 }], b: ["دو شیر", { fig: "lion", x: -0.6, z: -0.4, s: 0.8 }, { fig: "lion", x: 2.4, z: -0.4, s: 0.8, f: 1 }], life: ["glow", "birds"],
-      line: "بهرام برای رسیدن به تخت پادشاهی، تاج را از میان دو شیر ژیان برداشت." },
-    { name: "بزرگمهر و شطرنج", sky: "blue", ground: "lilac", hills: "range", props: [["chess", 0.6, 0.6], ["blossom", -6.6, -2.6]],
-      a: ["نوشیروان", { fig: "anushirvan", x: -3.2, z: -0.2, s: 0.9 }], b: ["بزرگمهر", { fig: "sage", x: 3, z: 1, f: 1 }], life: ["petals", "birds"],
-      line: "فرستاده‌ی هند شطرنج آورد؛ بزرگمهر راز آن را گشود و در پاسخ، نرد را ساخت." },
-    { name: "کیخسرو و جام جهان‌نما", sky: "lapis", ground: "sage", hills: "range", props: [["castle", 4.8, -3.6], ["cypress", -7, -2.6]],
-      a: ["کیخسرو", { fig: "kaykhosrow", x: -1.6, z: 0.6 }], b: ["گیو", { fig: "sohrabStand", x: 2.6, z: 1, f: 1 }], life: ["stars", "cupglow"],
-      line: "کیخسرو در جام جهان‌نما نگریست و بیژن را در چاهی در سرزمین توران دید." },
-  ];
+  const STORIES = window.SHN_STORIES;
 
   const storyNo = (level) => Math.floor(level / PARTS.length) % STORIES.length;
   const storyOf = (level) => STORIES[storyNo(level)];
@@ -130,10 +45,11 @@
     blue: { top: "#2f6fb3", mid: "#6aa3d6", low: "#cfe3ef", cloud: "#f8f2e2", cloudLine: "#d9a441", sun: "#fff" },
     dawn: { top: "#d9806e", mid: "#efb48e", low: "#f8e3c2", cloud: "#fff4e4", cloudLine: "#b6413a", sun: "#fff3d0" },
     dusk: { top: "#6a3d78", mid: "#c26a6a", low: "#f0b07a", cloud: "#f7dcc8", cloudLine: "#6a3d78", sun: "#ffd890" },
+    dark: { top: "#14141c", mid: "#24243a", low: "#4a4a66", cloud: "#8a8aa6", cloudLine: GOLD, sun: "#cfd6f0", stars: true },
     lapis: { top: "#0f2456", mid: "#1d3a7a", low: "#2f5596", cloud: "#cdd8f0", cloudLine: GOLD, sun: "#f6e3a6", stars: true },
   };
-  const GROUND = { green: ["#9fbf7e", "#7da35c"], sage: ["#bccb9a", "#97ad74"], ochre: ["#e4c88a", "#c9a865"], lilac: ["#cdbfd6", "#a998b8"], desert: ["#ead2a0", "#d2b276"] };
-  const ROCK = { peak: ["#c9b2d6", "#e4b6a6", "#9cc5bf"], rocks: ["#e4b6a6", "#c9b2d6", "#9cc5bf"], range: ["#9cc5bf", "#c9b2d6", "#e4b6a6"], dunes: ["#e9c98a", "#ddb877", "#f0d9a6"], cave: ["#c9b2d6", "#9cc5bf", "#e4b6a6"], damavand: ["#c9b2d6", "#9cc5bf", "#e4b6a6"] };
+  const GROUND = { green: ["#9fbf7e", "#7da35c"], sage: ["#bccb9a", "#97ad74"], ochre: ["#e4c88a", "#c9a865"], lilac: ["#cdbfd6", "#a998b8"], desert: ["#ead2a0", "#d2b276"], snow: ["#f2f5f8", "#d9e2ea"] };
+  const ROCK = { peak: ["#c9b2d6", "#e4b6a6", "#9cc5bf"], rocks: ["#e4b6a6", "#c9b2d6", "#9cc5bf"], range: ["#9cc5bf", "#c9b2d6", "#e4b6a6"], dunes: ["#e9c98a", "#ddb877", "#f0d9a6"], cave: ["#c9b2d6", "#9cc5bf", "#e4b6a6"], damavand: ["#c9b2d6", "#9cc5bf", "#e4b6a6"], snow: ["#e8eef4", "#d6e0ea", "#c9d6e3"] };
 
   // ---------- بوم‌های بافت ----------
   function cv(w, h, fn) { const c = document.createElement("canvas"); c.width = w; c.height = h; fn(c.getContext("2d"), w, h); return c; }
@@ -242,6 +158,19 @@
   }
   function checkerCanvas() {
     return cv(128, 128, (c, w) => { const s = w / 8; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { c.fillStyle = (x + y) % 2 ? "#1d3a7a" : "#efe3c6"; c.fillRect(x * s, y * s, s, s); } c.strokeStyle = GOLD; c.lineWidth = 6; c.strokeRect(0, 0, w, w); });
+  }
+  function stripeCanvas() {
+    return cv(128, 64, (c, w, h) => { for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? "#f6f1e6" : "#b6413a"; c.fillRect((i * w) / 8, 0, w / 8, h); } c.fillStyle = "#d9a441"; c.fillRect(0, 0, w, 6); });
+  }
+  function metalCanvas() {
+    return cv(128, 64, (c, w, h) => { c.fillStyle = "#6e6e78"; c.fillRect(0, 0, w, h); c.fillStyle = "#b8794a"; for (let y = 6; y < h; y += 16) c.fillRect(0, y, w, 5); c.fillStyle = "#3a3a44"; for (let x = 4; x < w; x += 16) for (let y = 2; y < h; y += 8) { c.beginPath(); c.arc(x, y, 1.2, 0, 7); c.fill(); } });
+  }
+  function pageCanvas() {
+    return cv(128, 96, (c, w, h) => {
+      c.fillStyle = "#f4ead2"; c.fillRect(0, 0, w, h); c.fillStyle = "#c9a14a"; c.fillRect(w / 2 - 1, 0, 2, h);
+      c.strokeStyle = "#2a1a12"; c.lineWidth = 1.5; for (let y = 16; y < h - 8; y += 10) { c.beginPath(); c.moveTo(8, y); c.lineTo(w / 2 - 8, y); c.moveTo(w / 2 + 8, y); c.lineTo(w - 8, y); c.stroke(); }
+      c.strokeStyle = "#1d3a7a"; c.lineWidth = 3; c.strokeRect(2, 2, w - 4, h - 4);
+    });
   }
   function blobCanvas() {
     return cv(128, 64, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, 2, w / 2, h / 2, w / 2); g.addColorStop(0, "rgba(40,25,15,.45)"); g.addColorStop(1, "rgba(40,25,15,0)"); c.fillStyle = g; c.fillRect(0, 0, w, h); });
@@ -399,6 +328,10 @@
         mouth.scale.set(1, 1.5, 1);
         add(mouth, 2.4, 0.02, -3.62);
         add(rock(6, 1.8, [[0.4, 1, 0.3]], c[1], 3), -6.4, 0, -3.4);
+      } else if (kind === "snow") {
+        add(rock(16, 4, [[0.2, 0.7, 0.14], [0.45, 1, 0.12], [0.75, 0.8, 0.14]], c[0], 5), 0, 0, -5.4);
+        add(rock(8, 2, [[0.4, 1, 0.25]], c[1], 2), -6, 0, -4);
+        add(rock(7, 1.6, [[0.6, 1, 0.25]], c[2], 9), 6.4, 0, -3.8);
       } else if (kind === "rocks") {
         add(rock(8, 3.4, [[0.3, 1, 0.16], [0.6, 0.7, 0.14]], c[0], 1), -4.8, 0, -4.8);
         add(rock(9, 3.8, [[0.5, 1, 0.14], [0.8, 0.6, 0.12]], c[1], 2), 4.6, 0, -5.2);
@@ -424,6 +357,40 @@
       m.position.y = 0.03;
       m.userData.noEdges = 1;
       return m;
+    }
+
+    // رود پهن (جیحون) و دریاچه
+    function waterMat() { return keep(new THREE.MeshPhongMaterial({ color: 0x7fa8c4, specular: 0xffffff, shininess: 90 })); }
+    function waves(g, x0, x1, z0, z1, n) {
+      const lm = keep(new THREE.LineBasicMaterial({ color: 0xf4f8fb }));
+      const r = rnd(n);
+      for (let i = 0; i < n; i++) {
+        const cx = x0 + r() * (x1 - x0), cz = z0 + r() * (z1 - z0), pts = [];
+        for (let k = 0; k <= 8; k++) pts.push(new THREE.Vector3(cx + k * 0.14, 0.05, cz + Math.sin(k * 1.6) * 0.05));
+        const ln = new THREE.Line(keep(new THREE.BufferGeometry().setFromPoints(pts)), lm);
+        ln.userData.noSketch = 1;
+        g.add(ln);
+      }
+    }
+    function river() {
+      const g = new THREE.Group();
+      const s = new THREE.Shape();
+      s.moveTo(-10, -0.6);
+      for (let i = 0; i <= 20; i++) s.lineTo(-10 + i, -0.6 + Math.sin(i * 0.8) * 0.25);
+      for (let i = 20; i >= 0; i--) s.lineTo(-10 + i, 1.4 + Math.sin(i * 0.7 + 1) * 0.25);
+      const m = new THREE.Mesh(keep(new THREE.ShapeGeometry(s)), waterMat());
+      m.rotation.x = -Math.PI / 2; m.position.y = 0.03; m.userData.noEdges = 1;
+      g.add(m);
+      waves(g, -9, 8, -1.2, 0.4, 26);
+      return g;
+    }
+    function lake() {
+      const g = new THREE.Group();
+      const m = new THREE.Mesh(keep(new THREE.CircleGeometry(2.4, 40)), waterMat());
+      m.rotation.x = -Math.PI / 2; m.scale.y = 0.55; m.position.set(2.4, 0.03, -1.6); m.userData.noEdges = 1;
+      g.add(m);
+      waves(g, 0.8, 3.6, -2.4, -1, 8);
+      return g;
     }
 
     // ---------- درخت‌ها و بناها ----------
@@ -507,6 +474,57 @@
       } else if (kind === "pit") {
         const hole = new THREE.Mesh(keep(new THREE.CircleGeometry(1, 18)), keep(new THREE.MeshBasicMaterial({ color: 0x241812 }))); hole.rotation.x = -Math.PI / 2; hole.position.y = 0.03; hole.scale.y = 0.6; hole.userData.noEdges = 1; g.add(hole);
         for (let i = 0; i < 6; i++) { const s = new THREE.Mesh(keep(new THREE.ConeGeometry(0.04, 0.8, 5)), lam(0xb7bcc4)); s.position.set(-0.6 + i * 0.24, 0.3, (i % 2) * 0.2 - 0.1); g.add(s); }
+      } else if (kind === "bigstone") {
+        const st2 = new THREE.Mesh(keep(new THREE.DodecahedronGeometry(1.3, 0)), keep(new THREE.MeshLambertMaterial({ color: 0x8f8794, flatShading: true }))); st2.scale.set(1, 1.3, 0.9); st2.position.y = 1.3; g.add(st2);
+        g.add(blob(0, 0, 3.4));
+      } else if (kind === "ball") {
+        const b = new THREE.Mesh(keep(new THREE.SphereGeometry(0.14, 12, 8)), lam(0xf6f1e6)); b.position.y = 0.14; g.add(b);
+        g.add(blob(0, 0, 0.6));
+      } else if (kind === "tent") {
+        const c = new THREE.Mesh(keep(new THREE.CylinderGeometry(1.2, 1.2, 1.2, 16, 1, true)), keep(new THREE.MeshLambertMaterial({ map: tex(stripeCanvas(), [3, 1]), side: THREE.DoubleSide }))); c.position.y = 0.6; g.add(c);
+        const r = new THREE.Mesh(keep(new THREE.ConeGeometry(1.4, 1.2, 16)), lam(0xb6413a)); r.position.y = 1.8; g.add(r);
+        const f = new THREE.Mesh(keep(new THREE.ConeGeometry(0.06, 0.5, 6)), lam(0xd9a441)); f.position.y = 2.6; g.add(f);
+        const d = new THREE.Mesh(keep(new THREE.PlaneGeometry(0.7, 0.9)), keep(new THREE.MeshBasicMaterial({ color: 0x2a1a12 }))); d.position.set(0, 0.45, 1.21); d.userData.noEdges = 1; g.add(d);
+        g.add(blob(0, 0, 3.2));
+      } else if (kind === "bigcypress") {
+        const t = prop("cypress", 0, 0); t.scale.set(1.3, 1.25, 1.3); g.add(t);
+      } else if (kind === "bigtree") {
+        const t = prop("chenar", 0, 0); t.scale.setScalar(1.35); g.add(t);
+      } else if (kind === "talk") {
+        const r = rnd(5);
+        for (let i = 0; i < 9; i++) { const f = new THREE.Mesh(keep(new THREE.SphereGeometry(0.16, 10, 8)), keep(new THREE.MeshBasicMaterial({ color: i % 2 ? 0xf0cd6e : 0xf6f1e6 }))); f.position.set((r() - 0.5) * 2.6, 3.2 + r() * 1.6, 0.9 + r() * 0.3); f.userData.glowfruit = i; g.add(f); }
+      } else if (kind === "wall") {
+        const w = new THREE.Mesh(keep(new THREE.BoxGeometry(8, 3, 0.8)), [lam(0x6a5a4a), lam(0x6a5a4a), lam(0x8a7a66), lam(0x6a5a4a), keep(new THREE.MeshLambertMaterial({ map: tex(metalCanvas(), [4, 1]) })), lam(0x6a5a4a)]);
+        w.position.y = 1.5; g.add(w);
+        for (let i = 0; i < 15; i++) { const m = new THREE.Mesh(keep(new THREE.BoxGeometry(0.3, 0.3, 0.8)), lam(0x8a7a66)); m.position.set(-3.8 + i * 0.54, 3.15, 0); g.add(m); }
+        g.add(blob(0, 0.3, 9));
+      } else if (kind === "box") {
+        const bx = new THREE.Mesh(keep(new THREE.BoxGeometry(0.9, 0.45, 0.55)), lam(0x8a5a2e)); bx.position.y = 0.2; g.add(bx);
+        const tr = new THREE.Mesh(keep(new THREE.BoxGeometry(0.94, 0.08, 0.59)), lam(0xd9a441)); tr.position.y = 0.38; g.add(tr);
+        g.userData.anim = "bob";
+      } else if (kind === "mill") {
+        const h = new THREE.Mesh(keep(new THREE.BoxGeometry(2.2, 1.8, 1.8)), keep(new THREE.MeshLambertMaterial({ map: tex(brickCanvas(false), [2, 1]) }))); h.position.y = 0.9; g.add(h);
+        const roof = new THREE.Mesh(keep(new THREE.ConeGeometry(1.7, 0.9, 4)), lam(0x7a5a3a)); roof.position.y = 2.25; roof.rotation.y = Math.PI / 4; g.add(roof);
+        const wh = new THREE.Group(); wh.position.set(-0.55, 0.95, 1.0); wh.name = "wheel";
+        const rim = new THREE.Mesh(keep(new THREE.TorusGeometry(0.8, 0.07, 6, 20)), lam(0x6b4a2a)); wh.add(rim);
+        for (let i = 0; i < 6; i++) { const sp = new THREE.Mesh(keep(new THREE.BoxGeometry(0.08, 1.6, 0.12)), lam(0x6b4a2a)); sp.rotation.z = (i * Math.PI) / 6; wh.add(sp); }
+        g.add(wh);
+        const d = new THREE.Mesh(keep(new THREE.PlaneGeometry(0.6, 0.9)), keep(new THREE.MeshBasicMaterial({ color: 0x2a1a12 }))); d.position.set(0.6, 0.45, 0.91); d.userData.noEdges = 1; g.add(d);
+        g.add(blob(0, 0, 3.4));
+      } else if (kind === "arch") {
+        const s = new THREE.Shape();
+        s.moveTo(-5, 0); s.lineTo(-5, 4.6); s.lineTo(5, 4.6); s.lineTo(5, 0); s.lineTo(1.6, 0); s.lineTo(1.6, 2.2);
+        s.quadraticCurveTo(1.5, 4.1, 0, 4.2); s.quadraticCurveTo(-1.5, 4.1, -1.6, 2.2); s.lineTo(-1.6, 0); s.lineTo(-5, 0);
+        const geo = keep(new THREE.ExtrudeGeometry(s, { depth: 1.2, bevelEnabled: false }));
+        const a = new THREE.Mesh(geo, keep(new THREE.MeshLambertMaterial({ map: tex(brickCanvas(false), [0.25, 0.25]) })));
+        g.add(a);
+        const back = new THREE.Mesh(keep(new THREE.PlaneGeometry(3.2, 4.2)), lam(0x5a4636)); back.position.set(0, 2.1, 0.05); back.userData.noEdges = 1; g.add(back);
+        for (let i = 0; i < 4; i++) { const w = new THREE.Mesh(keep(new THREE.CircleGeometry(0.28, 12, 0, Math.PI)), keep(new THREE.MeshBasicMaterial({ color: 0x3a2a1e }))); w.scale.y = 1.8; w.position.set(i < 2 ? -4 + i * 1.2 : 2.8 + (i - 2) * 1.2, 2.8, 1.21); w.userData.noEdges = 1; g.add(w); }
+        g.add(blob(0, 0.6, 11));
+      } else if (kind === "book") {
+        const st2 = new THREE.Mesh(keep(new THREE.BoxGeometry(0.9, 0.7, 0.7)), lam(0x7a3a24)); st2.position.y = 0.35; g.add(st2);
+        const pg = new THREE.Mesh(keep(new THREE.BoxGeometry(1.2, 0.08, 0.8)), keep(new THREE.MeshLambertMaterial({ map: tex(pageCanvas()) }))); pg.position.y = 0.74; pg.rotation.x = 0.35; g.add(pg);
+        g.add(blob(0, 0, 1.6));
       } else if (kind === "banner") {
         const pole = new THREE.Mesh(keep(new THREE.CylinderGeometry(0.05, 0.05, 4.6, 6)), lam(0x7a5a3a)); pole.position.y = 2.3; g.add(pole);
         const tip = new THREE.Mesh(keep(new THREE.ConeGeometry(0.12, 0.4, 6)), lam(0xd9a441)); tip.position.y = 4.8; g.add(tip);
@@ -548,7 +566,9 @@
       parts[0].push(g);
     })();
     parts[1].push(hills(st.hills));
-    if (!(st.life || []).includes("spring") && st.hills !== "dunes") parts[1].push(stream());
+    if (st.water === "river") parts[1].push(river());
+    else if (st.water === "lake") parts[1].push(lake());
+    else if (!(st.life || []).includes("spring") && st.hills !== "dunes" && st.hills !== "snow") parts[1].push(stream());
     st.props.forEach(([k, x, z]) => parts[2].push(k === "rakhshProp" ? { fig: "rakhshStand", x, z, s: 0.8, f: 1 } : prop(k, x, z)));
     const addSpec = (i) => (spec) => parts[i].push(spec.prop ? prop(spec.prop, spec.x, spec.z) : spec);
     st.a.slice(1).forEach(addSpec(3));
@@ -624,12 +644,13 @@
       if (L.includes("cupglow") || L.includes("glow")) {
         const gl = new THREE.PointLight(0xffd27a, 1.4, 6); gl.position.set(L.includes("glow") ? 0.6 : -0.6, 1.6, 1.4); root.add(gl);
       }
-      if (L.includes("petals") || L.includes("fireflies") || L.includes("dust") || L.includes("sparks") || L.includes("stars")) {
-        const n = 26, geo = keep(new THREE.SphereGeometry(L.includes("dust") ? 0.06 : 0.045, 6, 4));
-        const col = L.includes("petals") ? 0xf3c6d0 : L.includes("dust") ? 0xe2cc9a : 0xffe08a;
+      if (L.includes("snow") || L.includes("petals") || L.includes("fireflies") || L.includes("dust") || L.includes("sparks") || L.includes("stars") || L.includes("notes")) {
+        const snow = L.includes("snow");
+        const n = snow ? 70 : 26, geo = keep(new THREE.SphereGeometry(L.includes("dust") ? 0.06 : snow ? 0.05 : 0.045, 6, 4));
+        const col = snow ? 0xffffff : L.includes("petals") ? 0xf3c6d0 : L.includes("dust") ? 0xe2cc9a : 0xffe08a;
         const pm = new THREE.InstancedMesh(geo, keep(new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.85 })), n);
         pm.userData.parts = Array.from({ length: n }, (_, i) => ({ x: (Math.random() - 0.5) * 16, y: Math.random() * 5 + 0.3, z: (Math.random() - 0.5) * 6, v: 0.2 + Math.random() * 0.3, p: Math.random() * 6 }));
-        pm.userData.kind = L.includes("petals") ? "fall" : L.includes("dust") ? "drift" : "rise";
+        pm.userData.kind = snow || L.includes("petals") ? "fall" : L.includes("dust") ? "drift" : "rise";
         root.add(pm); life.push(pm);
       }
       if (L.includes("ropes")) {
@@ -720,6 +741,11 @@
             m.instanceMatrix.needsUpdate = true;
           }
         });
+        if (alive) root.traverse((m) => {
+          if (m.name === "wheel") m.rotation.z = -s * 0.8;
+          else if (m.userData.glowfruit !== undefined) m.scale.setScalar(1 + Math.sin(s * 3 + m.userData.glowfruit) * 0.25);
+        });
+        root.children.forEach((o) => { if (o.userData.anim === "bob") o.position.y = Math.sin(s * 1.5) * 0.06; });
         if (alive && st.life.includes("lift")) root.traverse((m) => { if (m.name === "lid") m.position.set(0.9 + Math.sin(s * 0.6) * 0.05, 0.85 + 0.6, 0.2); });
       }
       renderer.render(scene, camera);

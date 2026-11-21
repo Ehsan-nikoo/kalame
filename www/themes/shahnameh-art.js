@@ -82,11 +82,11 @@
   function head(o) {
     const out = [];
     const hx = 3, hy = -82;
-    if (o.woman) out.push(F("M-5 -88C-10 -80 -9 -64 -6 -50C-4 -48 -2 -50 -2 -52C-3 -64 -2 -76 1 -84Z", HAIR)); // گیسوی بلند
+    if (o.woman) out.push(F("M-5 -88C-10 -80 -9 -64 -6 -50C-4 -48 -2 -50 -2 -52C-3 -64 -2 -76 1 -84Z", o.hairc || HAIR)); // گیسوی بلند
     out.push(F(E(hx, hy, 6.4, 7.4), SKIN));
     out.push(L(`M5 -84.2q2 -1.3 4 -.1`, INK, 0.75), L(`M4.6 -87q2.4 -1.6 5.2 -.3`, HAIR, 0.8), L(`M9.4 -83.4l.9 3.1l-1.2.4`, "#b57d62", 0.55), L(`M6.6 -77.6q1.3.6 2.6 -.1`, "#b6413a", 0.8));
     if (o.cheek !== false) out.push(F(E(6.5, -80, 1.6, 1.1), "#f1b9a4", { no: 1 }));
-    if (o.beard) out.push(F("M-1.5 -80C-2 -72 2 -67 6.5 -68.5C9 -69.5 10 -73 9.8 -76.5C8 -75.6 6.2 -76 5 -77.6C3.4 -76.4 1 -77.5 -1.5 -80Z", HAIR), K("M5 -78.4q2.2 -1.2 4.8.3", 1.1, HAIR));
+    if (o.beard) out.push(F("M-1.5 -80C-2 -72 2 -67 6.5 -68.5C9 -69.5 10 -73 9.8 -76.5C8 -75.6 6.2 -76 5 -77.6C3.4 -76.4 1 -77.5 -1.5 -80Z", o.beardc || HAIR), K("M5 -78.4q2.2 -1.2 4.8.3", 1.1, o.beardc || HAIR));
     // کلاه و تاج
     const hg = o.head;
     if (hg === "crown") out.push(F("M-4 -88L-5 -97L-1.5 -92.5L1.5 -100L4 -92.5L7.5 -100L9 -92L11.5 -96.5L10.5 -87.5C6 -89.5 0 -89.5 -4 -88Z", GOLD), F(E(3.5, -91.5, 1, 1.2), "#b6413a", { no: 1 }), F(E(7.6, -95, 0.8), "#2a9fb3", { no: 1 }));
@@ -99,7 +99,7 @@
     } else if (hg === "turban") out.push(F("M-6 -84C-8 -93 -1 -97 4 -96C10 -96 14 -91 11.5 -84.5C6 -87 -1 -87 -6 -84Z", "#f6f1e6"), K("M2 -96L2.6 -102", 1.6, "#b6413a"), L("M-5 -88C0 -86 6 -90 11 -88", "#c9bfa9", 0.6));
     else if (hg === "cap") out.push(F("M-5.5 -85C-5 -93 10 -94 11.5 -85C6 -87 -1 -87 -5.5 -85Z", o.capc || "#b6413a"), L("M-5 -86C0 -84 7 -84 11.5 -86", GOLD, 1));
     else if (hg === "veil") out.push(F("M-6.5 -83C-8 -95 12 -97 11.5 -84C10 -90 -2 -92 -4 -82C-7 -74 -9 -66 -11 -58L-12 -62C-10 -70 -8 -78 -6.5 -83Z", o.veilc || "#f6f1e6"), F("M-2 -90.5L0 -95L2.5 -91.5L5 -96L7.5 -91L9.6 -94.5L10 -89C6 -90.5 1 -91 -2 -90.5Z", GOLD));
-    else if (hg === "hair") out.push(F("M-5.6 -83C-6.5 -92 6 -95 11 -87C7 -88.5 3 -88 0 -86L-2 -80Z", HAIR));
+    else if (hg === "hair") out.push(F("M-5.6 -83C-6.5 -92 6 -95 11 -87C7 -88.5 3 -88 0 -86L-2 -80Z", o.hairc || HAIR));
     return out;
   }
 
@@ -167,6 +167,17 @@
       out.push(K("M9 -67C14 -72 18 -80 20 -86", 6.5, sleeve), hand(20.5, -87.5), F("M19 -94C22 -96 25 -94 24.5 -91C23 -89 20 -89 19 -91Z", "#8d8577"));
     } else if (w === "banner") {
       out.push(K("M9 -67C14 -64 17 -60 18 -57", 6.5, sleeve), hand(18.5, -56.5));
+    } else if (w === "mallet") {
+      out.push(K("M19 -57L40 -30", 1.4, "#7a5a3a"), K("M37 -29L44 -32", 2.4, "#7a5a3a"));
+      out.push(K("M9 -67C14 -63 17 -60 18 -57", 6.5, sleeve), hand(18.5, -56.5));
+    } else if (w === "lute") {
+      out.push(F("M8 -54C4 -44 10 -36 18 -38C26 -40 28 -48 24 -54C20 -58 12 -60 8 -54Z", "#a8641e"), K("M22 -55L36 -72", 2.2, "#7a4a1e"), F(E(16, -47, 2.2), "#3a2210", { no: 1 }), L("M14 -42L34 -71", "#efe3c6", 0.35));
+      out.push(K("M9 -67C14 -60 16 -54 16 -48", 6.5, sleeve), hand(16, -47));
+    } else if (w === "orange") {
+      out.push(K("M9 -67C15 -66 20 -64 23 -63", 6.5, sleeve), F(E(26.5, -64, 3.4), "#f0a030"), L("M26 -67.5l1 -2", "#3c6e47", 1), hand(23.5, -62.5));
+    } else if (w === "pen") {
+      out.push(F("M14 -50L34 -50L36 -38L12 -38Z", "#f6f1e6"), L("M24 -50L24 -38M16 -46h6M16 -43h6M27 -46h6M27 -43h6", "#5a4a3a", 0.5));
+      out.push(K("M9 -67C14 -60 18 -54 22 -50", 6.5, sleeve), K("M22 -49L27 -58", 0.9, "#7a5a3a"), hand(22, -49));
     } else if (w === "hand") {
       out.push(K("M9 -67C15 -68 20 -72 23 -77", 6.5, sleeve), hand(23.5, -78.5));
     } else {
@@ -194,10 +205,12 @@
     out.push(K("M14 -46C19 -55 25 -63 31 -69", 2.4, o.mane || dark));
     out.push(F(E(39.5, -61.5, 1.1, 0.8), INK, { no: 1 }), L("M45 -52.5l1.2 -.5", INK, 0.6));
     // افسار و زین و زین‌پوش
-    out.push(L("M36.5 -66L38 -58L45.5 -53M38 -58C34 -54 30 -50 24 -48", "#b6413a", 0.9, { nos: 1 }));
-    out.push(F("M-17 -48L9 -48L11 -27C2 -25 -8 -25 -15 -27Z", o.cloth || "pat:flower:#2a6fb3"), L("M-15 -29C-8 -27 2 -27 10.5 -29", GOLD, 1.2, { nos: 1 }));
-    out.push(F("M-12 -50C-9 -53 3 -53 6 -50L6 -47L-12 -47Z", "#7a3a24"));
-    out.push(L("M-21 -24L-31 -42M19 -26L25 -44", GOLD, 0.8, { nos: 1 }));
+    if (!o.wild) {
+      out.push(L("M36.5 -66L38 -58L45.5 -53M38 -58C34 -54 30 -50 24 -48", "#b6413a", 0.9, { nos: 1 }));
+      out.push(F("M-17 -48L9 -48L11 -27C2 -25 -8 -25 -15 -27Z", o.cloth || "pat:flower:#2a6fb3"), L("M-15 -29C-8 -27 2 -27 10.5 -29", GOLD, 1.2, { nos: 1 }));
+      out.push(F("M-12 -50C-9 -53 3 -53 6 -50L6 -47L-12 -47Z", "#7a3a24"));
+      out.push(L("M-21 -24L-31 -42M19 -26L25 -44", GOLD, 0.8, { nos: 1 }));
+    } else out.push(F("M-30 -28C-20 -24 4 -24 20 -27C10 -30 -18 -30 -30 -28Z", "#f3ead6", { no: 1 }));
     out.push(...farLeg(1), ...farLeg(3));
     if (o.spots) for (let i = 0; i < 9; i++) out.push(F(E(-30 + i * 6.5, -38 + (i % 3) * 4.5, 1.2, 0.9), "#f7e3c4", { no: 1, nos: 1 }));
     return out;
@@ -314,6 +327,78 @@
     return [K("M-20 0C-14 -6 -6 4 0 -4C6 -12 12 -4 14 -12C16 -18 22 -20 26 -18", 3.2, "pat:scales:" + c), F("M24 -21C28 -23 32 -21 32 -18C30 -16 26 -15 24 -16Z", c), F(E(28, -19.5, 0.6), "#f6b13a", { no: 1 }), L("M32 -18l3 1l1 -1M35 -17l1 1", "#b6413a", 0.5)];
   }
 
+
+  // ---------- پیل، شتر، گراز، گرگ، آهو، کرم ----------
+  function elephant(o = {}) {
+    const c = o.color || "#8d8a96", far = o.far || "#77737f", out = [];
+    out.push(F("M-30 -32L-30 0L-20 0L-20 -32Z", far), F("M18 -32L18 0L28 0L28 -32Z", far));
+    out.push(K("M-44 -54C-50 -48 -50 -40 -48 -32", 2.2, c));
+    out.push(F("M-44 -52C-46 -78 -20 -86 6 -84C26 -82 38 -72 38 -54C38 -38 26 -30 2 -30L-30 -30C-42 -32 -44 -42 -44 -52Z", c));
+    out.push(F("M26 -78C40 -86 56 -80 56 -64C56 -56 54 -50 52 -46C52 -32 56 -22 62 -16C65 -12 60 -9 57 -13C49 -23 45 -33 43 -43C37 -43 29 -47 27 -55Z", c));
+    out.push(F("M48 -47C50 -39 55 -35 61 -35C57 -39 53 -43 51 -49Z", "#f6f1e6"));
+    out.push(F("M30 -76C21 -76 17 -63 21 -53C25 -47 34 -49 36 -55C38 -63 36 -74 30 -76Z", far));
+    out.push(F(E(46, -67, 1.3), INK, { no: 1 }), L("M52 -40c2 2 3 5 3 9M54 -46c1 1 1.5 2 1.5 3", INK, 0.4, { nos: 1 }));
+    if (o.cloth !== false) out.push(F("M-30 -84L14 -84L16 -44C0 -40 -16 -40 -30 -44Z", o.cloth || "pat:flower:#b6413a"), L("M-30 -46C-16 -42 0 -42 16 -46", GOLD, 1.6, { nos: 1 }), F("M-32 -86L16 -86L16 -82L-32 -82Z", GOLD));
+    out.push(F("M-38 -36L-38 0L-27 0L-26 -36Z", c), F("M10 -36L10 0L21 0L22 -36Z", c));
+    out.push(L("M-37 -1.5c2 -1.5 4 -1.5 6 0M11 -1.5c2 -1.5 4 -1.5 6 0", "#f6f1e6", 0.8, { nos: 1 }));
+    return out;
+  }
+  function camel(o = {}) {
+    const c = o.color || "#c9a46a", far = "#a8864e", out = [];
+    out.push(K("M-22 -40C-23 -28 -24 -16 -22 -1", 4, far), K("M22 -40C23 -28 22 -16 22 -1", 4, far));
+    out.push(K("M-31 -48C-36 -44 -37 -38 -35 -32", 2, c));
+    out.push(F("M-31 -48C-33 -60 -22 -62 -15 -70C-9 -80 6 -79 10 -69C14 -61 22 -57 26 -51C28 -43 20 -39 10 -39L-20 -39C-28 -41 -31 -44 -31 -48Z", c));
+    out.push(F("M20 -53C30 -53 34 -63 34 -73C34 -81 38 -85 44 -85C50 -85 54 -81 55 -77C51 -75 47 -75 45 -73C43 -63 41 -53 30 -45Z", c));
+    out.push(F("M41 -84l1 -4l2 3.5z", c), F(E(46.5, -81, 0.9), INK, { no: 1 }));
+    if (o.cloth !== false) out.push(F("M-18 -66C-12 -74 2 -74 8 -66L10 -46L-20 -46Z", o.cloth || "pat:flower:#2a6fb3"), L("M-20 -48L10 -48", GOLD, 1.4, { nos: 1 }));
+    out.push(K("M-17 -40C-15 -28 -18 -16 -16 -1", 4.5, c), K("M16 -40C15 -28 16 -16 14 -1", 4.5, c));
+    out.push(F(E(-15.5, -1, 3, 1.4), INK, { no: 1 }), F(E(14.5, -1, 3, 1.4), INK, { no: 1 }));
+    return out;
+  }
+  function boar() {
+    const c = "#5a4a44", out = [];
+    out.push(K("M-20 -14L-22 0M14 -14L16 0", 4, "#43362f"));
+    out.push(F("M-28 -24C-30 -34 -16 -40 0 -38C14 -38 24 -32 28 -22C30 -14 22 -10 10 -10L-20 -10C-26 -12 -28 -18 -28 -24Z", "pat:dots:" + c));
+    for (let i = 0; i < 8; i++) out.push(L(`M${-20 + i * 5} -37l1 -4`, "#2a201c", 1, { nos: 1 }));
+    out.push(F("M22 -32C30 -34 38 -28 40 -20L42 -16C38 -14 30 -14 24 -16Z", c), F("M34 -20C36 -26 40 -28 42 -30C40 -24 38 -20 36 -18Z", "#f6f1e6"));
+    out.push(F(E(31, -27, 1), "#f6b13a", { ow: 0.4 }), F("M24 -34l2 -6l3 5z", c));
+    out.push(K("M-14 -12L-16 0M8 -12L10 0", 4.5, c), K("M-28 -26C-32 -24 -34 -20 -33 -16", 1.4, c));
+    return out;
+  }
+  function wolf() {
+    const c = "#8d8a86", out = [];
+    out.push(K("M-22 -14L-28 -1M14 -14L22 -2", 3.4, "#6f6c68"));
+    out.push(K("M-30 -24C-40 -24 -46 -18 -48 -10", 4, c));
+    out.push(F("M-30 -26C-32 -32 -20 -34 -6 -32L10 -32C20 -32 24 -26 22 -20C20 -14 12 -13 4 -14L-22 -14C-28 -16 -30 -20 -30 -26Z", "pat:feather:" + c));
+    out.push(F("M14 -34C18 -42 26 -44 32 -40L42 -34C42 -30 38 -29 34 -30L28 -28C22 -26 16 -28 14 -34Z", c), F("M18 -40l1 -7l4 5zM23 -41l3 -6l2 6z", c));
+    out.push(F(E(28, -36, 0.9), "#f6b13a", { ow: 0.4 }), F("M34 -30l2 2l2 -2", "#fff", { no: 1 }));
+    out.push(K("M-18 -14L-20 -1M10 -14L12 -1", 3.6, c));
+    return out;
+  }
+  function deer() {
+    const c = "#d39a5a", out = [];
+    out.push(K("M-14 -20L-20 -2M12 -20L18 -4", 2.4, "#a8743e"));
+    out.push(F("M-20 -28C-22 -34 -10 -36 2 -34L10 -34C18 -34 20 -28 18 -22C16 -18 8 -18 2 -18L-14 -18C-20 -20 -20 -24 -20 -28Z", c), F("M-14 -22C-6 -19 4 -19 12 -22C4 -24 -6 -24 -14 -22Z", "#f6ead2", { no: 1 }));
+    out.push(F("M12 -32C16 -40 20 -48 24 -52C28 -54 32 -52 33 -48L30 -46C28 -42 22 -36 18 -28Z", c), F(E(27.5, -50.5, 0.8), INK, { no: 1 }));
+    out.push(K("M25 -54C24 -60 22 -64 18 -66M25 -55C28 -60 32 -62 34 -66M21 -61l-3 -1M30 -60l3 -1", 1, "#7a4a1e"));
+    out.push(K("M-10 -20L-12 -1M8 -20L10 -1", 2.6, c));
+    return out;
+  }
+  function worm() {
+    const out = [];
+    for (let i = 0; i < 9; i++) {
+      const x = -48 + i * 11, y = -12 - Math.sin(i * 0.7) * 10 - (i > 6 ? (i - 6) * 9 : 0), r = 9 + Math.sin(i * 0.9) * 1.5;
+      out.push(F(E(x, y, r, r * 0.95), i % 2 ? "pat:spots:#7a9a4a" : "pat:spots:#8fae5a"));
+    }
+    out.push(F(E(52, -48, 10, 9), "#8fae5a"), F(E(56, -51, 2, 1.6), "#f6b13a"), F(E(56.5, -51, 0.8), INK, { no: 1 }), L("M56 -42q4 2 8 -1", INK, 0.8));
+    out.push(K("M48 -56C46 -62 48 -66 52 -66M54 -56C56 -62 60 -62 62 -60", 1.2, "#5a6a2a"));
+    return out;
+  }
+  // سوار بر پیل یا شتر
+  function riderOn(animal, ao, p, sx, sy) {
+    return [...animal(ao), G(person({ ...p, pose: "ride" }), sx, sy, 1)];
+  }
+
   // ---------- چیدمان‌ها (هر پیکره: لایه‌ها + کادر) ----------
   const ROSTAM = { robe: "#c58a3a", pat: "pat:tiger:#d39a3e", robe2: "#c58a3a", head: "rostam", beard: true, sash: "#2a9fb3" };
   const RAKHSH = { color: "#c66e5c", spots: true, cloth: "pat:flower:#1f5f8a" };
@@ -339,8 +424,8 @@
     kaveh: { box: [-28, -104, 36, 2], art: () => person({ robe: "#7a4a2a", robe2: "#7a4a2a", head: "cap", capc: "#5a2a1e", beard: true, pose: "stand", weapon: "banner", sash: "#b6413a" }) },
     hushang: { box: [-28, -104, 36, 2], art: () => person({ robe: "#3c6e47", pat: "pat:dots:#3c6e47", robe2: "#3c6e47", head: "crown", beard: true, pose: "stand", weapon: "stone" }) },
     tahmuras: { box: [-28, -112, 40, 2], art: () => person({ robe: "#2a6fb3", pat: "pat:dots:#2a6fb3", robe2: "#2a6fb3", head: "crown", beard: true, pose: "stand", weapon: "mace" }) },
-    zal: { box: [-28, -104, 36, 2], art: () => person({ robe: "#f6f1e6", pat: "pat:flower:#e9e4d6", robe2: "#e9e4d6", head: "hair", beard: false, pose: "stand", weapon: "hand", boot: "#b6413a" }) },
-    zalChild: { box: [-28, -104, 36, 2], art: () => person({ robe: "#f6f1e6", robe2: "#e9e4d6", head: "hair", beard: false, pose: "stand", weapon: "hand", boot: "#b6413a" }) },
+    zal: { box: [-28, -104, 36, 2], art: () => person({ robe: "#f6f1e6", pat: "pat:flower:#e9e4d6", robe2: "#e9e4d6", head: "hair", hairc: "#efeadf", beard: false, pose: "stand", weapon: "hand", boot: "#b6413a" }) },
+    zalChild: { box: [-28, -104, 36, 2], art: () => person({ robe: "#f6f1e6", robe2: "#e9e4d6", head: "hair", hairc: "#efeadf", beard: false, pose: "stand", weapon: "hand", boot: "#b6413a" }) },
     sage: { box: [-28, -104, 36, 2], art: () => person({ robe: "#f6f1e6", pat: "pat:dots:#e9e4d6", robe2: "#2a6fb3", head: "turban", beard: true, pose: "stand", weapon: "hand" }) },
     shaghad: { box: [-28, -104, 40, 2], art: () => person({ robe: "#5a4a6a", robe2: "#5a4a6a", head: "cap", beard: true, pose: "stand", weapon: "sword" }) },
     olad: { box: [-28, -104, 36, 2], art: () => person({ robe: "#8a6a3a", robe2: "#8a6a3a", head: "cap", capc: "#3c6e47", beard: true, pose: "stand", bound: true }) },
@@ -394,5 +479,5 @@
     return cv;
   }
 
-  window.SHN_ART = { FIGS, canvasOf, draw, E, INK, PAPER, GOLD, GOLD2 };
+  window.SHN_ART = { FIGS, canvasOf, draw, E, INK, PAPER, GOLD, GOLD2, G, person, horse, rider, riderOn, simorgh, div, dragon, lion, ram, eagle, snake, throne, elephant, camel, boar, wolf, deer, worm, ROSTAM, RAKHSH };
 })();

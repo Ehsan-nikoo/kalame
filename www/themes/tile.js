@@ -1,6 +1,6 @@
 // ظاهر «کاشی‌کاری»: دیوار کاشی هفت‌رنگ لاجوردی و فیروزه‌ای، با تابلوی کاشی معرق هشت‌ضلعی به جای دایره‌ی حروف.
 // هر کلمه‌ی درست، خانه‌های خاکی جدول را کاشی لعاب‌دار می‌کند. هر ۶ مرحله یک داستان شاهنامه است
-// (۲۸ داستان: زال و سیمرغ، هفت‌خان رستم، رستم و سهراب، ...) که به سبک نگارگری ایرانی، سه‌بعدی ساخته می‌شود.
+// (۱۰۷ داستان به ترتیب شاهنامه، از کیومرث تا یزدگرد) که به سبک نگارگری ایرانی، سه‌بعدی ساخته می‌شود.
 (function () {
   "use strict";
 
@@ -106,9 +106,10 @@
         box.innerHTML = `<div class="shn-frame home-tile"><div class="shn-view"></div><div class="shn-title"></div></div><p class="scene-caption"></p>`;
         box.querySelector(".shn-title").textContent = st.name;
         homeView = SHN.show(box.querySelector(".shn-view"), { level: d.done, count, fresh: -1 });
+        const no = `داستان ${faDigits(SHN.storyNo(d.done) + 1)} از ${faDigits(SHN.STORIES.length)}`;
         box.querySelector(".scene-caption").textContent = count
-          ? `${faDigits(count)} از ${faDigits(PARTS)} بخش نگاره کامل شده`
-          : "نگاره‌ی تازه از شاهنامه";
+          ? `${no} · بخش ${faDigits(count)} از ${faDigits(PARTS)} کامل شده`
+          : `${no} · نگاره‌ی تازه`;
       },
       found(d) {
         glint(d.cells);
