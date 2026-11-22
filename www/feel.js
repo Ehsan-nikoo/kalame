@@ -258,8 +258,19 @@ function startTutorial() {
   showPreview("حرف‌ها رو به هم وصل کن", "show note", 4000);
 
   let k = 0;
+  let shownAt = Date.now();
   const move = () => {
     if (!tutorialHand) return;
+    // گوشی در حالت استراحت: دست (بعد از نیم دقیقه نشان دادن) می‌ایستد و با اولین لمس ادامه می‌دهد
+    if (document.documentElement.dataset.rest && Date.now() - shownAt > 30000) {
+      hand.classList.add("lift");
+      k = 0;
+      tutorialWake = move;
+      window.addEventListener("kalame-wake", move, { once: true });
+      return;
+    }
+    if (tutorialWake) shownAt = Date.now();
+    tutorialWake = null;
     if (k === steps.length) {
       hand.classList.add("lift");
       k = 0;
@@ -269,17 +280,20 @@ function startTutorial() {
     const el = letterEls[steps[k]];
     hand.classList.toggle("lift", false);
     hand.classList.toggle("jump", k === 0);
-    // حرف‌ها با translate(-50%,-50%) جا گرفته‌اند، پس offsetLeft/Top همان مرکزشان است
-    hand.style.left = el.offsetLeft + "px";
-    hand.style.top = el.offsetTop + "px";
+    // حرف‌ها با translate(-50%,-50%) جا گرفته‌اند، پس offsetLeft/Top همان مرکزشان است؛
+    // دست با translate جابه‌جا می‌شود (کار کارت گرافیک، نه چیدن دوباره‌ی صفحه در هر فریم)
+    hand.style.translate = `${el.offsetLeft}px ${el.offsetTop}px`;
     k++;
     tutorialTimer = setTimeout(move, k === 1 ? 700 : 650);
   };
   move();
 }
 
+let tutorialWake = null;
 function stopTutorial() {
   clearTimeout(tutorialTimer);
+  if (tutorialWake) window.removeEventListener("kalame-wake", tutorialWake);
+  tutorialWake = null;
   if (tutorialHand) tutorialHand.remove();
   tutorialHand = null;
 }

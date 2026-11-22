@@ -1103,7 +1103,10 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
   color: var(--ink);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
-  transition: left 0.55s ease-in-out, top 0.55s ease-in-out, opacity 0.3s, scale 0.3s;
+  left: 0;
+  top: 0;
+  will-change: translate;
+  transition: translate 0.55s ease-in-out, opacity 0.3s, scale 0.3s;
 }
 .tutorial-hand.jump { transition: opacity 0.3s, scale 0.3s; }
 .tutorial-hand.lift { opacity: 0; scale: 1.3; }

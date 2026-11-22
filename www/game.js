@@ -32,8 +32,8 @@ const THEMES = [
   { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی", product: "theme_stars", price: 99000 },
   { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود", product: "theme_carpet", price: 79000 },
   { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله", product: "theme_caravan", price: 59000 },
-  { id: "tile", name: "شاهنامه", desc: "۱۰۷ داستان شاهنامه به ترتیب، از کیومرث تا فردوسی؛ با هر مرحله تکه‌ای از نگاره‌ی سه‌بعدی رنگ می‌گیرد", product: "theme_tile", price: 69000 },
-  { id: "persepolis", name: "تخت جمشید", desc: "۴۰ بنای ایران باستان، از تخت جمشید و پاسارگاد تا طاق کسری و طاق بستان؛ با هر مرحله تکه‌ای از بنا سه‌بعدی ساخته می‌شود", product: "theme_persepolis", price: 69000 },
+  { id: "tile", name: "شاهنامه", desc: "۱۰۷ داستان شاهنامه به ترتیب، از کیومرث تا فردوسی؛ با هر مرحله تکه‌ای از نگاره‌ی سه‌بعدی رنگ می‌گیرد", product: "theme_tile", price: 99000 },
+  { id: "persepolis", name: "تخت جمشید", desc: "۴۰ بنای ایران باستان، از تخت جمشید و پاسارگاد تا طاق کسری و طاق بستان؛ با هر مرحله تکه‌ای از بنا سه‌بعدی ساخته می‌شود", product: "theme_persepolis", price: 99000 },
   { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
@@ -174,6 +174,21 @@ function applyTheme(id) {
   document.documentElement.dataset.theme = id;
   const def = themeDefs[id];
   if (def && def.setup) themeTeardown = def.setup() || null;
+  syncBackdrop();
+}
+
+// اندروید: رنگ پشت نوار پایین گوشی (روی WebViewهای قدیمی‌تر دیده می‌شود) هم‌رنگ پس‌زمینه‌ی ظاهر؛
+// تا صفحه‌ی بارگذاری هست، همان بنفش خودش می‌ماند (MainActivity)
+function syncBackdrop() {
+  const plugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Backdrop;
+  if (!plugin || document.getElementById("loading")) return;
+  const pick = (el) => getComputedStyle(el).backgroundColor;
+  let c = pick(document.body);
+  if (/rgba\(.*,\s*0\)|transparent/.test(c)) c = pick(document.documentElement);
+  const m = c.match(/\d+(\.\d+)?/g);
+  if (!m || m.length < 3 || (m.length > 3 && +m[3] === 0)) return;
+  const hex = "#" + m.slice(0, 3).map((v) => Math.round(+v).toString(16).padStart(2, "0")).join("");
+  plugin.set({ color: hex }).catch(() => {});
 }
 
 // فایل‌های دیگر (مثل extras.js) می‌توانند به رویدادهای بازی گوش کنند
@@ -1727,7 +1742,10 @@ function hideLoading() {
     }, 380);
     setTimeout(() => {
       el.classList.add("done");
-      setTimeout(() => el.remove(), 500);
+      setTimeout(() => {
+        el.remove();
+        syncBackdrop();
+      }, 500);
     }, 1000);
   }, wait);
 }
