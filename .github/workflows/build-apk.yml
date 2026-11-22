@@ -103,6 +103,6 @@ jobs:
               --notes "نسخه‌ی تست از شاخه‌ی ${GITHUB_REF_NAME}: همه‌ی ظاهرها باز هستند. با نام بسته‌ی com.kalameh.game.test کنار نسخه‌ی اصلی نصب می‌شود. برای انتشار در فروشگاه نیست."
             exit 0
           fi
-          gh release create "v$VERSION" "kalame-$VERSION-bazaar.apk" "kalame-$VERSION-myket.apk" \
+          gh release create "v$VERSION" "kalame-$VERSION-bazaar.apk" "kalame-$VERSION-myket.apk" --target "$GITHUB_SHA" \
             --title "کلمه $VERSION" \
             --notes "kalame-$VERSION-bazaar.apk برای انتشار در کافه‌بازار و kalame-$VERSION-myket.apk برای مایکت است. برای آزمایش روی گوشی هم هر کدام را می‌شود نصب کرد."

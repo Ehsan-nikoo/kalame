@@ -150,7 +150,7 @@ function defineTheme(id, def) {
 
 // فقط برای تست با start-game: همه‌ی ظاهرهای پولی در مرورگر باز هستند.
 // قبل از ساختن APK این را false کنید. (در خود اپ اندروید هیچ‌وقت اثری ندارد.)
-const TEST_ALL_THEMES = true;
+const TEST_ALL_THEMES = false;
 // نسخه‌ی تست APK (build-apk.yml با گزینه‌ی test) این را true می‌کند تا ظاهرها روی گوشی هم باز باشند.
 const TEST_APK = false;
 const IN_NATIVE_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
