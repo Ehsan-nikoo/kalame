@@ -85,20 +85,18 @@ function kwUseTheme(id) {
   applyTheme(id);
   if (screenNow) route();
 }
-// بعد از انتخاب بخش، بازیکن مستقیم به بازی می‌رود (بزرگسال: مرحله‌ی فعلی؛ کودک: چرخ کلمه با همان سختی قبلی)؛
-// منو و فهرست بازی‌های کودک با دکمه‌ی منو/خانه در دسترس‌اند
+// بعد از انتخاب بخش، بازیکن به منوی اصلی همان بخش می‌رود (بزرگسال: منوی بازی؛ کودک: فهرست بازی‌های کودک)
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
   kwUseTheme(adultThemeOf(save.theme));
-  if (!(screenNow === "play" && puzzle && !isKidsPlay())) continueGame();
+  if (screenNow !== "home") goHome();
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.remove("hidden");
   kwUseTheme(kwKidsTheme());
-  kwRound = { game: "wheel", n: 0 };
-  kwWheel();
+  kwMenu();
 }
 $("kgKid").onclick = chooseKid;
 $("kgAdult").onclick = chooseAdult;
