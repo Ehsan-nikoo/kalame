@@ -412,7 +412,7 @@ function cwRender() {
     if (!lnSame(input.value, cwSel.word)) {
       lnBad();
       input.classList.remove("shake");
-      void input.offsetWidth;
+      void getComputedStyle(input).animationName;
       input.classList.add("shake");
       return;
     }

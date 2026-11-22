@@ -47,8 +47,8 @@
   // تزئین هر کهکشان روی نقشه (c: رنگ‌های آسمان)
   const DECO = {
     comet: (c) => `<g transform="translate(160 18) rotate(20)"><path d="M0 0l-30 -4l30 4l-28 4z" fill="${c[2]}" opacity=".5"/><circle r="3.4" fill="#fff"/></g>`,
-    stars: () => [[30, 14], [92, 20], [150, 86], [188, 50], [118, 88]].map(([x, y], i) =>
-      `<path class="space-tw" style="animation-delay:${-i * 0.5}s" transform="translate(${x} ${y})" d="M0 -4q.8 3.2 4 4q-3.2 .8 -4 4q-.8 -3.2 -4 -4q3.2 -.8 4 -4z" fill="#fff6c2"/>`).join(""),
+    stars: () => [[30, 14], [92, 20], [150, 86], [188, 50], [118, 88]].map(([x, y]) =>
+      `<path transform="translate(${x} ${y})" d="M0 -4q.8 3.2 4 4q-3.2 .8 -4 4q-.8 -3.2 -4 -4q3.2 -.8 4 -4z" fill="#fff6c2"/>`).join(""),
     asteroids: () => `<g fill="#9a8a7a">${[[86, 10, 3], [100, 14, 2], [112, 9, 2.6], [126, 15, 1.8], [140, 10, 2.4], [70, 14, 1.6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")}</g>`,
     rainbow: () => `<g fill="none" stroke-width="2.4" opacity=".8">${["#ff5f6d", "#ffb23a", "#ffd34a", "#58d97a", "#3fc4ff", "#9a7cff"].map((c, i) =>
       `<path d="M${120 + i * 3} 100a${40 - i * 3} ${40 - i * 3} 0 0 1 ${80 - i * 6} 0" stroke="${c}"/>`).join("")}</g>`,
@@ -147,7 +147,7 @@
       ? `<g transform="translate(${rx + 13} ${ry - 15})"><g class="space-rocket${from ? " fly" : ""}"${fly}><g transform="rotate(30) scale(.62)">${ROCKET}</g></g></g>`
       : `<g transform="translate(${SLOTS[0][0] - 4} ${SLOTS[0][1] + 8})"><g class="space-rocket"><g transform="rotate(30) scale(.62)">${ROCKET}</g></g></g>`;
     const stars = [[12, 14], [40, 22], [88, 12], [118, 26], [160, 12], [190, 30], [70, 88], [130, 90], [186, 88], [8, 44]]
-      .map(([x, y], i) => `<circle class="space-tw" style="animation-delay:${-i * 0.35}s" cx="${x}" cy="${y}" r="${i % 3 ? 0.9 : 1.4}" fill="#fff"/>`).join("");
+      .map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${i % 3 ? 0.9 : 1.4}" fill="#fff"/>`).join("");
     return `<svg class="space-map" viewBox="0 0 200 100" aria-hidden="true">
       <defs>
         <clipPath id="${k}c"><rect width="200" height="100" rx="14"/></clipPath>
@@ -170,9 +170,10 @@
     for (let i = 0; i < 46; i++) {
       const x = (i * 97 + 13) % 400, y = (i * 61 + 7) % 660;
       const big = i % 7 === 0;
+      // ستاره‌ها ثابت‌اند (چشمک زدن ده‌ها ستاره‌ی داخل svg هر فریم کل صفحه را دوباره می‌کشید)
       stars.push(big
-        ? `<path class="space-tw" style="animation-delay:${-(i % 5) * 0.6}s" transform="translate(${x} ${y})" d="M0 -6q1 5 6 6q-5 1 -6 6q-1 -5 -6 -6q5 -1 6 -6z" fill="#fff6c2"/>`
-        : `<circle class="space-tw" style="animation-delay:${-(i % 6) * 0.5}s" cx="${x}" cy="${y}" r="${1 + (i % 3) * 0.6}" fill="#fff"/>`);
+        ? `<path transform="translate(${x} ${y})" d="M0 -6q1 5 6 6q-5 1 -6 6q-1 -5 -6 -6q5 -1 6 -6z" fill="#fff6c2"/>`
+        : `<circle cx="${x}" cy="${y}" r="${1 + (i % 3) * 0.6}" fill="#fff"/>`);
     }
     const crater = (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.42}" fill="#a796e8"/><ellipse cx="${x}" cy="${y - r * 0.08}" rx="${r * 0.8}" ry="${r * 0.3}" fill="#9584dc"/>`;
     return `<svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
@@ -187,7 +188,6 @@
       <ellipse cx="300" cy="380" rx="220" ry="140" fill="url(#${id}-neb)"/>
       <ellipse cx="60" cy="200" rx="200" ry="120" fill="url(#${id}-neb2)"/>
       ${stars.join("")}
-      <g class="space-shoot"><path d="M0 0l-60 22" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".8"/><circle r="3.4" fill="#fff"/></g>
       <g transform="translate(330 132)">
         <path d="M-64 10a64 16 -14 0 1 128 -24" stroke="#c9a8ff" stroke-width="9" fill="none" transform="rotate(-14)"/>
         <circle r="40" fill="#ffab6b"/><g clip-path="url(#${id}-rp)" fill="#ff9450"><rect x="-40" y="-22" width="80" height="7"/><rect x="-40" y="18" width="80" height="6"/></g>
@@ -198,16 +198,19 @@
         <path d="M64 -26a64 16 -14 0 1 -128 24" stroke="#d9c4ff" stroke-width="9" fill="none" transform="rotate(-14)"/>
       </g>
       <g transform="translate(58 300)"><circle r="20" fill="#7cdc8a"/><circle cx="-6" cy="-7" r="3" fill="#5fc070"/><circle cx="8" cy="5" r="4" fill="#5fc070"/><ellipse cx="-7" cy="-9" rx="5" ry="3" fill="#fff" opacity=".35" transform="rotate(-35 -7 -9)"/></g>
-      <g class="space-ufo" transform="translate(300 520)">
-        <ellipse cx="0" cy="-6" rx="11" ry="10" fill="#9fe6ff" opacity=".85"/><circle cx="-1" cy="-7" r="4.2" fill="#7cdc8a"/><circle cx="-1" cy="-8" r="1.3" fill="#1d1a33"/>
-        <ellipse rx="26" ry="8" fill="#c9c3e8"/><ellipse cy="-2" rx="20" ry="4" fill="#e8e4ff"/>
-        <g fill="#ffd34a"><circle cx="-16" cy="2" r="2"/><circle cx="0" cy="4" r="2"/><circle cx="16" cy="2" r="2"/></g>
-      </g>
       <path d="M0 690Q80 650 170 672Q260 640 400 668V800H0Z" fill="#c9b8ff"/>
       <path d="M0 740Q120 712 230 730Q320 744 400 722V800H0Z" fill="#b6a3f5"/>
       ${crater(70, 700, 22)}${crater(250, 690, 14)}${crater(340, 742, 26)}${crater(150, 766, 18)}${crater(30, 780, 10)}
       <g transform="translate(206 676)"><path d="M0 0v-46" stroke="#e8e4ff" stroke-width="3"/><path d="M1.5 -46h26l-6 8l6 8h-26z" fill="#ff5f6d"/><circle cx="12" cy="-38" r="3.6" fill="#ffd34a"/></g>
-    </svg>`;
+    </svg>
+    <div class="space-fx">
+      <div class="space-shoot"><svg viewBox="-64 -6 70 32"><path d="M0 0l-60 22" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".8"/><circle r="3.4" fill="#fff"/></svg></div>
+      <div class="space-ufo"><svg viewBox="-30 -18 60 30">
+        <ellipse cx="0" cy="-6" rx="11" ry="10" fill="#9fe6ff" opacity=".85"/><circle cx="-1" cy="-7" r="4.2" fill="#7cdc8a"/><circle cx="-1" cy="-8" r="1.3" fill="#1d1a33"/>
+        <ellipse rx="26" ry="8" fill="#c9c3e8"/><ellipse cy="-2" rx="20" ry="4" fill="#e8e4ff"/>
+        <g fill="#ffd34a"><circle cx="-16" cy="2" r="2"/><circle cx="0" cy="4" r="2"/><circle cx="16" cy="2" r="2"/></g>
+      </svg></div>
+    </div>`;
   }
 
   // کهکشانی که الان گشته می‌شود (از روی همه‌ی مرحله‌های چرخ کلمه‌ی بچه‌ها)
@@ -228,7 +231,7 @@
     const el = document.querySelector(".space-pal");
     if (!el) return;
     el.classList.remove("hop", "no", "spin", "hi");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add(move);
   }
 
@@ -252,7 +255,7 @@
   function bump(cls) {
     const wheel = document.getElementById("wheel");
     wheel.classList.remove("space-wobble", "space-twirl");
-    void wheel.offsetWidth;
+    void getComputedStyle(wheel).animationName;
     wheel.classList.add(cls);
   }
 

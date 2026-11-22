@@ -1088,11 +1088,10 @@ button { font-family: inherit; cursor: pointer; }
 [data-text="xlarge"] :is(.home-menu, .home-sub, .sheet-card, .card, .preview, .ach-list, .theme-list, .settings-list) { zoom: 1.25; }
 
 /* ---------- یادآوری راهنما: دکمه آرام چشمک می‌زند ---------- */
-.tool.nudge { animation: nudge 1.6s ease-in-out infinite; }
-@keyframes nudge {
-  0%, 100% { transform: none; box-shadow: 0 4px 0 var(--lip), 0 0 0 0 rgba(226, 176, 74, 0); }
-  50% { transform: scale(1.08); box-shadow: 0 4px 0 var(--lip), 0 0 0 6px rgba(226, 176, 74, 0.45); }
-}
+/* فقط بزرگ و کوچک می‌شود (کار کارت گرافیک) و چند بار؛ این چشمک وقتی می‌آید که بازیکن مدتی دست نزده،
+   پس حالت استراحت آن را نمی‌گیرد و حلقه‌ی سایه‌دار بی‌پایان هر فریم کل صفحه را دوباره می‌کشید */
+.tool.nudge { box-shadow: 0 4px 0 var(--lip), 0 0 0 4px rgba(226, 176, 74, 0.45); animation: nudge 1.6s ease-in-out 6; }
+@keyframes nudge { 50% { transform: scale(1.08); } }
 
 /* ---------- آموزش مرحله‌ی اول: انگشت روی دایره ---------- */
 .tutorial-hand {
@@ -2518,6 +2517,9 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .kg-kid { background: linear-gradient(160deg, #ffe08a, #ffb38a); border-color: rgba(255, 255, 255, 0.7); color: #4a2a10; }
 
 /* ===== بخش کودک ===== */
+/* دنیای کودک کل صفحه را می‌پوشاند؛ صفحه‌ها و پس‌زمینه‌ی متحرک زیرش بیهوده کشیده نشوند
+   (visibility و نه display: صفحه‌ی بازی زیر آن اندازه‌گیری و آماده می‌شود) */
+body:has(> #kidsWorld:not(.hidden)) > :is(.screen, .sea-bg, .sea-pal, .space-bg, .space-pal, .toon-bg, .toon-pal) { visibility: hidden; }
 .kw {
   position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
   display: flex; flex-direction: column; color: #3b2a1a; font-family: "Vazirmatn", sans-serif;

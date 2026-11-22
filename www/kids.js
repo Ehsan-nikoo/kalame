@@ -307,7 +307,7 @@ function kwTap(key) {
     if (typeof sound === "function") sound("repeat");
     if (typeof haptic === "function") haptic("light");
     key.classList.remove("no");
-    void key.offsetWidth;
+    void getComputedStyle(key).animationName;
     key.classList.add("no");
     return;
   }
@@ -370,7 +370,7 @@ function kwOops(btn) {
   if (typeof sound === "function") sound("repeat");
   if (typeof haptic === "function") haptic("light");
   btn.classList.remove("no");
-  void btn.offsetWidth;
+  void getComputedStyle(btn).animationName;
   btn.classList.add("no");
 }
 

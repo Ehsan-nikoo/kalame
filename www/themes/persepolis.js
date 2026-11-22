@@ -115,7 +115,7 @@
     if (!cells || (typeof calm === "function" && calm())) return;
     cells.forEach((cell, i) => {
       cell.classList.remove("prs-glint");
-      void cell.offsetWidth;
+      void getComputedStyle(cell).animationName;
       cell.style.setProperty("--g", i * 70 + 380 + "ms");
       cell.classList.add("prs-glint");
     });
@@ -151,7 +151,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("prs-shake");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("prs-shake");
       },
       shuffle() { turn(30, 600); },

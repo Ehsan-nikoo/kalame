@@ -203,7 +203,7 @@
     const el = document.querySelector(".toon-pal");
     if (!el) return;
     el.classList.remove("hop", "no", "spin", "hi");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add(move);
   }
 
@@ -226,7 +226,7 @@
   function bump(cls) {
     const wheel = document.getElementById("wheel");
     wheel.classList.remove("toon-wobble", "toon-squash");
-    void wheel.offsetWidth;
+    void getComputedStyle(wheel).animationName;
     wheel.classList.add(cls);
   }
 

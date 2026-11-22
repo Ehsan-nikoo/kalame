@@ -352,19 +352,28 @@ setupSettings();
 
 const REST_MS = 8000;
 let restT = 0;
-let restPaused = [];
+let restHeld = [];
 function restNow() {
   const root = document.documentElement;
   if (root.dataset.rest) return;
   root.dataset.rest = "1";
   // فقط حرکت‌های بی‌پایان؛ حرکت‌های یک‌باره (باز شدن کارت، سکه، نوار زمان) دست نمی‌خورند
-  restPaused = document.getAnimations().filter((a) => {
+  restHeld = document.getAnimations().filter((a) => {
     if (a.playState !== "running" || !a.effect || !a.effect.getComputedTiming) return false;
     if (a.effect.getComputedTiming().iterations !== Infinity) return false;
     const t = a.effect.target;
     return !(t && t.closest && t.closest("#loading, .loading, .ef-letter"));
   });
-  restPaused.forEach((a) => a.pause());
+  // یکباره وسط راه یخ نمی‌زنند (ماهی وسط آب، بشقاب پرنده کج): دور فعلی‌شان تمام می‌شود و همان‌جا آرام می‌مانند
+  restHeld.forEach((a) => {
+    try {
+      const t = a.effect.getComputedTiming();
+      a.restFill = a.effect.getTiming().fill;
+      a.effect.updateTiming({ iterations: (t.currentIteration || 0) + 1, fill: "forwards" });
+    } catch (e) {
+      a.pause();
+    }
+  });
 }
 function restWake() {
   clearTimeout(restT);
@@ -372,8 +381,16 @@ function restWake() {
   const root = document.documentElement;
   if (!root.dataset.rest) return;
   delete root.dataset.rest;
-  restPaused.forEach((a) => { try { a.play(); } catch (e) { /* انیمیشن برداشته شده */ } });
-  restPaused = [];
+  // از همان‌جا که ایستاده‌اند ادامه می‌دهند، بی‌پرش
+  restHeld.forEach((a) => {
+    try {
+      const at = a.currentTime; // انیمیشنی که تمام شده روی همین لحظه نگه داشته شده
+      a.effect.updateTiming({ iterations: Infinity, fill: a.restFill || "auto" });
+      a.currentTime = at;
+      if (a.playState !== "running") a.play();
+    } catch (e) { /* انیمیشن برداشته شده */ }
+  });
+  restHeld = [];
   window.dispatchEvent(new Event("kalame-wake")); // حلقه‌های کشیدن (ستاره‌ها، نمای سه‌بعدی) دوباره راه می‌افتند
 }
 ["pointerdown", "pointermove", "touchstart", "keydown", "wheel"].forEach((e) => window.addEventListener(e, restWake, { passive: true, capture: true }));

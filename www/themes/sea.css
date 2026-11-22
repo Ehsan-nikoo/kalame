@@ -36,16 +36,23 @@
 .sea-kw { z-index: -1; }
 .sea-bg svg, .sea-kw svg { width: 100%; height: 100%; display: block; }
 [data-theme="sea"] .kw { background: #46bdf0; }
-.sea-rays { animation: sea-sway 9s ease-in-out infinite alternate; transform-origin: 200px 0; }
+/* sea-fx هم‌اندازه‌ی viewBox ‏۴۰۰×۸۰۰ با preserveAspectRatio="xMidYMax slice" است؛ جای هر تکه به درصد همان مختصات */
+.sea-bg, .sea-kw { container-type: size; }
+.sea-fx { position: absolute; left: 50%; bottom: 0; width: max(100vw, 50vh); width: max(100cqw, 50cqh); aspect-ratio: 1 / 2; transform: translateX(-50%); }
+.sea-fx > div { position: absolute; will-change: transform; }
+.sea-fx svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sea-fx .sea-floor { position: absolute; left: 0; top: 85%; height: 15%; }
+.sea-rays { left: -10%; top: 0; width: 120%; height: 80%; transform-origin: 50% 0; animation: sea-sway 9s ease-in-out infinite alternate; }
 .sea-weed { transform-box: fill-box; transform-origin: 50% 100%; animation: sea-weed 3.4s ease-in-out infinite alternate; }
-.sea-school { animation: sea-school 26s linear infinite; }
-.sea-school.s2 { animation-duration: 34s; animation-delay: -14s; animation-direction: reverse; }
+.sea-school { left: -4%; top: -2%; width: 15%; height: 4.25%; opacity: 0.55; animation: sea-school 26s linear infinite; }
+.sea-school.s2 { opacity: 0.4; animation-duration: 34s; animation-delay: -14s; animation-direction: reverse; }
 @keyframes sea-sway { from { transform: skewX(-4deg); } to { transform: skewX(4deg); } }
 @keyframes sea-weed { from { transform: skewX(-7deg); } to { transform: skewX(7deg); } }
+/* همان مسیر قبلی (‎-80,300 → 200,270 → 480,310) به درصد اندازه‌ی خود دسته‌ی ماهی (۶۰×۳۴) */
 @keyframes sea-school {
-  from { transform: translate(-80px, 300px); }
-  50% { transform: translate(200px, 270px); }
-  to { transform: translate(480px, 310px); }
+  from { transform: translate(-133.33%, 882.35%); }
+  50% { transform: translate(333.33%, 794.12%); }
+  to { transform: translate(800%, 911.76%); }
 }
 .sea-bubble {
   position: absolute;

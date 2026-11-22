@@ -274,33 +274,41 @@
   function sceneSVG(id) {
     const fish = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-9 0l-6 -5v10z" fill="${c}"/><ellipse rx="9" ry="5" fill="${c}"/><circle cx="4.4" cy="-1" r="1.2" fill="#1d2433"/></g>`;
     const school = [[0, 0, 1], [18, -10, 0.8], [20, 12, 0.85], [36, 2, 0.7]].map(([x, y, s]) => fish(x, y, s, "#ffffff")).join("");
-    const weed = (x, h, c, d) => `<path class="sea-weed" style="animation-delay:${d}s" d="M${x} 800q-14 -${h / 4} 0 -${h / 2}q14 -${h / 4} 0 -${h / 2}" stroke="${c}" stroke-width="11" fill="none" stroke-linecap="round"/>`;
+    // هر علف یک تکه‌ی جدا با svg کوچک خودش است؛ جا و اندازه به درصد صفحه‌ی ۴۰۰×۸۰۰
+    const pc = (v, of) => +((v / of) * 100).toFixed(3) + "%";
+    const weed = (x, h, c, d) => `<div class="sea-weed" style="left:${pc(x - 14, 400)};top:${pc(800 - h - 6, 800)};width:${pc(28, 400)};height:${pc(h + 6, 800)};animation-delay:${d}s"><svg viewBox="${x - 14} ${800 - h - 6} 28 ${h + 6}"><path d="M${x} 800q-14 -${h / 4} 0 -${h / 2}q14 -${h / 4} 0 -${h / 2}" stroke="${c}" stroke-width="11" fill="none" stroke-linecap="round"/></svg></div>`;
     const shells = [];
     const colors = ["#ff9ab8", "#fff", "#ffd36a", "#c8a6ff", "#ff9e6b"];
     for (let i = 0; i < 18; i++) {
       const x = (i * 173) % 400, y = 748 + ((i * 41) % 46);
       shells.push(`<circle cx="${x}" cy="${y}" r="${i % 3 ? 2.6 : 3.6}" fill="${colors[i % colors.length]}" opacity=".9"/>`);
     }
+    // سه لایه: آب ثابت، تکه‌های متحرک (نور، ماهی‌ها، علف‌ها) و کف دریا که جلوی ریشه‌ی علف‌هاست.
+    // تکه‌های متحرک بیرون از svg بزرگ‌اند تا فقط جابه‌جا شوند و کل آب هر فریم دوباره کشیده نشود.
     return `<svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs>
         <linearGradient id="${id}-w" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" style="stop-color:var(--sea-w0,#8ce6ff)"/><stop offset=".35" style="stop-color:var(--sea-w1,#46bdf0)"/><stop offset=".75" style="stop-color:var(--sea-w2,#2a93d8)"/><stop offset="1" style="stop-color:var(--sea-w3,#2380c8)"/></linearGradient>
-        <linearGradient id="${id}-ray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
       </defs>
       <rect width="400" height="800" fill="url(#${id}-w)"/>
-      <g class="sea-rays" fill="url(#${id}-ray)"><path d="M40 0h46l-90 640h-40z"/><path d="M170 0h30l-10 560h-60z"/><path d="M290 0h50l100 620h-50z"/></g>
       <path d="M0 18q25 -12 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V0H0z" fill="#fff" opacity=".4"/>
-      <g class="sea-school" opacity=".55">${school}</g>
-      <g class="sea-school s2" opacity=".4">${[[0, 0, 0.9], [16, 8, 0.7]].map(([x, y, s]) => fish(x, y, s, "#ffe27a")).join("")}</g>
       <path d="M0 700Q60 640 120 668Q150 610 210 650Q260 620 300 660Q350 630 400 650V800H0Z" fill="#1e6fb0" opacity=".35"/>
+    </svg>
+    <div class="sea-fx">
+      <div class="sea-rays"><svg viewBox="-40 0 480 640"><defs><linearGradient id="${id}-ray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+        <g fill="url(#${id}-ray)"><path d="M40 0h46l-90 640h-40z"/><path d="M170 0h30l-10 560h-60z"/><path d="M290 0h50l100 620h-50z"/></g></svg></div>
+      <div class="sea-school"><svg viewBox="-16 -16 60 34">${school}</svg></div>
+      <div class="sea-school s2"><svg viewBox="-16 -16 60 34">${[[0, 0, 0.9], [16, 8, 0.7]].map(([x, y, s]) => fish(x, y, s, "#ffe27a")).join("")}</svg></div>
       ${weed(26, 220, "#2fae8a", 0)}${weed(52, 160, "#57c98a", -1.2)}${weed(360, 240, "#2fae8a", -0.6)}${weed(384, 150, "#57c98a", -1.8)}
-      <g transform="translate(300 742)"><path d="M0 0v-46M0 -20l-18 -16M0 -30l14 -20M-18 -36l-4 -14M14 -50l8 -8M0 -46l-6 -10" stroke="#ff7fa8" stroke-width="9" stroke-linecap="round" fill="none"/></g>
-      <g transform="translate(96 748)"><path d="M0 0c-30 -4 -36 -48 0 -54c36 6 30 50 0 54z" fill="#ffa64d"/><path d="M0 -2v-46M0 -16l-14 -18M0 -16l14 -18M0 -32l-8 -12M0 -32l8 -12" stroke="#ffd08f" stroke-width="2.4" fill="none"/></g>
-      <g transform="translate(200 752)"><ellipse rx="24" ry="9" fill="#a77ce8"/><g fill="#c8a6ff"><circle cx="-12" cy="-6" r="7"/><circle cx="2" cy="-10" r="9"/><circle cx="15" cy="-5" r="6.5"/></g></g>
-      <path d="M0 744Q100 722 200 740T400 734V800H0Z" fill="#ffe2a6"/>
-      <path d="M0 772Q120 756 240 774T400 766V800H0Z" fill="#f6cf86"/>
-      ${shells.join("")}
-    </svg>`;
+      <svg class="sea-floor" viewBox="0 680 400 120">
+        <g transform="translate(300 742)"><path d="M0 0v-46M0 -20l-18 -16M0 -30l14 -20M-18 -36l-4 -14M14 -50l8 -8M0 -46l-6 -10" stroke="#ff7fa8" stroke-width="9" stroke-linecap="round" fill="none"/></g>
+        <g transform="translate(96 748)"><path d="M0 0c-30 -4 -36 -48 0 -54c36 6 30 50 0 54z" fill="#ffa64d"/><path d="M0 -2v-46M0 -16l-14 -18M0 -16l14 -18M0 -32l-8 -12M0 -32l8 -12" stroke="#ffd08f" stroke-width="2.4" fill="none"/></g>
+        <g transform="translate(200 752)"><ellipse rx="24" ry="9" fill="#a77ce8"/><g fill="#c8a6ff"><circle cx="-12" cy="-6" r="7"/><circle cx="2" cy="-10" r="9"/><circle cx="15" cy="-5" r="6.5"/></g></g>
+        <path d="M0 744Q100 722 200 740T400 734V800H0Z" fill="#ffe2a6"/>
+        <path d="M0 772Q120 756 240 774T400 766V800H0Z" fill="#f6cf86"/>
+        ${shells.join("")}
+      </svg>
+    </div>`;
   }
 
   // حباب‌هایی که آرام از پایین صفحه بالا می‌روند
@@ -335,7 +343,7 @@
     const el = document.querySelector(".sea-pal");
     if (!el) return;
     el.classList.remove("hop", "no", "spin", "hi");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add(move);
   }
 
@@ -359,7 +367,7 @@
   function bump(cls) {
     const wheel = document.getElementById("wheel");
     wheel.classList.remove("sea-wobble", "sea-swirl");
-    void wheel.offsetWidth;
+    void getComputedStyle(wheel).animationName;
     wheel.classList.add(cls);
   }
 

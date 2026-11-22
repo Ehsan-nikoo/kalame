@@ -251,7 +251,7 @@ function tourShow() {
   tourEl.querySelector(".tour-next").textContent = i === steps.length - 1 ? tourWords(step.last || "تموم!") : "بعدی";
   tourEl.querySelectorAll(".tour-dots i").forEach((d, k) => d.classList.toggle("on", k === i));
   tourCard.classList.remove("pop");
-  void tourCard.offsetWidth;
+  void getComputedStyle(tourCard).animationName;
   tourCard.classList.add("pop");
   if (typeof sound === "function") sound("tap");
 }

@@ -357,7 +357,7 @@ function pickVerseTile(tile) {
     sound("wrong");
     const slots = $("verseSlots");
     slots.classList.remove("shake");
-    void slots.offsetWidth;
+    void getComputedStyle(slots).animationName;
     slots.classList.add("shake");
     setTimeout(clearVerse, 450);
   }
@@ -443,7 +443,7 @@ function renderChain(pop) {
     dot.classList.toggle("on", i < chain);
     if (pop && i === chain - 1) {
       dot.classList.remove("pop");
-      void dot.offsetWidth;
+      void getComputedStyle(dot).animationName;
       dot.classList.add("pop");
     }
   });
@@ -471,7 +471,7 @@ function chainBreak() {
   if (!chain) return;
   chain = 0;
   chainEl.classList.remove("broke");
-  void chainEl.offsetWidth;
+  void getComputedStyle(chainEl).animationName;
   chainEl.classList.add("broke");
   renderChain();
 }

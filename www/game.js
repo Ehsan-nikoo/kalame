@@ -467,7 +467,7 @@ function flashWord(word) {
   for (const el of wordCells(word)) {
     el.style.animation = "";
     el.classList.remove("again");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add("again");
   }
 }
@@ -779,7 +779,7 @@ function addToChest(word) {
   const done = () => {
     updateChest();
     btn.classList.remove("bump");
-    void btn.offsetWidth;
+    void getComputedStyle(btn).animationName;
     btn.classList.add("bump");
   };
   if (calm() || !to.width) return done();
@@ -957,7 +957,7 @@ function praise(word) {
   const el = $("praise");
   el.textContent = text;
   el.classList.remove("show");
-  void el.offsetWidth;
+  void getComputedStyle(el).animationName;
   el.classList.add("show");
 }
 
@@ -986,7 +986,7 @@ function updateCoins() {
 function bumpCoins() {
   for (const el of document.querySelectorAll(".coins")) {
     el.classList.remove("bump");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add("bump");
   }
 }
@@ -1038,7 +1038,7 @@ function showPreview(text, kind, ms) {
   clearTimeout(previewTimer);
   previewEl.textContent = text;
   previewEl.className = "preview";
-  void previewEl.offsetWidth;
+  void getComputedStyle(previewEl).animationName;
   previewEl.className = "preview " + kind;
   previewTimer = setTimeout(hidePreview, ms);
 }
@@ -1156,7 +1156,7 @@ function flyCoins(amount, from, target) {
       shown += amount / N;
       count.textContent = faDigits(Math.round(shown));
       ghost.classList.remove("bump");
-      void ghost.offsetWidth;
+      void getComputedStyle(ghost).animationName;
       ghost.classList.add("bump");
       if (k === N - 1) {
         updateCoins();
@@ -1568,7 +1568,7 @@ function renderLevels() {
       if (status === "done") return showLevelSheet(i);
       if (status === "current") return play(i);
       btn.classList.remove("nope");
-      void btn.offsetWidth;
+      void getComputedStyle(btn).animationName;
       btn.classList.add("nope");
     };
     track.appendChild(btn);

@@ -562,7 +562,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("dim");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("dim");
       },
       shuffle() {

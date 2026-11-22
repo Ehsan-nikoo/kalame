@@ -35,17 +35,20 @@
 .space-kw { z-index: -1; }
 .space-bg svg, .space-kw svg { width: 100%; height: 100%; display: block; }
 [data-theme="space"] .kw { background: #33237c; }
-.space-tw { animation: space-tw 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-@keyframes space-tw { 50% { opacity: 0.35; transform: scale(0.7); } }
-.space-shoot { animation: space-shoot 7s ease-in infinite; opacity: 0; }
+/* بخش‌های متحرک پس‌زمینه بیرون از svg بزرگ‌اند تا فقط جابه‌جا شوند و کل آسمان هر فریم دوباره کشیده نشود.
+   space-fx هم‌اندازه‌ی viewBox ‏۴۰۰×۸۰۰ با preserveAspectRatio="xMidYMax slice" است؛ جای هر تکه به درصد همان مختصات. */
+.space-bg, .space-kw { container-type: size; }
+.space-fx { position: absolute; left: 50%; bottom: 0; width: max(100vw, 50vh); width: max(100cqw, 50cqh); aspect-ratio: 1 / 2; transform: translateX(-50%); }
+.space-fx > div { position: absolute; will-change: transform; }
+.space-fx svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.space-shoot { left: 79%; top: 4.25%; width: 17.5%; height: 4%; opacity: 0; animation: space-shoot 7s ease-in infinite; }
 @keyframes space-shoot {
-  0%, 70% { transform: translate(380px, 40px); opacity: 0; }
+  0%, 70% { transform: none; opacity: 0; }
   73% { opacity: 1; }
-  90% { transform: translate(180px, 120px); opacity: 0; }
-  100% { transform: translate(180px, 120px); opacity: 0; }
+  90%, 100% { transform: translate(-285.7%, 250%); opacity: 0; }
 }
-.space-ufo { animation: space-ufo 5s ease-in-out infinite alternate; }
-@keyframes space-ufo { from { transform: translate(300px, 520px); } to { transform: translate(250px, 488px) rotate(-6deg); } }
+.space-ufo { left: 67.5%; top: 62.75%; width: 15%; height: 3.75%; transform-origin: 50% 60%; animation: space-ufo 5s ease-in-out infinite alternate; }
+@keyframes space-ufo { from { transform: none; } to { transform: translate(-83.33%, -106.67%) rotate(-6deg); } }
 
 /* زیپو گوشه‌ی صفحه‌ی بازی */
 .space-pal {
@@ -297,5 +300,5 @@
 [data-theme="space"] .tour-hole { box-shadow: 0 0 0 9999px rgba(12, 6, 40, 0.68), 0 0 0 4px #ffd34a, 0 0 24px 8px rgba(255, 211, 74, 0.5); }
 
 @media (prefers-reduced-motion: reduce) {
-  .space-tw, .space-shoot, .space-ufo, .space-pal .zp-ant, .space-pal .tk-eyes, .space-map .space-p, .space-map .space-rocket, .space-map .space-flame, [data-theme="space"] .wheel::before { animation: none; }
+  .space-shoot, .space-ufo, .space-pal .zp-ant, .space-pal .tk-eyes, .space-map .space-p, .space-map .space-rocket, .space-map .space-flame, [data-theme="space"] .wheel::before { animation: none; }
 }
