@@ -347,9 +347,8 @@
 [data-theme="garden"] .board {
   padding: 12px;
   border-radius: 20px;
-  background: rgba(251, 245, 230, 0.78);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  /* پشت جدول ماهی و نور آب در حرکت‌اند؛ بلور آن هر فریم دوباره حساب می‌شد، پس به جایش پنل کمی پررنگ‌تر است */
+  background: rgba(251, 245, 230, 0.9);
   box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85), inset 0 0 0 3px rgba(44, 143, 154, 0.16), 0 10px 24px rgba(45, 74, 52, 0.28);
 }
 

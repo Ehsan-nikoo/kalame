@@ -85,10 +85,12 @@ function kwUseTheme(id) {
   applyTheme(id);
   if (screenNow) route();
 }
+// بعد از انتخاب بخش، بازیکن به منوی اصلی همان بخش می‌رود (بزرگسال: منوی بازی؛ کودک: فهرست بازی‌های کودک)
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
   kwUseTheme(adultThemeOf(save.theme));
+  if (screenNow !== "home") goHome();
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
@@ -308,7 +310,7 @@ function kwTap(key) {
     if (typeof sound === "function") sound("repeat");
     if (typeof haptic === "function") haptic("light");
     key.classList.remove("no");
-    void key.offsetWidth;
+    void getComputedStyle(key).animationName;
     key.classList.add("no");
     return;
   }
@@ -371,7 +373,7 @@ function kwOops(btn) {
   if (typeof sound === "function") sound("repeat");
   if (typeof haptic === "function") haptic("light");
   btn.classList.remove("no");
-  void btn.offsetWidth;
+  void getComputedStyle(btn).animationName;
   btn.classList.add("no");
 }
 

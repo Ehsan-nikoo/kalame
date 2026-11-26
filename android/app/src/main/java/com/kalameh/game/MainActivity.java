@@ -1,5 +1,6 @@
 package com.kalameh.game;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.webkit.WebView;
@@ -17,7 +18,10 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         // پلاگین فروشگاه سکه باید پیش از ساخته شدن پل Capacitor ثبت شود
         registerPlugin(CoinStorePlugin.class);
+        registerPlugin(BackdropPlugin.class);
         super.onCreate(savedInstanceState);
+        // تا صفحه‌ی بارگذاری بالا بیاید، پشت نوارهای گوشی همان بنفش صفحه‌ی بارگذاری است (نه سفید)
+        getWindow().getDecorView().setBackgroundColor(Color.parseColor("#3b2d8f"));
 
         WebView webView = getBridge().getWebView();
         // اندازه‌ی نوشته‌ها را خود بازی (تنظیمات ← اندازه‌ی نوشته) تعیین می‌کند؛

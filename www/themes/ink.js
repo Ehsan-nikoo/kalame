@@ -205,7 +205,7 @@
         // لوگو هر بار با قلم از راست به چپ نوشته می‌شود
         const logo = document.querySelector("#screenHome .logo");
         logo.classList.remove("write");
-        void logo.offsetWidth;
+        void getComputedStyle(logo).animationName;
         logo.classList.add("write");
       },
       found(d) {
@@ -229,7 +229,7 @@
         );
         setTimeout(() => {
           card.classList.remove("thump");
-          void card.offsetWidth;
+          void getComputedStyle(card).animationName;
           card.classList.add("thump");
         }, 600);
         if (d.finished) document.getElementById("overlayTitle").textContent = "دیوان کامل شد!";

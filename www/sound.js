@@ -18,10 +18,19 @@
     return ctx;
   }
 
-  // مرورگرهای موبایل صدا را فقط بعد از اولین لمس کاربر اجازه می‌دهند
+  // Web Audio تا وقتی روشن است پردازنده‌ی صدا را بیدار نگه می‌دارد (باتری و داغ شدن گوشی)؛
+  // پس چند ثانیه بعد از آخرین صدا خاموش می‌شود و با صدای بعدی دوباره روشن می‌شود
+  let idleT = 0;
+  function nap() {
+    clearTimeout(idleT);
+    idleT = setTimeout(() => { if (ctx && ctx.state === "running") ctx.suspend().catch(() => {}); }, 4000);
+  }
+  // مرورگرهای موبایل صدا را فقط بعد از اولین لمس کاربر اجازه می‌دهند؛ اگر صدا خاموش است، اصلاً ساخته نمی‌شود
   function unlock() {
+    if (typeof settings === "object" && settings && !settings.sound) return;
     const c = audio();
     if (c && c.state === "suspended") c.resume().catch(() => {});
+    nap();
   }
   window.addEventListener("pointerdown", unlock, { passive: true });
   window.addEventListener("touchstart", unlock, { passive: true });
@@ -169,6 +178,51 @@
       }
     },
 
+    // زیر دریا: «بلوپ» حباب که بالا می‌رود و چند حباب کوچک‌تر پشت سرش
+    sea(t, len, lift) {
+      tone(t, 180 * lift, { type: "sine", dur: 0.16, vol: 0.3, glide: 3.2 });
+      const n = Math.min(Math.max(len - 1, 2), 4);
+      for (let i = 0; i < n; i++) {
+        const tt = t + 0.12 + i * 0.08;
+        tone(tt, (420 + i * 90) * lift, { type: "sine", dur: 0.09, vol: 0.16, glide: 2.2 });
+      }
+      tone(t + 0.14 + n * 0.08, 1046 * lift, { type: "triangle", dur: 0.35, vol: 0.12 });
+    },
+
+    // سفر فضایی: «ویو» فضایی که بالا می‌رود و چند نت ستاره‌ای براق پشت سرش
+    space(t, len, lift) {
+      tone(t, 300 * lift, { type: "square", dur: 0.18, vol: 0.06, glide: 3 });
+      tone(t, 300 * lift, { type: "sine", dur: 0.2, vol: 0.2, glide: 3 });
+      const steps = [0, 4, 7, 11];
+      const n = Math.min(Math.max(len - 1, 2), 4);
+      for (let i = 0; i < n; i++) {
+        const tt = t + 0.14 + i * 0.07;
+        const f = 784 * lift * Math.pow(2, steps[i] / 12);
+        tone(tt, f, { type: "sine", dur: 0.3, vol: 0.14 });
+        tone(tt, f * 2.01, { type: "sine", dur: 0.12, vol: 0.05 });
+      }
+    },
+
+    // کاشی‌کاری: «تق» روشن کاشی روی کاشی، و زنگ کوتاه لعاب برای هر حرف
+    tile(t, len, lift) {
+      noise(t, { dur: 0.05, vol: 0.22, type: "bandpass", freq: 3200, q: 4 });
+      const n = Math.min(Math.max(len - 1, 2), 4);
+      for (let i = 0; i < n; i++) {
+        const tt = t + 0.06 + i * 0.085;
+        bell(tt, note(880 * lift, [0, 2, 4, 7][i]), [[1, 1, 1], [2.76, 0.35, 0.5], [5.4, 0.15, 0.25]], { dur: 0.55, vol: 0.13 });
+      }
+    },
+
+    // تخت جمشید: دو ضربه‌ی تیشه روی سنگ، و بعد طنین بم یک زنگ مفرغی
+    persepolis(t, len, lift) {
+      noise(t, { dur: 0.04, vol: 0.3, type: "bandpass", freq: 1900, q: 6 });
+      noise(t + 0.11, { dur: 0.04, vol: 0.26, type: "bandpass", freq: 2300, q: 6 });
+      const tt = t + 0.2;
+      const bronze = [[1, 1, 1], [2.4, 0.3, 0.6], [3.9, 0.18, 0.4], [5.6, 0.08, 0.25]];
+      bell(tt, 196 * lift, bronze, { dur: 1.4, vol: 0.2 });
+      if (len >= 4) bell(tt + 0.16, 294 * lift, bronze, { dur: 1.1, vol: 0.13 });
+    },
+
     // ساده: یک «دینگ» دو نتی تمیز
     plain(t, len, lift) {
       tone(t, 660 * lift, { type: "sine", dur: 0.25, vol: 0.22 });
@@ -182,6 +236,7 @@
       const c = audio();
       if (!c) return;
       if (c.state === "suspended") c.resume().catch(() => {});
+      nap();
       const play = SOUNDS[theme] || SOUNDS.plain;
       const lift = Math.pow(2, Math.min(Math.max(streak - 1, 0), 6) / 12);
       try {

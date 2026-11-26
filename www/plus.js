@@ -116,7 +116,7 @@ rocketBtn.addEventListener("click", hintRocket);
 // هر فصل یک ضرب‌المثل دارد. هر مرحله‌ای که بار اول تمام شود یک تکه‌ی دیگرش را نشان می‌دهد
 // و آخر فصل کامل می‌شود، با معنی‌اش و چند سکه.
 
-const PROVERB_REWARD = 10;
+const PROVERB_REWARD = 5;
 
 // فهرست ضرب‌المثل‌ها در proverbs.js
 
@@ -252,7 +252,7 @@ function renderProverbBtn() {
 const EF_TIME = 90;         // ثانیه
 const EF_POINTS = 10;       // هر جواب درست
 const EF_ALL_BONUS = 20;    // همه‌ی دسته‌ها درست
-const EF_MAX_COINS = 25;    // جایزه‌ی بار اول هر روز
+const EF_MAX_COINS = 15;    // جایزه‌ی بار اول هر روز
 
 // «سیب زمینی»، «سیب‌زمینی» و «آلو / الو» یکی حساب می‌شوند
 const efNorm = (w) =>
@@ -552,7 +552,7 @@ function syncWidget() {
 // اگر آن را بدون راهنما تمام کند، تاج 👑 آن مرحله را روی نقشه می‌گیرد (بار اول با سکه).
 
 const VARIANT_PREFIX = "v:";
-const CROWN_REWARD = 15;
+const CROWN_REWARD = 10;
 const isVariant = () => typeof playKey === "string" && playKey.startsWith(VARIANT_PREFIX);
 
 function crowns() {

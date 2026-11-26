@@ -81,7 +81,7 @@
     div.innerHTML = `<svg viewBox="0 0 ${CaravanScenes.W} 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">` +
       CaravanScenes.draw(stop.name, stop.scene, "sky-" + leg) + `</svg>`;
     document.body.prepend(div);
-    void div.offsetWidth; // تا محو شدن از شفاف شروع شود
+    void getComputedStyle(div).animationName; // تا محو شدن از شفاف شروع شود
     div.style.opacity = "1";
     const old = [...document.querySelectorAll(".scene")].slice(1);
     setTimeout(() => old.forEach((el) => el.remove()), 1300);
@@ -269,7 +269,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("wobble");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("wobble");
       },
       complete(d) {

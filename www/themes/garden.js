@@ -224,7 +224,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("shiver");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("shiver");
         // ماهی‌ها تند می‌شوند و بعد آرام می‌گیرند
         document.querySelectorAll(".koi").forEach((k) => k.classList.add("dart"));
