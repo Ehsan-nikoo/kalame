@@ -149,6 +149,7 @@ const KW_LV_NOTE = {
   wheel: ["جدول کوچولو", "جدول بزرگ‌تر", "کلمه‌های بلند و بیشتر"],
   spell: ["کلمه‌های کوتاه", "کلمه‌های بلندتر", "سه تا گزینه"],
   ef: ["چهار تا نقاشی", "شش تا نقاشی", "حرف وسط کلمه هم قایم میشه!"],
+  syl: ["چند تا بخش داره؟", "بخش‌ها رو بچین", "بخش گم‌شده رو پیدا کن"],
 };
 function kwLv(game) {
   const v = X().kidsLv && X().kidsLv[game];
@@ -374,15 +375,16 @@ function kwOops(btn) {
   btn.classList.add("no");
 }
 
-// چهار بازی اول پیش از شروع، صفحه‌ی انتخاب سختی دارند
+// بازی‌های کودک (به‌جز ظاهر بازی) پیش از شروع، صفحه‌ی انتخاب سختی دارند
 const KW_GAMES = [
   ["pic", "🖼️", "نقاشی و کلمه", () => kwLvPick("pic")],
   ["wheel", "🎡", "چرخ کلمه", () => kwLvPick("wheel")],
   ["spell", "✏️", "کدوم درسته؟", () => kwLvPick("spell")],
   ["ef", "🙈", "قایم‌موشک حرف‌ها", () => kwLvPick("ef")],
+  ["syl", "👏", "بخش‌بازی", () => kwLvPick("syl")],
   ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
 ];
-const KW_PLAY = { pic: () => kwNext(), wheel: () => kwWheel(), spell: () => kwSpell(), ef: () => kwEf() };
+const KW_PLAY = { pic: () => kwNext(), wheel: () => kwWheel(), spell: () => kwSpell(), ef: () => kwEf(), syl: () => kwSyl() };
 
 function kwMenu() {
   kwStop();
@@ -592,6 +594,184 @@ function kwEf() {
     kwReward();
     $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
     kwRoundWin("ef", 2200);
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// بخش‌بازی: کلمه از چند بخش (هجا) ساخته شده، مثل «داس / تان»
+//   آسون: چند بخشه؟ بچه به تعداد بخش‌ها دست می‌زنه (۱ تا ۳ بخش)
+//   متوسط: بخش‌ها قاطی شده‌اند؛ به ترتیب بچینشان (۲ یا ۳ بخش)
+//   سخت: یکی از بخش‌ها جا افتاده؛ از بین سه تکه پیدایش کن (۳ بخش یا بیشتر)
+// بخش‌ها در KIDS_SYL (kidswords.js) دستی نوشته شده‌اند.
+// ---------------------------------------------------------------------------
+
+const kwPlain = (s) => s.replace(/[ً-ْ]/g, "");
+let kwSylBank = null;
+function kwSylItems() {
+  if (!kwSylBank)
+    kwSylBank = KIDS_WORDS.filter(([w]) => KIDS_SYL[w]).map(([w, pic]) => ({ w, pic, parts: KIDS_SYL[w].split("-") }));
+  return kwSylBank;
+}
+function kwSylPool(lv) {
+  return kwSylItems().filter(({ w, parts }) =>
+    lv === "easy" ? parts.length <= 3 && kwLen(w) <= 6 : lv === "mid" ? parts.length === 2 || parts.length === 3 : parts.length >= 3);
+}
+// صدای دست زدن برای هر بخش؛ هر تکه هم‌زمان روشن می‌شود
+function kwSylClap(stage, then) {
+  const parts = [...stage.querySelectorAll(".kw-syl-p")];
+  parts.forEach((p, i) =>
+    kwLater(() => {
+      p.classList.add("on");
+      if (typeof sound === "function") sound("letter", i);
+      if (typeof haptic === "function") haptic("light");
+    }, 250 + i * 520));
+  if (then) kwLater(then, 250 + parts.length * 520);
+}
+const kwSylRow = (parts, cls = "") =>
+  `<div class="kw-syl ${cls}${parts.length >= 4 ? " many" : ""}">${parts.map((p, i) => `${i ? `<i class="kw-syl-dash">-</i>` : ""}<span class="kw-syl-p">${p}</span>`).join("")}</div>`;
+
+function kwSyl() {
+  kwStop();
+  kwIn = "syl";
+  const lv = kwLv("syl");
+  const pool = kwSylPool(lv);
+  const id = kwDeck("syl:" + lv, pool.map((x) => x.w));
+  const it = pool.find((x) => x.w === id);
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  if (lv === "easy") return kwSylCount(it);
+  if (lv === "mid") return kwSylOrder(it);
+  return kwSylMissing(it);
+}
+
+// آسون: چند بخشه؟
+function kwSylCount(it) {
+  const n = it.parts.length;
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-word kw-syl-word">${it.w}</div>
+    <div class="kw-ask">بگو و دست بزن: چند تا بخش داره؟</div>
+    <div class="kw-opts kw-claps">${[1, 2, 3].map((k) =>
+      `<button class="kw-opt kw-clap" type="button" data-n="${k}"><span>${"👏".repeat(k)}</span><b>${faDigits(k)}</b></button>`).join("")}</div>`;
+  kwWireBar("syl");
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-clap").forEach((b) => (b.onclick = () => {
+    if (+b.dataset.n !== n) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    const stage = $("kwStage");
+    stage.querySelectorAll(".kw-clap").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    stage.querySelector(".kw-syl-word").outerHTML = kwSylRow(it.parts, "show");
+    stage.querySelector(".kw-ask").outerHTML = `<div class="kw-ask">${faDigits(n)} تا بخش!</div>`;
+    kwSylClap(stage, () => {
+      if (!missed) kwReward();
+      else if (typeof sound === "function") sound("found");
+      stage.querySelector(".kw-ask").outerHTML = kwCheer();
+      stage.querySelector(".kw-pic").classList.add("win");
+      if (missed) kwLater(kwSyl, 1500);
+      else kwRoundWin("syl", 1500);
+    });
+  }));
+}
+
+// متوسط: بخش‌ها رو بچین
+function kwSylOrder(it) {
+  const parts = it.parts;
+  let order = shuffled(parts.map((p, i) => ({ p, i })), Math.random);
+  if (order.every((o, k) => kwPlain(o.p) === kwPlain(parts[k]))) order = order.reverse();
+  // دو بخش یکسان (مثل «با-با») هر دو تا پشت‌سرهم درستند
+  let at = 0;
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-ask">بخش‌ها رو به ترتیب بچین</div>
+    <div class="kw-slots kw-syl-slots">${parts.map(() => `<span class="kw-slot kw-syl-slot"></span>`).join("")}</div>
+    <div class="kw-keys">${order.map((o) => `<button class="kw-key kw-syl-key" type="button">${o.p}</button>`).join("")}</div>`;
+  kwWireBar("syl");
+  const arm = () => {
+    clearTimeout(kwHintTimer);
+    $("kwStage").querySelectorAll(".kw-key.nudge").forEach((k) => k.classList.remove("nudge"));
+    kwHintTimer = setTimeout(() => {
+      const key = [...$("kwStage").querySelectorAll(".kw-key:not([disabled])")].find((k) => k.textContent === parts[at]);
+      if (key) key.classList.add("nudge");
+    }, KIDS_HINT_MS.mid);
+  };
+  arm();
+  $("kwStage").querySelectorAll(".kw-key").forEach((k) => (k.onclick = () => {
+    if (at >= parts.length) return;
+    if (k.textContent !== parts[at]) {
+      if (typeof sound === "function") sound("repeat");
+      if (typeof haptic === "function") haptic("light");
+      k.classList.remove("no");
+      void k.offsetWidth;
+      k.classList.add("no");
+      return;
+    }
+    if (typeof sound === "function") sound("letter", at);
+    k.disabled = true;
+    k.classList.remove("nudge");
+    const slot = $("kwStage").querySelectorAll(".kw-slot")[at];
+    slot.textContent = k.textContent;
+    slot.classList.add("on");
+    at++;
+    if (at < parts.length) return arm();
+    clearTimeout(kwHintTimer);
+    kwState().done++;
+    kwReward();
+    const stage = $("kwStage");
+    stage.querySelector(".kw-ask").outerHTML = `<div class="kw-word">${it.w}</div>`;
+    stage.querySelector(".kw-keys").innerHTML = kwCheer();
+    stage.querySelector(".kw-pic").classList.add("win");
+    kwRoundWin("syl", 1800);
+  }));
+}
+
+// سخت: کدوم بخش جا افتاده؟ دو تکه‌ی غلط از بخش‌های کلمه‌های دیگر، با اندازه‌ی نزدیک
+function kwSylMissing(it) {
+  const parts = it.parts;
+  const gap = Math.floor(Math.random() * parts.length);
+  const right = parts[gap];
+  const len = kwPlain(right).length;
+  const own = new Set(parts.map(kwPlain));
+  const seen = new Set();
+  const others = shuffled(kwSylItems().flatMap((x) => x.parts), Math.random).filter((p) => {
+    const k = kwPlain(p);
+    if (own.has(k) || seen.has(k) || Math.abs(k.length - len) > 1) return false;
+    seen.add(k);
+    return true;
+  });
+  const opts = shuffled([right, ...others.slice(0, 2)], Math.random);
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-syl kw-syl-gap${parts.length >= 4 ? " many" : ""}">${parts.map((p, i) =>
+      `${i ? `<i class="kw-syl-dash">-</i>` : ""}<span class="kw-syl-p${i === gap ? " hole" : ""}">${i === gap ? "؟" : p}</span>`).join("")}</div>
+    <div class="kw-ask">کدوم تیکه جا افتاده؟</div>
+    <div class="kw-opts three kw-syl-opts">${opts.map((p) => `<button class="kw-opt" type="button">${p}</button>`).join("")}</div>`;
+  kwWireBar("syl");
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-opt").forEach((b) => (b.onclick = () => {
+    if (b.textContent !== right) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    const stage = $("kwStage");
+    stage.querySelectorAll(".kw-opt").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    const hole = stage.querySelector(".kw-syl-p.hole");
+    hole.textContent = right;
+    hole.classList.remove("hole");
+    hole.classList.add("fill");
+    kwSylClap(stage, () => {
+      if (!missed) kwReward();
+      else if (typeof sound === "function") sound("found");
+      stage.querySelector(".kw-syl").outerHTML = `<div class="kw-word">${it.w}</div>`;
+      stage.querySelector(".kw-ask").outerHTML = kwCheer();
+      stage.querySelector(".kw-pic").classList.add("win");
+      if (missed) kwLater(kwSyl, 1500);
+      else kwRoundWin("syl", 1500);
+    });
   }));
 }
 

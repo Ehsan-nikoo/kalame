@@ -2484,15 +2484,16 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 
 /* بخش کودک: فهرست بازی‌ها و سه بازی تازه */
 .kw-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.4; color: #ff7a45; }
-.kw-menu { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 380px; }
+/* پنج بازی و ظاهر بازی: دو ردیف سه‌تایی */
+.kw-menu { direction: rtl; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 380px; }
 .kw-game {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 8px 16px; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 16px 4px 12px; border: 0; cursor: pointer;
   border-radius: 26px; color: #fff; background: #ff8a5c; box-shadow: 0 6px 0 #d8653a; font-family: "Vazirmatn", sans-serif;
   transition: transform 0.1s ease;
 }
 .kw-game:active { transform: translateY(4px); box-shadow: 0 2px 0 #d8653a; }
-.kw-game span { font-size: 54px; line-height: 1.2; }
-.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 23px; line-height: 1.4; }
+.kw-game span { font-size: 44px; line-height: 1.2; }
+.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 19px; line-height: 1.35; }
 .kw-g-wheel { background: #6cb8ff; box-shadow: 0 6px 0 #3f8fd8; }
 .kw-g-spell { background: #b48cff; box-shadow: 0 6px 0 #8a5fd8; }
 .kw-g-ef { background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a; }
@@ -2551,11 +2552,7 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .mode-kids .chain { display: none; }
 
 /* بخش کودک: دکمه‌ی ظاهر بازی (پهن، زیر چهار بازی) و سؤال بزرگ‌ترها پیش از خرید */
-.kw-game.kw-g-themes {
-  grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; padding: 12px 8px;
-  background: #ffc94d; box-shadow: 0 6px 0 #d9a326; color: #5a3d10;
-}
-.kw-game.kw-g-themes span { font-size: 34px; }
+.kw-game.kw-g-themes { background: #ffc94d; box-shadow: 0 6px 0 #d9a326; color: #5a3d10; }
 .kw-parent {
   position: fixed; inset: 0; z-index: 960; display: flex; align-items: center; justify-content: center;
   padding: 16px; background: rgba(20, 14, 8, 0.45);
@@ -2821,3 +2818,34 @@ button { touch-action: manipulation; }
   .kw-hide.n9 .kw-card span { font-size: 38px; }
   .kw-stage { gap: 14px; }
 }
+
+/* بخش‌بازی کودک: کلمه بخش‌بخش (هجا)؛ تکه‌ها حرکت (ـَ ـِ ـُ) دارند، برای همین با وزیر نوشته می‌شوند */
+.kw-game.kw-g-syl { background: #ff7eb6; box-shadow: 0 6px 0 #d85a92; }
+.kw-game.kw-g-syl:active { box-shadow: 0 2px 0 #d85a92; }
+.kw-syl { direction: rtl; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 380px; }
+.kw-syl-p {
+  min-width: 64px; padding: 4px 14px 8px; border-radius: 18px; background: rgba(255, 255, 255, 0.9); color: #3b2a1a;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1); font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 38px; line-height: 1.6; text-align: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.kw-syl-p.on { background: #ffc94d; color: #5a3d10; transform: scale(1.15) translateY(-4px); }
+.kw-syl-p.hole { border: 3px dashed #ff7eb6; background: rgba(255, 255, 255, 0.55); color: #ff7eb6; }
+.kw-syl-p.fill { background: #5bbf7a; color: #fff; animation: pop 0.3s ease; }
+.kw-syl-p.fill.on { background: #ffc94d; color: #5a3d10; }
+.kw-syl-dash { font-style: normal; font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 28px; color: rgba(59, 42, 26, 0.4); }
+.kw-syl-word { font-size: 52px; }
+.kw-claps { gap: 10px; }
+.kw-opt.kw-clap { min-width: 96px; padding: 10px 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.kw-clap span { font-size: 24px; line-height: 1.2; letter-spacing: -4px; }
+.kw-clap b { font-weight: 400; font-size: 30px; line-height: 1.2; }
+.kw-syl-slot, .kw-syl-key {
+  width: auto; min-width: 72px; height: 66px; padding: 0 14px 6px;
+  font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 32px; line-height: 1.6;
+}
+.kw-syl-slots { gap: 6px; }
+.kw-syl-opts .kw-opt { font-family: "Vazirmatn", sans-serif; font-weight: 700; line-height: 1.6; }
+.kw-syl.many { gap: 3px; flex-wrap: nowrap; }
+.kw-syl.many .kw-syl-p { min-width: 0; padding: 2px 9px 6px; font-size: 28px; border-radius: 14px; }
+.kw-syl.many .kw-syl-dash { font-size: 20px; }
+.kw-opts.three.kw-syl-opts { flex-direction: row; gap: 10px; }
+.kw-opts.three.kw-syl-opts .kw-opt { min-width: 92px; padding: 4px 14px 8px; }

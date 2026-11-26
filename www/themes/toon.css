@@ -227,12 +227,12 @@
 /* مزرعه جای عنوان بالای بازی‌ها را گرفته؛ کاشی‌ها کمی جمع‌تر تا همه در یک صفحه جا شوند */
 [data-theme="toon"] .toon-farm-btn ~ .kw-title { display: none; }
 [data-theme="toon"] .kw-menu { gap: 12px; }
-[data-theme="toon"] .kw-game { padding: 14px 8px 12px; }
-[data-theme="toon"] .kw-game span { font-size: 46px; }
+[data-theme="toon"] .kw-game { padding: 14px 4px 10px; }
+[data-theme="toon"] .kw-game span { font-size: 40px; }
 @media (max-height: 700px) {
   [data-theme="toon"] .toon-farm-btn { max-width: 250px; }
-  [data-theme="toon"] .kw-game { padding: 10px 8px 8px; }
-  [data-theme="toon"] .kw-game span { font-size: 40px; }
+  [data-theme="toon"] .kw-game { padding: 10px 4px 8px; }
+  [data-theme="toon"] .kw-game span { font-size: 36px; }
 }
 [data-theme="toon"] .kw-themes-note { opacity: 1; color: #3b5a72; }
 [data-theme="toon"] .kw-slot { background: rgba(255, 255, 255, 0.85); border-color: #8cc9e8; }
