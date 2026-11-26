@@ -228,12 +228,12 @@
 [data-theme="space"] .kw-stage { gap: 14px; padding-top: 6px; }
 [data-theme="space"] .space-map-btn ~ .kw-title { display: none; }
 [data-theme="space"] .kw-menu { gap: 12px; }
-[data-theme="space"] .kw-game { padding: 14px 8px 12px; }
-[data-theme="space"] .kw-game span { font-size: 46px; }
+[data-theme="space"] .kw-game { padding: 14px 4px 10px; }
+[data-theme="space"] .kw-game span { font-size: 40px; }
 @media (max-height: 700px) {
   [data-theme="space"] .space-map-btn { max-width: 250px; }
-  [data-theme="space"] .kw-game { padding: 10px 8px 8px; }
-  [data-theme="space"] .kw-game span { font-size: 40px; }
+  [data-theme="space"] .kw-game { padding: 10px 4px 8px; }
+  [data-theme="space"] .kw-game span { font-size: 36px; }
 }
 [data-theme="space"] .kw-themes-note { opacity: 1; color: #fff; }
 [data-theme="space"] .kw-found span { background: #fff; }

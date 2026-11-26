@@ -253,12 +253,12 @@
 [data-theme="sea"] .kw-stage { gap: 14px; padding-top: 6px; }
 [data-theme="sea"] .sea-tank-btn ~ .kw-title { display: none; }
 [data-theme="sea"] .kw-menu { gap: 12px; }
-[data-theme="sea"] .kw-game { padding: 14px 8px 12px; }
-[data-theme="sea"] .kw-game span { font-size: 46px; }
+[data-theme="sea"] .kw-game { padding: 14px 4px 10px; }
+[data-theme="sea"] .kw-game span { font-size: 40px; }
 @media (max-height: 700px) {
   [data-theme="sea"] .sea-tank-btn { max-width: 250px; }
-  [data-theme="sea"] .kw-game { padding: 10px 8px 8px; }
-  [data-theme="sea"] .kw-game span { font-size: 40px; }
+  [data-theme="sea"] .kw-game { padding: 10px 4px 8px; }
+  [data-theme="sea"] .kw-game span { font-size: 36px; }
 }
 [data-theme="sea"] .kw-themes-note { opacity: 1; color: #fff; text-shadow: 0 1px 2px rgba(10, 50, 100, 0.5); }
 [data-theme="sea"] .kw-slot { background: rgba(255, 255, 255, 0.85); border-color: #9fdcf7; }
