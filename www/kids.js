@@ -161,6 +161,7 @@ const kwLvInfo = (game) => KW_LV.find((l) => l.id === kwLv(game));
 
 function kwLvPick(game) {
   kwStop();
+  if (typeof kxFocus !== "undefined") kxFocus = null;
   kwIn = "lv";
   const g = KW_GAMES.find((x) => x[0] === game);
   const cur = kwLv(game);
@@ -182,8 +183,10 @@ function kwLvPick(game) {
 function kwBar(game) {
   const l = kwLvInfo(game);
   if (kwRound.game !== game) kwRound = { game, n: 0 };
+  const focus = game === "pic" && typeof kxFocus !== "undefined" && kxFocus && kxFocus.length;
   return `<div class="kw-bar">
-    <button class="kw-lv-chip kw-lv-${l.id}" type="button" id="kwLvChip" aria-label="عوض کردن سختی">${l.stars} ${l.name}</button>
+    ${focus ? `<button class="kw-lv-chip kw-lv-focus" type="button" id="kwLvChip" aria-label="عوض کردن سختی">🎯 تمرین ${kxFocus.join(" ")}</button>`
+      : `<button class="kw-lv-chip kw-lv-${l.id}" type="button" id="kwLvChip" aria-label="عوض کردن سختی">${l.stars} ${l.name}</button>`}
     <div class="kw-dots kw-round" id="kwRound">${kwRoundDots()}</div></div>`;
 }
 function kwWireBar(game) {
@@ -251,6 +254,9 @@ function kwDeck(key, ids) {
 // نقاشی و کلمه: حرف‌ها را به ترتیب بزن
 // ---------------------------------------------------------------------------
 function kwPicPool(lv) {
+  // تمرین حرف‌هایی که در امتحان سخت بودند (kidsexam.js)
+  if (typeof kxFocus !== "undefined" && kxFocus && kxFocus.length)
+    return KIDS_WORDS.filter(([w]) => kwLen(w) <= 6 && kwLetters(w).some((c) => kxFocus.includes(c)));
   return KIDS_WORDS.filter(([w]) => {
     const n = kwLen(w);
     return lv === "easy" ? n <= 3 : lv === "mid" ? n === 4 : n >= 5 && n <= 7;
@@ -258,7 +264,8 @@ function kwPicPool(lv) {
 }
 function kwPick(lv) {
   const pool = kwPicPool(lv);
-  const w = kwDeck("pic:" + lv, pool.map((x) => x[0]));
+  const focus = typeof kxFocus !== "undefined" && kxFocus && kxFocus.length ? "f:" + kxFocus.join("") : "";
+  const w = kwDeck("pic:" + (focus || lv), pool.map((x) => x[0]));
   return pool.find((x) => x[0] === w);
 }
 
@@ -385,11 +392,13 @@ const KW_GAMES = [
   ["ef", "🙈", "قایم‌موشک حرف‌ها", () => kwLvPick("ef")],
   ["syl", "👏", "بخش‌بازی", () => kwLvPick("syl")],
   ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
+  ["exam", "📝", "امتحان", () => kxHome()],
 ];
 const KW_PLAY = { pic: () => kwNext(), wheel: () => kwWheel(), spell: () => kwSpell(), ef: () => kwEf(), syl: () => kwSyl() };
 
 function kwMenu() {
   kwStop();
+  if (typeof kxFocus !== "undefined") kxFocus = null;
   kwLeavePlay();
   if (kwThemeMode) kwThemesDone();
   kwIn = null;
@@ -1086,8 +1095,8 @@ function kwThemesDone() {
 const kwParent = document.createElement("div");
 kwParent.className = "kw-parent hidden";
 kwParent.innerHTML = `<div class="kw-parent-card">
-  <div class="kw-parent-title">این ظاهر خریدنیه 🔒</div>
-  <div class="kw-parent-text">برای خرید، یکی از بزرگ‌ترها باید جواب بده:</div>
+  <div class="kw-parent-title" id="kwParentT">این ظاهر خریدنیه 🔒</div>
+  <div class="kw-parent-text" id="kwParentX">برای خرید، یکی از بزرگ‌ترها باید جواب بده:</div>
   <div class="kw-parent-q" id="kwParentQ"></div>
   <div class="kw-parent-opts" id="kwParentOpts"></div>
   <button class="card-link" type="button" id="kwParentNo">بستن</button>
@@ -1100,7 +1109,9 @@ kwParent.addEventListener("click", (e) => {
 function kwParentClose() {
   kwParent.classList.add("hidden");
 }
-function kwParentGate(then) {
+function kwParentGate(then, title = "این ظاهر خریدنیه 🔒", text = "برای خرید، یکی از بزرگ‌ترها باید جواب بده:") {
+  $("kwParentT").textContent = title;
+  $("kwParentX").textContent = text;
   const a = 6 + Math.floor(Math.random() * 4);
   const b = 6 + Math.floor(Math.random() * 4);
   const right = a * b;
