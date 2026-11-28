@@ -5,59 +5,16 @@
 // بزرگسال همان بازی همیشگی است. کودک چهار بازی ساده دارد، بدون سکه، بدون وقت و بدون باخت:
 // نقاشی و کلمه، چرخ کلمه (همان بازی اصلی با کلمه‌های آسان)، کدوم درسته (املا) و اسم فامیل.
 
-// هر دسته جدا (برای «اسم فامیل» بچه‌ها هم به کار می‌رود)
-const KIDS_CATS = {
-  // میوه و خوراکی
-  food: [
-    ["سیب", "🍎"], ["موز", "🍌"], ["انگور", "🍇"], ["لیمو", "🍋"], ["گیلاس", "🍒"], ["پرتقال", "🍊"],
-    ["هندوانه", "🍉"], ["آناناس", "🍍"], ["هلو", "🍑"], ["گلابی", "🍐"], ["نارگیل", "🥥"], ["کیوی", "🥝"],
-    ["هویج", "🥕"], ["گوجه", "🍅"], ["پیاز", "🧅"], ["سیر", "🧄"], ["ذرت", "🌽"], ["قارچ", "🍄"],
-    ["فلفل", "🌶️"], ["خیار", "🥒"], ["بادمجان", "🍆"], ["نان", "🍞"], ["کیک", "🍰"], ["پنیر", "🧀"],
-    ["تخم", "🥚"], ["عسل", "🍯"], ["پیتزا", "🍕"], ["بستنی", "🍦"], ["شکلات", "🍫"], ["کلوچه", "🍪"],
-    ["چای", "🍵"], ["برنج", "🍚"], ["دونات", "🍩"], ["نمک", "🧂"], ["آب", "💧"], ["شیرینی", "🧁"],
-  ],
-  // حیوان‌ها
-  animal: [
-    ["ماهی", "🐟"], ["گربه", "🐈"], ["سگ", "🐕"], ["اسب", "🐎"], ["شیر", "🦁"], ["خرس", "🐻"],
-    ["موش", "🐭"], ["مرغ", "🐔"], ["خروس", "🐓"], ["جوجه", "🐥"], ["اردک", "🦆"], ["فیل", "🐘"],
-    ["زنبور", "🐝"], ["میمون", "🐒"], ["خرگوش", "🐇"], ["مار", "🐍"], ["جغد", "🦉"], ["شتر", "🐫"],
-    ["گاو", "🐄"], ["زرافه", "🦒"], ["پروانه", "🦋"], ["ببر", "🐅"], ["گرگ", "🐺"], ["روباه", "🦊"],
-    ["پنگوئن", "🐧"], ["قورباغه", "🐸"], ["کوسه", "🦈"], ["نهنگ", "🐋"], ["دلفین", "🐬"], ["اختاپوس", "🐙"],
-    ["گوسفند", "🐑"], ["بز", "🐐"], ["کانگورو", "🦘"], ["تمساح", "🐊"], ["عقاب", "🦅"], ["طوطی", "🦜"],
-    ["کبوتر", "🕊️"], ["مورچه", "🐜"], ["حلزون", "🐌"], ["عنکبوت", "🕷️"], ["خفاش", "🦇"], ["سنجاب", "🐿️"],
-    ["کرگدن", "🦏"], ["گورخر", "🦓"], ["پلنگ", "🐆"], ["خرچنگ", "🦀"], ["میگو", "🦐"], ["شیر", "🦁"],
-  ],
-  // طبیعت
-  nature: [
-    ["ماه", "🌙"], ["گل", "🌸"], ["رز", "🌹"], ["درخت", "🌳"], ["برگ", "🍃"], ["ابر", "☁️"],
-    ["باران", "🌧️"], ["برف", "❄️"], ["ستاره", "⭐"], ["خورشید", "☀️"], ["کوه", "⛰️"], ["آتش", "🔥"],
-    ["دریا", "🌊"], ["کاکتوس", "🌵"], ["زمین", "🌍"], ["رعد", "⚡"],
-  ],
-  // چیزها
-  thing: [
-    ["کفش", "👟"], ["کلاه", "🧢"], ["توپ", "⚽"], ["کتاب", "📖"], ["مداد", "✏️"], ["ساعت", "⌚"],
-    ["خانه", "🏠"], ["قلب", "❤️"], ["هدیه", "🎁"], ["کلید", "🔑"], ["قاشق", "🥄"], ["چتر", "☂️"],
-    ["عینک", "👓"], ["بادکنک", "🎈"], ["لامپ", "💡"], ["قیچی", "✂️"], ["چکش", "🔨"], ["جارو", "🧹"],
-    ["صندلی", "🪑"], ["تخت", "🛏️"], ["در", "🚪"], ["پیراهن", "👕"], ["شلوار", "👖"], ["جوراب", "🧦"],
-    ["دستکش", "🧤"], ["شال", "🧣"], ["تاج", "👑"], ["انگشتر", "💍"], ["کیف", "👜"], ["طبل", "🥁"],
-    ["گیتار", "🎸"], ["زنگ", "🔔"], ["نامه", "✉️"], ["دوربین", "📷"], ["چمدان", "🧳"], ["شمع", "🕯️"],
-    ["گوشی", "📱"], ["بادبادک", "🪁"],
-  ],
-  // وسیله‌های نقلیه
-  vehicle: [
-    ["ماشین", "🚗"], ["قطار", "🚆"], ["کشتی", "🚢"], ["قایق", "⛵"], ["موشک", "🚀"], ["دوچرخه", "🚲"],
-    ["هواپیما", "✈️"], ["اتوبوس", "🚌"], ["تاکسی", "🚕"], ["کامیون", "🚚"], ["تراکتور", "🚜"], ["موتور", "🏍️"],
-  ],
-  // بدن و آدم‌ها
-  body: [
-    ["دست", "✋"], ["چشم", "👁️"], ["گوش", "👂"], ["بینی", "👃"], ["پا", "🦶"], ["دندان", "🦷"],
-    ["بچه", "👶"], ["پسر", "👦"], ["دختر", "👧"], ["بابا", "👨"], ["مامان", "👩"], ["پلیس", "👮"],
-  ],
-};
+// کلمه‌های تصویری (KIDS_CATS) در kidswords.js است
 const KIDS_WORDS = Object.values(KIDS_CATS).flat()
   .filter((w, i, all) => all.findIndex((v) => v[0] === w[0]) === i);
 
-const KIDS_HINT_MS = 4500; // اگر بچه مدتی حرف درست را نزد، همان حرف تکان می‌خورد
+// کلمه‌های دوتکه نیم‌فاصله دارند (مثل «لاک‌پشت»)؛ نیم‌فاصله حرف حساب نمی‌شود
+const kwLetters = (w) => [...w.replace(/\u200c/g, "")];
+const kwLen = (w) => kwLetters(w).length;
+
+// اگر بچه مدتی حرف درست را نزد، همان حرف تکان می‌خورد (هر چه سخت‌تر، دیرتر)
+const KIDS_HINT_MS = { easy: 3500, mid: 5000, hard: 8000 };
 
 // ---------------------------------------------------------------------------
 // صفحه‌ی انتخاب: کودک / بزرگسال
@@ -128,10 +85,12 @@ function kwUseTheme(id) {
   applyTheme(id);
   if (screenNow) route();
 }
+// بعد از انتخاب بخش، بازیکن به منوی اصلی همان بخش می‌رود (بزرگسال: منوی بازی؛ کودک: فهرست بازی‌های کودک)
 function chooseAdult() {
   kidsGate.classList.add("hidden");
   kidsWorld.classList.add("hidden");
   kwUseTheme(adultThemeOf(save.theme));
+  if (screenNow !== "home") goHome();
 }
 function chooseKid() {
   kidsGate.classList.add("hidden");
@@ -179,19 +138,135 @@ function kwState() {
   if (!x.kidsPlay) x.kidsPlay = { done: 0, recent: [] };
   return x.kidsPlay;
 }
-// کلمه‌های کوتاه اول؛ هر چه بچه بیشتر بسازد، کلمه‌های بلندتر هم می‌آیند
-function kwMaxLen(done) {
-  if (done < 8) return 3;
-  if (done < 20) return 4;
-  if (done < 40) return 5;
-  return 9;
+// ---------------------------------------------------------------------------
+// سختی هر بازی: خود بچه انتخاب می‌کند (آسون / متوسط / سخت) و برای هر بازی جدا یادش می‌ماند
+// ---------------------------------------------------------------------------
+const KW_LV = [
+  { id: "easy", stars: "⭐", name: "آسون" },
+  { id: "mid", stars: "⭐⭐", name: "متوسط" },
+  { id: "hard", stars: "⭐⭐⭐", name: "سخت" },
+];
+const KW_LV_NOTE = {
+  pic: ["کلمه‌های کوتاه", "کلمه‌های چهار حرفی", "کلمه‌های بلند، با حرف اضافه"],
+  wheel: ["جدول کوچولو", "جدول بزرگ‌تر", "کلمه‌های بلند و بیشتر"],
+  spell: ["کلمه‌های کوتاه", "کلمه‌های بلندتر", "سه تا گزینه"],
+  ef: ["چهار تا نقاشی", "شش تا نقاشی", "حرف وسط کلمه هم قایم میشه!"],
+  syl: ["چند تا بخش داره؟", "بخش‌ها رو بچین", "بخش گم‌شده رو پیدا کن"],
+};
+function kwLv(game) {
+  const v = X().kidsLv && X().kidsLv[game];
+  return KW_LV.some((l) => l.id === v) ? v : "easy";
 }
-function kwPick() {
-  const st = kwState();
-  const max = kwMaxLen(st.done);
-  let pool = KIDS_WORDS.filter((w) => [...w[0]].length <= max && !st.recent.includes(w[0]));
-  if (!pool.length) pool = KIDS_WORDS.filter((w) => [...w[0]].length <= max);
-  return pool[Math.floor(Math.random() * pool.length)];
+const kwLvInfo = (game) => KW_LV.find((l) => l.id === kwLv(game));
+
+function kwLvPick(game) {
+  kwStop();
+  if (typeof kxFocus !== "undefined") kxFocus = null;
+  kwIn = "lv";
+  const g = KW_GAMES.find((x) => x[0] === game);
+  const cur = kwLv(game);
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  $("kwStage").innerHTML = `
+    <div class="kw-lv-head"><span>${g[1]}</span><b>${g[2]}</b></div>
+    <div class="kw-ask">چقدر سخت باشه؟</div>
+    <div class="kw-lvs">${KW_LV.map((l, i) => `<button class="kw-lv kw-lv-${l.id}${l.id === cur ? " sel" : ""}" type="button" data-lv="${l.id}">
+      <i>${l.stars}</i><b>${l.name}</b><small>${KW_LV_NOTE[game][i]}</small></button>`).join("")}</div>`;
+  $("kwStage").querySelectorAll(".kw-lv").forEach((b) => (b.onclick = () => {
+    X().kidsLv = { ...(X().kidsLv || {}), [game]: b.dataset.lv };
+    persist();
+    kwRound = { game, n: 0 };
+    if (typeof sound === "function") sound("found");
+    KW_PLAY[game]();
+  }));
+}
+// دکمه‌ی کوچک سختی بالای هر بازی؛ زدنش دوباره صفحه‌ی انتخاب سختی را می‌آورد
+function kwBar(game) {
+  const l = kwLvInfo(game);
+  if (kwRound.game !== game) kwRound = { game, n: 0 };
+  const focus = game === "pic" && typeof kxFocus !== "undefined" && kxFocus && kxFocus.length;
+  return `<div class="kw-bar">
+    ${focus ? `<button class="kw-lv-chip kw-lv-focus" type="button" id="kwLvChip" aria-label="عوض کردن سختی">🎯 تمرین ${kxFocus.join(" ")}</button>`
+      : `<button class="kw-lv-chip kw-lv-${l.id}" type="button" id="kwLvChip" aria-label="عوض کردن سختی">${l.stars} ${l.name}</button>`}
+    <div class="kw-dots kw-round" id="kwRound">${kwRoundDots()}</div></div>`;
+}
+function kwWireBar(game) {
+  const chip = $("kwLvChip");
+  if (chip) chip.onclick = () => kwLvPick(game);
+}
+
+// هر دور پنج سؤال است؛ آخر هر دور یک جام
+const KW_ROUND = 5;
+let kwRound = { game: null, n: 0 };
+const kwRoundDots = () =>
+  Array.from({ length: KW_ROUND }, (_, i) => `<i class="${i < kwRound.n ? "done" : i === kwRound.n ? "now" : ""}"></i>`).join("");
+function kwRoundWin(game, delay) {
+  kwRound.n++;
+  const dots = $("kwRound");
+  if (dots) dots.innerHTML = kwRoundDots();
+  kwLater(() => (kwRound.n >= KW_ROUND ? kwTrophy(game) : KW_PLAY[game]()), delay);
+}
+function kwTrophy(game) {
+  kwStop();
+  kwIn = game;
+  kwRound = { game, n: 0 };
+  const at = KW_LV.findIndex((l) => l.id === kwLv(game));
+  const harder = KW_LV[at + 1];
+  $("kwStage").innerHTML = `
+    <div class="kw-pic win kw-trophy">🏆</div>
+    <div class="kw-word">${lnPick(["قهرمان!", "عالی بودی!", "ایول قهرمان!", "تو بهترینی!"])}</div>
+    <div class="kw-ask">پنج تا رو درست جواب دادی!</div>
+    <div class="kw-trophy-btns">
+      <button class="kw-next" type="button" id="kwAgain">یه دور دیگه ◀</button>
+      ${harder ? `<button class="kw-next kw-harder" type="button" id="kwHarder">${harder.stars} سخت‌ترش کن</button>` : ""}
+    </div>`;
+  kwConfetti();
+  setTimeout(kwConfetti, 500);
+  if (typeof sound === "function") sound("complete");
+  $("kwAgain").onclick = () => KW_PLAY[game]();
+  if (harder) $("kwHarder").onclick = () => {
+    X().kidsLv = { ...(X().kidsLv || {}), [game]: harder.id };
+    persist();
+    KW_PLAY[game]();
+  };
+}
+
+// دسته‌ی بُرخورده‌ی ماندگار: تا همه‌ی کلمه‌های یک بازی و سختی نیامده‌اند، هیچ‌کدام تکرار نمی‌شود
+// (حتی اگر بازی بسته و دوباره باز شود)
+function kwDeck(key, ids) {
+  const x = X();
+  if (!x.kidsDeck || typeof x.kidsDeck !== "object") x.kidsDeck = {};
+  const valid = new Set(ids);
+  let left = Array.isArray(x.kidsDeck[key]) ? x.kidsDeck[key].filter((i) => valid.has(i)) : [];
+  if (!left.length) {
+    const last = x.kidsDeck[key + "~"];
+    left = shuffled([...ids], Math.random);
+    // آخرین کلمه‌ی دور قبل، اول دور تازه نیاید
+    if (left.length > 1 && left[0] === last) left.push(left.shift());
+  }
+  const next = left.shift();
+  x.kidsDeck[key] = left;
+  x.kidsDeck[key + "~"] = next;
+  persist();
+  return next;
+}
+
+// ---------------------------------------------------------------------------
+// نقاشی و کلمه: حرف‌ها را به ترتیب بزن
+// ---------------------------------------------------------------------------
+function kwPicPool(lv) {
+  // تمرین حرف‌هایی که در امتحان سخت بودند (kidsexam.js)
+  if (typeof kxFocus !== "undefined" && kxFocus && kxFocus.length)
+    return KIDS_WORDS.filter(([w]) => kwLen(w) <= 6 && kwLetters(w).some((c) => kxFocus.includes(c)));
+  return KIDS_WORDS.filter(([w]) => {
+    const n = kwLen(w);
+    return lv === "easy" ? n <= 3 : lv === "mid" ? n === 4 : n >= 5 && n <= 7;
+  });
+}
+function kwPick(lv) {
+  const pool = kwPicPool(lv);
+  const focus = typeof kxFocus !== "undefined" && kxFocus && kxFocus.length ? "f:" + kxFocus.join("") : "";
+  const w = kwDeck("pic:" + (focus || lv), pool.map((x) => x[0]));
+  return pool.find((x) => x[0] === w);
 }
 
 function kwTodayStars() {
@@ -199,20 +274,29 @@ function kwTodayStars() {
   return st && st.day === todayKey() ? st.all || st.n || 0 : 0;
 }
 
+// حرف‌های اضافه‌ی سطح سخت: حرف‌های رایجی که در کلمه نیستند و با حرف‌های کلمه هم‌صدا نیستند
+const KW_DECOY = [..."ابپتجچدرزسشکگلمنوهی"];
 function kwNext() {
   kwStop();
   kwIn = "pic";
-  const [word, pic] = kwPick();
-  const letters = [...word];
-  let order = shuffled(letters.map((ch, i) => ({ ch, i })), Math.random);
+  const lv = kwLv("pic");
+  const [word, pic] = kwPick(lv);
+  const letters = kwLetters(word);
+  const keys = letters.map((ch, i) => ({ ch, i }));
+  if (lv === "hard") {
+    const sounds = new Set(letters.map((c) => kwSound(c === "آ" ? "ا" : c)));
+    shuffled(KW_DECOY.filter((c) => !sounds.has(kwSound(c))), Math.random).slice(0, 2).forEach((ch) => keys.push({ ch, i: -1 }));
+  }
+  let order = shuffled(keys, Math.random);
   if (letters.length > 1 && order.every((o, k) => o.i === k)) order = order.reverse();
-  kw = { word, pic, letters, at: 0 };
+  kw = { word, pic, letters, at: 0, lv };
   $("kwStars").textContent = faDigits(kwTodayStars());
-  $("kwStage").innerHTML = `
+  $("kwStage").innerHTML = `${kwBar("pic")}
     <div class="kw-pic">${pic}</div>
     <div class="kw-slots${letters.length >= 6 ? " many" : ""}">${letters.map(() => `<span class="kw-slot"></span>`).join("")}</div>
-    <div class="kw-keys">${order.map((o) => `<button class="kw-key" type="button">${o.ch}</button>`).join("")}</div>`;
+    <div class="kw-keys${order.length >= 8 ? " many" : ""}">${order.map((o) => `<button class="kw-key" type="button">${o.ch}</button>`).join("")}</div>`;
   $("kwStage").querySelectorAll(".kw-key").forEach((k) => (k.onclick = () => kwTap(k)));
+  kwWireBar("pic");
   kwArmHint();
 }
 
@@ -223,7 +307,7 @@ function kwArmHint() {
     const need = kw && kw.letters[kw.at];
     const key = [...$("kwStage").querySelectorAll(".kw-key:not([disabled])")].find((k) => k.textContent === need);
     if (key) key.classList.add("nudge");
-  }, KIDS_HINT_MS);
+  }, KIDS_HINT_MS[(kw && kw.lv) || "easy"]);
 }
 
 function kwTap(key) {
@@ -233,7 +317,7 @@ function kwTap(key) {
     if (typeof sound === "function") sound("repeat");
     if (typeof haptic === "function") haptic("light");
     key.classList.remove("no");
-    void key.offsetWidth;
+    void getComputedStyle(key).animationName;
     key.classList.add("no");
     return;
   }
@@ -252,13 +336,12 @@ function kwWin() {
   clearTimeout(kwHintTimer);
   const st = kwState();
   st.done++;
-  st.recent = [kw.word, ...st.recent.filter((w) => w !== kw.word)].slice(0, 40);
   kwReward();
   const stage = $("kwStage");
   stage.querySelector(".kw-slots").outerHTML = `<div class="kw-word">${kw.word}</div>`;
   stage.querySelector(".kw-keys").innerHTML = kwCheer();
   stage.querySelector(".kw-pic").classList.add("win");
-  kwLater(kwNext, 1700);
+  kwRoundWin("pic", 1700);
 }
 
 function kwConfetti() {
@@ -297,20 +380,25 @@ function kwOops(btn) {
   if (typeof sound === "function") sound("repeat");
   if (typeof haptic === "function") haptic("light");
   btn.classList.remove("no");
-  void btn.offsetWidth;
+  void getComputedStyle(btn).animationName;
   btn.classList.add("no");
 }
 
+// بازی‌های کودک (به‌جز ظاهر بازی) پیش از شروع، صفحه‌ی انتخاب سختی دارند
 const KW_GAMES = [
-  ["pic", "🖼️", "نقاشی و کلمه", () => kwNext()],
-  ["wheel", "🎡", "چرخ کلمه", () => kwWheel()],
-  ["spell", "✏️", "کدوم درسته؟", () => kwSpell()],
-  ["ef", "🙈", "قایم‌موشک حرف‌ها", () => kwEf()],
+  ["pic", "🖼️", "نقاشی و کلمه", () => kwLvPick("pic")],
+  ["wheel", "🎡", "چرخ کلمه", () => kwLvPick("wheel")],
+  ["spell", "✏️", "کدوم درسته؟", () => kwLvPick("spell")],
+  ["ef", "🙈", "قایم‌موشک حرف‌ها", () => kwLvPick("ef")],
+  ["syl", "👏", "بخش‌بازی", () => kwLvPick("syl")],
   ["themes", "🎨", "ظاهر بازی", () => kwThemes()],
+  ["exam", "📝", "امتحان", () => kxHome()],
 ];
+const KW_PLAY = { pic: () => kwNext(), wheel: () => kwWheel(), spell: () => kwSpell(), ef: () => kwEf(), syl: () => kwSyl() };
 
 function kwMenu() {
   kwStop();
+  if (typeof kxFocus !== "undefined") kxFocus = null;
   kwLeavePlay();
   if (kwThemeMode) kwThemesDone();
   kwIn = null;
@@ -331,7 +419,7 @@ function kwMenu() {
 
 const KIDS_SPELL = [
   ["طوطی", "توتی", "🦜"], ["قاشق", "غاشق", "🥄"], ["صندلی", "سندلی", "🪑"], ["حلزون", "هلزون", "🐌"],
-  ["عینک", "عینگ", "👓"], ["عسل", "اسل", "🍯"], ["قورباغه", "غورباغه", "🐸"], ["ذرت", "زرت", "🌽"],
+  ["عینک", "عینگ", "👓"], ["عسل", "اسل", "🍯"], ["قورباغه", "غورباغه", "🐸"], ["ذرت", "ضرت", "🌽"],
   ["خورشید", "خرشید", "☀️"], ["صابون", "سابون", "🧼"], ["طبل", "تبل", "🥁"], ["عقاب", "اقاب", "🦅"],
   ["غذا", "قذا", "🍲"], ["توپ", "طوپ", "⚽"], ["تخت", "طخت", "🛏️"], ["گوسفند", "گوصفند", "🐑"],
   ["عروسک", "اروسک", "🪆"], ["صدف", "سدف", "🐚"], ["شطرنج", "شترنج", "♟️"], ["اتوبوس", "اطوبوس", "🚌"],
@@ -343,20 +431,61 @@ const KIDS_SPELL = [
   ["ساعت", "ساعط", "⌚"], ["تمساح", "طمساح", "🐊"], ["ظرف", "زرف", "🍽️"], ["بستنی", "بصتنی", "🍦"],
   ["شکلات", "شکلاط", "🍫"], ["صحرا", "سحرا", "🏜️"],
 ];
-let kwSpellLast = [];
+
+// غلط‌های املایی ساختگی: یک حرف با حرف هم‌صدایش عوض می‌شود (ت/ط، س/ص/ث، ز/ذ/ض/ظ، ق/غ، ه/ح، ا/ع اول کلمه).
+// «ه» آخر کلمه (صدای «ـه» مثل گربه) عوض نمی‌شود؛ شکلی که خودش کلمه‌ی درستی باشد هم کنار می‌رود.
+const KW_SWAP = ["تط", "سصث", "زذضظ", "قغ", "هح"];
+// شکل‌هایی که درست یا کلمه‌ی دیگری‌اند (یا برای بچه مناسب نیستند) و نباید گزینه‌ی غلط شوند
+const KW_SPELL_OK = new Set(["پرتغال", "طاس", "زرت", "حلو", "عبر", "سد", "صد"]);
+function kwMisspell(word) {
+  const ch = [...word];
+  const out = new Set();
+  ch.forEach((c, i) => {
+    let group = KW_SWAP.find((g) => g.includes(c));
+    if (c === "ه" && (i === ch.length - 1 || ch[i + 1] === "\u200c")) group = null;
+    if (group) for (const o of group) if (o !== c) out.add([...ch.slice(0, i), o, ...ch.slice(i + 1)].join(""));
+    if (i === 0 && c === "ا") out.add("ع" + ch.slice(1).join(""));
+    if (i === 0 && c === "ع") out.add("ا" + ch.slice(1).join(""));
+  });
+  const real = (v) => KW_SPELL_OK.has(v) || (dict && dict.has(v.replace(/\u200c/g, ""))) || KIDS_WORDS.some((w) => w[0] === v);
+  return shuffled([...out].filter((v) => !real(v)), seededRandom(hashText(word)));
+}
+let kwSpellBank = null;
+function kwSpellItems() {
+  if (kwSpellBank && kwSpellBank.dict === dict.size) return kwSpellBank.items;
+  const items = new Map();
+  // اول غلط‌های دست‌نوشته (مثل خواب/خاب)، بعد غلط‌های ساختگی
+  for (const [right, wrong, pic] of KIDS_SPELL) items.set(right, { w: right, pic, wrongs: [wrong] });
+  for (const [w, pic] of KIDS_WORDS) {
+    const it = items.get(w) || { w, pic, wrongs: [] };
+    for (const v of kwMisspell(w)) if (!it.wrongs.includes(v)) it.wrongs.push(v);
+    if (it.wrongs.length) items.set(w, it);
+  }
+  kwSpellBank = { dict: dict.size, items: [...items.values()] };
+  return kwSpellBank.items;
+}
+function kwSpellPool(lv) {
+  return kwSpellItems().filter((it) => {
+    const n = kwLen(it.w);
+    return lv === "easy" ? n <= 4 : lv === "mid" ? n >= 4 : n >= 4 && it.wrongs.length >= 2;
+  });
+}
 
 function kwSpell() {
   kwStop();
   kwIn = "spell";
-  const pool = KIDS_SPELL.filter((x) => !kwSpellLast.includes(x[0]));
-  const [right, wrong, pic] = lnPick(pool.length ? pool : KIDS_SPELL);
-  kwSpellLast = [right, ...kwSpellLast].slice(0, 15);
-  const opts = Math.random() < 0.5 ? [right, wrong] : [wrong, right];
+  const lv = kwLv("spell");
+  const pool = kwSpellPool(lv);
+  const id = kwDeck("spell:" + lv, pool.map((x) => x.w));
+  const it = pool.find((x) => x.w === id);
+  const right = it.w;
+  const opts = shuffled([right, ...it.wrongs.slice(0, lv === "hard" ? 2 : 1)], Math.random);
   $("kwStars").textContent = faDigits(kwTodayStars());
-  $("kwStage").innerHTML = `
-    <div class="kw-pic">${pic}</div>
+  $("kwStage").innerHTML = `${kwBar("spell")}
+    <div class="kw-pic">${it.pic}</div>
     <div class="kw-ask">کدوم درست نوشته شده؟</div>
-    <div class="kw-opts">${opts.map((w) => `<button class="kw-opt" type="button">${w}</button>`).join("")}</div>`;
+    <div class="kw-opts${opts.length > 2 ? " three" : ""}">${opts.map((w) => `<button class="kw-opt" type="button">${w}</button>`).join("")}</div>`;
+  kwWireBar("spell");
   let missed = false;
   $("kwStage").querySelectorAll(".kw-opt").forEach((b) => (b.onclick = () => {
     if (b.textContent !== right) {
@@ -370,52 +499,92 @@ function kwSpell() {
     else if (typeof sound === "function") sound("found");
     $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
     $("kwStage").querySelector(".kw-pic").classList.add("win");
-    kwLater(kwSpell, 1500);
+    // دور پنج‌تایی فقط با جواب درستِ بار اول جلو می‌رود
+    if (missed) kwLater(kwSpell, 1500);
+    else kwRoundWin("spell", 1500);
   }));
 }
 
 // ---------------------------------------------------------------------------
-// اسم فامیل کودک: یک حرف میاد و شش نقاشی بدون اسم؛ بچه باید اسم هر نقاشی رو تو ذهنش بگه
-// و همه‌ی اونایی که با این حرف شروع میشن رو پیدا کنه. اسم هر نقاشی بعد از زدنش نشون داده میشه.
+// قایم‌موشک حرف‌ها: یک حرف قایم شده؛ نقاشی‌ها از پشت بوته‌ها سرک می‌کشند و بچه
+// اونایی رو پیدا می‌کنه که حرف توی اسمشونه. اسم هر نقاشی بعد از زدنش نشون داده میشه.
+//   آسون: ۴ نقاشی، اسم با این حرف شروع میشه
+//   متوسط: ۶ نقاشی، اسم با این حرف شروع میشه
+//   سخت: ۹ نقاشی، حرف هر جای اسم ممکنه قایم شده باشه (شکل‌های چسبیده‌ی حرف هم نشون داده میشه)
 // ---------------------------------------------------------------------------
 
-const KW_EF_CARDS = 6;
 // نقاشی‌هایی که اسمشان یکی نیست (مثلاً 📱 هم گوشی است هم موبایل) در این بازی نمی‌آیند
-const KW_EF_SKIP = new Set(["آب", "شیرینی", "زمین", "رعد", "دست", "پا", "بابا", "مامان", "پسر", "دختر", "بچه", "گوشی", "لامپ", "تخم", "کیف", "شال", "در", "برگ", "پلیس", "رز", "هدیه", "تاکسی", "بینی", "کلوچه", "خروس"]);
-// حرف‌های هم‌صدا: نقاشی‌ای که با حرف هم‌صدا شروع شود گزینه‌ی غلط نمی‌شود (بچه صدا را می‌شنود نه املا را)
+const KW_EF_SKIP = new Set(["آب", "شیرینی", "زمین", "رعد", "دست", "پا", "بابا", "مامان", "پسر", "دختر", "بچه", "گوشی", "لامپ", "تخم‌مرغ", "کیف", "شال", "در", "برگ", "پلیس", "رز", "هدیه", "تاکسی", "بینی", "کلوچه", "خروس",
+  "غذا", "صبحانه", "خواب", "ظرف", "چراغ", "حمام", "پرنده", "دهان", "لباس", "جعبه", "پرچم", "تک‌شاخ", "ماهی‌مرکب", "روح", "فرشته", "سبد", "نخ", "کاموا", "جام", "قلعه", "کارخانه", "پل", "مترو", "یخ", "مغز", "دفتر", "پادشاه", "ملکه", "جادوگر",
+  "نوشابه", "کامپیوتر", "آبمیوه", "کاپشن", "سیاره", "آدم‌آهنی", "بشقاب‌پرنده", "طوفان", "صحرا", "نخل", "آتش‌بازی", "انگشتر", "اسکوتر", "لباس", "شبدر",
+  "کباب", "کاسه", "کرم", "باد", "دود", "شب", "صبح", "ماسک", "پیچ", "سنجاق", "دماسنج", "کمان", "شهر", "بوس", "خنده", "گریه", "تب", "سرما",
+  "گرما", "ناخن", "دکتر", "معلم", "نقاش", "آشپز", "سرباز", "کشاورز", "خلبان", "فضانورد"]);
+// حرف‌های هم‌صدا: نقاشی‌ای که حرف هم‌صدا دارد گزینه‌ی غلط نمی‌شود (بچه صدا را می‌شنود نه املا را)
 const KW_SAME_SOUND = ["اعآ", "تط", "سصث", "زذضظ", "هح", "قغ"];
-const kwFirst = (w) => (w[0] === "آ" ? "ا" : w[0]);
+const kwNorm = (c) => (c === "آ" ? "ا" : c);
+const kwFirst = (w) => kwNorm(w[0]);
 const kwSound = (ch) => (KW_SAME_SOUND.find((g) => g.includes(ch)) || ch);
-let kef = null; // { letter, need, got }
+// حرف‌هایی که به حرف بعدی نمی‌چسبند
+const KW_NOJOIN = "ادذرزژو";
+const KW_EF = { easy: { cards: 4, right: [2, 2] }, mid: { cards: 6, right: [2, 3] }, hard: { cards: 9, right: [3, 4] } };
+let kef = null; // { letter, need, got, right }
 
 function kwEfWords() {
   const seen = new Set();
   return KIDS_WORDS.filter(([w, pic]) => !KW_EF_SKIP.has(w) && !seen.has(pic) && seen.add(pic));
 }
+// آیا اسم نقاشی این حرف را دارد؟ (سخت: هر جای کلمه؛ بقیه: اول کلمه)
+const kwEfHas = (w, letter, anywhere) => (anywhere ? kwLetters(w).some((c) => kwNorm(c) === letter) : kwFirst(w) === letter);
+// آیا حرف هم‌صدا (یا خود حرف) در کلمه هست؟ چنین نقاشی‌ای گزینه‌ی غلط نمی‌شود
+const kwEfNear = (w, same, anywhere) => (anywhere ? kwLetters(w).some((c) => kwSound(kwNorm(c)) === same) : kwSound(kwFirst(w)) === same);
+// اسم با حرف‌های پیداشده‌ی رنگی (بدون شکستن چسبیدگی حروف)
+function kwMark(w, letter, anywhere) {
+  const ch = [...w];
+  let html = "";
+  ch.forEach((c, i) => {
+    const hit = kwNorm(c) === letter && (anywhere || i === 0);
+    html += hit ? `<em>${c}</em>` : c;
+  });
+  return html;
+}
 
 function kwEf() {
   kwStop();
   kwIn = "ef";
+  const lv = kwLv("ef");
+  const conf = KW_EF[lv];
+  const anywhere = lv === "hard";
   const words = kwEfWords();
-  const count = {};
-  for (const [w] of words) count[kwFirst(w)] = (count[kwFirst(w)] || 0) + 1;
-  // حرف‌هایی که دست‌کم سه نقاشی دارند
-  const last = kef && kef.letter;
-  const letter = lnPick(Object.keys(count).filter((ch) => count[ch] >= 3 && ch !== last));
-  const right = shuffled(words.filter(([w]) => kwFirst(w) === letter), Math.random).slice(0, 2 + (Math.random() < 0.5 ? 1 : 0));
+  const [lo, hi] = conf.right;
+  // حرف‌هایی که به اندازه‌ی کافی نقاشی درست و غلط دارند؛ از دسته‌ی بُرخورده تا تکراری نیاید
+  const ok = [..."ابپتجچحخدرزسشصطعغفقکگلمنوهی"].filter((ch) => {
+    const same = kwSound(ch);
+    const yes = words.filter(([w]) => kwEfHas(w, ch, anywhere)).length;
+    const no = words.filter(([w]) => !kwEfNear(w, same, anywhere)).length;
+    return yes >= hi + 1 && no >= conf.cards && (!anywhere || ch !== "ا");
+  });
+  const letter = kwDeck("ef:" + lv, ok);
+  const need = lo + Math.floor(Math.random() * (hi - lo + 1));
+  const right = shuffled(words.filter(([w]) => kwEfHas(w, letter, anywhere)), Math.random).slice(0, need);
   const same = kwSound(letter);
-  const wrong = [];
-  for (const w of shuffled(words, Math.random)) {
-    if (wrong.length >= KW_EF_CARDS - right.length) break;
-    if (kwSound(kwFirst(w[0])) !== same) wrong.push(w);
-  }
-  kef = { letter, need: right.length, got: 0, right: new Set(right.map((w) => w[0])) };
+  const wrong = shuffled(words.filter(([w]) => !kwEfNear(w, same, anywhere)), Math.random).slice(0, conf.cards - need);
+  kef = { letter, need, got: 0, right: new Set(right.map((w) => w[0])), anywhere };
   const cards = shuffled([...right, ...wrong], Math.random);
+  const forms = KW_NOJOIN.includes(letter) ? [letter, "ـ" + letter] : [letter + "ـ", "ـ" + letter + "ـ", "ـ" + letter];
+  const ask = anywhere
+    ? `«${letter}» توی اسم کدوم نقاشی‌ها قایم شده؟`
+    : `اسم کدوم نقاشی‌ها با «${letter}» شروع میشه؟`;
   $("kwStars").textContent = faDigits(kwTodayStars());
-  $("kwStage").innerHTML = `
-    <div class="kw-ef-head"><div class="kw-letter">${letter}</div></div>
-    <div class="kw-ask">اسم کدوم نقاشی‌ها با «${letter}» شروع میشه؟<br><small id="kefLeft">${faDigits(kef.need)} تا پیدا کن</small></div>
-    <div class="kw-cards six">${cards.map(([w, pic]) => `<button class="kw-card" type="button" data-w="${w}"><span>${pic}</span><b>${w}</b></button>`).join("")}</div>`;
+  $("kwStage").innerHTML = `${kwBar("ef")}
+    <div class="kw-ef-head">
+      <div class="kw-letter kw-peeker"><span>${letter}</span><i class="kw-eyes"><b></b><b></b></i></div>
+      ${anywhere ? `<div class="kw-forms">${forms.map((f) => `<span>${f}</span>`).join("")}</div>` : ""}
+    </div>
+    <div class="kw-ask">${ask}</div>
+    <div class="kw-dots kw-need" id="kefLeft">${Array.from({ length: need }, () => "<i></i>").join("")}</div>
+    <div class="kw-cards kw-hide n${conf.cards}">${cards.map(([w, pic], i) =>
+      `<button class="kw-card" type="button" data-w="${w}"><span style="animation-delay:${180 + i * 110}ms">${pic}</span><b>${kwMark(w, letter, anywhere)}</b></button>`).join("")}</div>`;
+  kwWireBar("ef");
   $("kwStage").querySelectorAll(".kw-card").forEach((b) => (b.onclick = () => {
     if (!kef.right.has(b.dataset.w)) {
       b.disabled = true;
@@ -424,16 +593,198 @@ function kwEf() {
     }
     b.disabled = true;
     b.classList.add("right", "show");
+    $("kefLeft").children[kef.got].classList.add("done");
     kef.got++;
     if (kef.got < kef.need) {
       if (typeof sound === "function") sound("letter", kef.got);
-      $("kefLeft").textContent = `${faDigits(kef.need - kef.got)} تای دیگه`;
       return;
     }
-    $("kwStage").querySelectorAll(".kw-card").forEach((o) => (o.disabled = true));
+    $("kwStage").querySelectorAll(".kw-card").forEach((o) => {
+      o.disabled = true;
+      // آخر کار اسم همه‌ی نقاشی‌ها نشان داده می‌شود
+      o.classList.add("show");
+    });
     kwReward();
     $("kwStage").querySelector(".kw-ask").outerHTML = kwCheer();
-    kwLater(kwEf, 1800);
+    kwRoundWin("ef", 2200);
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// بخش‌بازی: کلمه از چند بخش (هجا) ساخته شده، مثل «داس / تان»
+//   آسون: چند بخشه؟ بچه به تعداد بخش‌ها دست می‌زنه (۱ تا ۳ بخش)
+//   متوسط: بخش‌ها قاطی شده‌اند؛ به ترتیب بچینشان (۲ یا ۳ بخش)
+//   سخت: یکی از بخش‌ها جا افتاده؛ از بین سه تکه پیدایش کن (۳ بخش یا بیشتر)
+// بخش‌ها در KIDS_SYL (kidswords.js) دستی نوشته شده‌اند.
+// ---------------------------------------------------------------------------
+
+const kwPlain = (s) => s.replace(/[ً-ْ]/g, "");
+let kwSylBank = null;
+function kwSylItems() {
+  if (!kwSylBank)
+    kwSylBank = KIDS_WORDS.filter(([w]) => KIDS_SYL[w]).map(([w, pic]) => ({ w, pic, parts: KIDS_SYL[w].split("-") }));
+  return kwSylBank;
+}
+function kwSylPool(lv) {
+  return kwSylItems().filter(({ w, parts }) =>
+    lv === "easy" ? parts.length <= 3 && kwLen(w) <= 6 : lv === "mid" ? parts.length === 2 || parts.length === 3 : parts.length >= 3);
+}
+// صدای دست زدن برای هر بخش؛ هر تکه هم‌زمان روشن می‌شود
+function kwSylClap(stage, then) {
+  const parts = [...stage.querySelectorAll(".kw-syl-p")];
+  parts.forEach((p, i) =>
+    kwLater(() => {
+      p.classList.add("on");
+      if (typeof sound === "function") sound("letter", i);
+      if (typeof haptic === "function") haptic("light");
+    }, 250 + i * 520));
+  if (then) kwLater(then, 250 + parts.length * 520);
+}
+const kwSylRow = (parts, cls = "") =>
+  `<div class="kw-syl ${cls}${parts.length >= 4 ? " many" : ""}">${parts.map((p, i) => `${i ? `<i class="kw-syl-dash">-</i>` : ""}<span class="kw-syl-p">${p}</span>`).join("")}</div>`;
+
+function kwSyl() {
+  kwStop();
+  kwIn = "syl";
+  const lv = kwLv("syl");
+  const pool = kwSylPool(lv);
+  const id = kwDeck("syl:" + lv, pool.map((x) => x.w));
+  const it = pool.find((x) => x.w === id);
+  $("kwStars").textContent = faDigits(kwTodayStars());
+  if (lv === "easy") return kwSylCount(it);
+  if (lv === "mid") return kwSylOrder(it);
+  return kwSylMissing(it);
+}
+
+// آسون: چند بخشه؟
+function kwSylCount(it) {
+  const n = it.parts.length;
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-word kw-syl-word">${it.w}</div>
+    <div class="kw-ask">بگو و دست بزن: چند تا بخش داره؟</div>
+    <div class="kw-opts kw-claps">${[1, 2, 3].map((k) =>
+      `<button class="kw-opt kw-clap" type="button" data-n="${k}"><span>${"👏".repeat(k)}</span><b>${faDigits(k)}</b></button>`).join("")}</div>`;
+  kwWireBar("syl");
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-clap").forEach((b) => (b.onclick = () => {
+    if (+b.dataset.n !== n) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    const stage = $("kwStage");
+    stage.querySelectorAll(".kw-clap").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    stage.querySelector(".kw-syl-word").outerHTML = kwSylRow(it.parts, "show");
+    stage.querySelector(".kw-ask").outerHTML = `<div class="kw-ask">${faDigits(n)} تا بخش!</div>`;
+    kwSylClap(stage, () => {
+      if (!missed) kwReward();
+      else if (typeof sound === "function") sound("found");
+      stage.querySelector(".kw-ask").outerHTML = kwCheer();
+      stage.querySelector(".kw-pic").classList.add("win");
+      if (missed) kwLater(kwSyl, 1500);
+      else kwRoundWin("syl", 1500);
+    });
+  }));
+}
+
+// متوسط: بخش‌ها رو بچین
+function kwSylOrder(it) {
+  const parts = it.parts;
+  let order = shuffled(parts.map((p, i) => ({ p, i })), Math.random);
+  if (order.every((o, k) => kwPlain(o.p) === kwPlain(parts[k]))) order = order.reverse();
+  // دو بخش یکسان (مثل «با-با») هر دو تا پشت‌سرهم درستند
+  let at = 0;
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-ask">بخش‌ها رو به ترتیب بچین</div>
+    <div class="kw-slots kw-syl-slots">${parts.map(() => `<span class="kw-slot kw-syl-slot"></span>`).join("")}</div>
+    <div class="kw-keys">${order.map((o) => `<button class="kw-key kw-syl-key" type="button">${o.p}</button>`).join("")}</div>`;
+  kwWireBar("syl");
+  const arm = () => {
+    clearTimeout(kwHintTimer);
+    $("kwStage").querySelectorAll(".kw-key.nudge").forEach((k) => k.classList.remove("nudge"));
+    kwHintTimer = setTimeout(() => {
+      const key = [...$("kwStage").querySelectorAll(".kw-key:not([disabled])")].find((k) => k.textContent === parts[at]);
+      if (key) key.classList.add("nudge");
+    }, KIDS_HINT_MS.mid);
+  };
+  arm();
+  $("kwStage").querySelectorAll(".kw-key").forEach((k) => (k.onclick = () => {
+    if (at >= parts.length) return;
+    if (k.textContent !== parts[at]) {
+      if (typeof sound === "function") sound("repeat");
+      if (typeof haptic === "function") haptic("light");
+      k.classList.remove("no");
+      void k.offsetWidth;
+      k.classList.add("no");
+      return;
+    }
+    if (typeof sound === "function") sound("letter", at);
+    k.disabled = true;
+    k.classList.remove("nudge");
+    const slot = $("kwStage").querySelectorAll(".kw-slot")[at];
+    slot.textContent = k.textContent;
+    slot.classList.add("on");
+    at++;
+    if (at < parts.length) return arm();
+    clearTimeout(kwHintTimer);
+    kwState().done++;
+    kwReward();
+    const stage = $("kwStage");
+    stage.querySelector(".kw-ask").outerHTML = `<div class="kw-word">${it.w}</div>`;
+    stage.querySelector(".kw-keys").innerHTML = kwCheer();
+    stage.querySelector(".kw-pic").classList.add("win");
+    kwRoundWin("syl", 1800);
+  }));
+}
+
+// سخت: کدوم بخش جا افتاده؟ دو تکه‌ی غلط از بخش‌های کلمه‌های دیگر، با اندازه‌ی نزدیک
+function kwSylMissing(it) {
+  const parts = it.parts;
+  const gap = Math.floor(Math.random() * parts.length);
+  const right = parts[gap];
+  const len = kwPlain(right).length;
+  const own = new Set(parts.map(kwPlain));
+  const seen = new Set();
+  const others = shuffled(kwSylItems().flatMap((x) => x.parts), Math.random).filter((p) => {
+    const k = kwPlain(p);
+    if (own.has(k) || seen.has(k) || Math.abs(k.length - len) > 1) return false;
+    seen.add(k);
+    return true;
+  });
+  const opts = shuffled([right, ...others.slice(0, 2)], Math.random);
+  $("kwStage").innerHTML = `${kwBar("syl")}
+    <div class="kw-pic">${it.pic}</div>
+    <div class="kw-syl kw-syl-gap${parts.length >= 4 ? " many" : ""}">${parts.map((p, i) =>
+      `${i ? `<i class="kw-syl-dash">-</i>` : ""}<span class="kw-syl-p${i === gap ? " hole" : ""}">${i === gap ? "؟" : p}</span>`).join("")}</div>
+    <div class="kw-ask">کدوم تیکه جا افتاده؟</div>
+    <div class="kw-opts three kw-syl-opts">${opts.map((p) => `<button class="kw-opt" type="button">${p}</button>`).join("")}</div>`;
+  kwWireBar("syl");
+  let missed = false;
+  $("kwStage").querySelectorAll(".kw-opt").forEach((b) => (b.onclick = () => {
+    if (b.textContent !== right) {
+      missed = true;
+      b.disabled = true;
+      return kwOops(b);
+    }
+    const stage = $("kwStage");
+    stage.querySelectorAll(".kw-opt").forEach((o) => (o.disabled = true));
+    b.classList.add("right");
+    const hole = stage.querySelector(".kw-syl-p.hole");
+    hole.textContent = right;
+    hole.classList.remove("hole");
+    hole.classList.add("fill");
+    kwSylClap(stage, () => {
+      if (!missed) kwReward();
+      else if (typeof sound === "function") sound("found");
+      stage.querySelector(".kw-syl").outerHTML = `<div class="kw-word">${it.w}</div>`;
+      stage.querySelector(".kw-ask").outerHTML = kwCheer();
+      stage.querySelector(".kw-pic").classList.add("win");
+      if (missed) kwLater(kwSyl, 1500);
+      else kwRoundWin("syl", 1500);
+    });
   }));
 }
 
@@ -517,17 +868,17 @@ function kwPrepare() {
       return !seen.has(key) && seen.add(key);
     });
   };
-  kwSeeds = { easy, 4: seedsOf(4), 5: seedsOf(5) };
+  kwSeeds = { easy, 4: seedsOf(4), 5: seedsOf(5), 6: seedsOf(6) };
 }
 
-function kwBuild(seed, rnd) {
+function kwBuild(seed, rnd, max = KW_MAX_WORDS) {
   const subs = generator.wordsFrom(seed).filter((w) => w !== seed && w.length >= 2 && generator.levelOf(w) === 1);
   const rank = (w) => (kwSeeds.easy.has(w) ? 0 : 2) + (w.length === 2 ? 1 : 0) + rnd();
   const pool = subs.map((w) => ({ w, k: rank(w) })).sort((a, b) => a.k - b.k).map((x) => x.w);
   const picked = [seed];
   let twos = 0;
   for (const w of pool) {
-    if (picked.length >= KW_MAX_WORDS) break;
+    if (picked.length >= max) break;
     if (w.length === 2 && twos >= 1) continue;
     if (buildLayout([...picked, w], 400).connected) {
       picked.push(w);
@@ -537,32 +888,52 @@ function kwBuild(seed, rnd) {
   return { letters: shuffled([...seed], rnd), words: picked, seed };
 }
 
-function kwWheelLevel(n) {
-  if (n < handmade.length || !generator) return handmade[n % handmade.length];
+// سختی چرخ کلمه:
+//   آسون: اول همان مرحله‌های دست‌ساز، بعد کلمه‌ی ۴ حرفی و حداکثر ۳ کلمه در جدول
+//   متوسط: کلمه‌ی ۴ یا ۵ حرفی و حداکثر ۴ کلمه
+//   سخت: کلمه‌ی ۵ یا ۶ حرفی و حداکثر ۶ کلمه
+const KW_WHEEL = {
+  easy: { lens: [4], max: 3 },
+  mid: { lens: [4, 5], max: 4 },
+  hard: { lens: [5, 6], max: 6 },
+};
+function kwWheelLevel(n, lv = "easy") {
+  if (lv === "easy" && (n < handmade.length || !generator)) return handmade[n % handmade.length];
+  if (!generator) return handmade[n % handmade.length];
   kwPrepare();
-  const g = n - handmade.length;
-  const list = g < 20 || !kwSeeds[5].length ? kwSeeds[4] : g % 2 ? kwSeeds[5] : kwSeeds[4];
+  const conf = KW_WHEEL[lv];
+  const g = lv === "easy" ? n - handmade.length : n;
+  const lens = conf.lens.filter((L) => kwSeeds[L] && kwSeeds[L].length);
+  const list = kwSeeds[lens[g % lens.length] || 4];
   let best = null;
   for (let k = 0; k < 6; k++) {
-    const seed = list[(g + k * 7) % list.length];
-    const lv = kwBuild(seed, seededRandom(hashText(seed) + g));
-    if (!best || lv.words.length > best.words.length) best = lv;
-    if (lv.words.length >= 3) break;
+    const seed = list[(Math.floor(g / lens.length) + k * 7) % list.length];
+    const lev = kwBuild(seed, seededRandom(hashText(seed) + g + lv), conf.max);
+    if (!best || lev.words.length > best.words.length) best = lev;
+    if (lev.words.length >= Math.min(conf.max, lv === "easy" ? 3 : 4)) break;
   }
   return best;
+}
+
+// مرحله‌ی هر سختی جدا شمرده می‌شود (lvs)؛ lv همه‌ی مرحله‌های چرخ است (مزرعه‌ی ظاهر کودک با آن پر می‌شود)
+function kwWheelAt(lv) {
+  const st = kwState();
+  if (!st.lvs || typeof st.lvs !== "object") st.lvs = { easy: st.lv || 0, mid: 0, hard: 0 };
+  return st.lvs[lv] || 0;
 }
 
 function kwWheel() {
   kwStop();
   kwIn = "wheel";
-  const n = kwState().lv || 0;
+  const lv = kwLv("wheel");
+  const n = kwWheelAt(lv);
   $("app").classList.add("mode-kids");
-  startPuzzle(kwWheelLevel(n), n, KW_PREFIX + n);
+  startPuzzle(kwWheelLevel(n, lv), n, `${KW_PREFIX}${lv}:${n}`);
   // ظاهر مخصوص کودک اسم مرحله‌ی خودش را دارد (مثلاً «مزرعه‌ی شاد»)؛ بقیه فقط شماره‌ی مرحله‌ی بچه‌ها
   const look = THEMES.find((t) => t.id === activeTheme);
   if (!(look && look.kids)) {
     $("levelLabel").classList.remove("has-name");
-    $("levelLabel").textContent = `🧸 مرحله‌ی ${faDigits(n + 1)}`;
+    $("levelLabel").textContent = `🧸 ${kwLvInfo("wheel").name} · مرحله‌ی ${faDigits(n + 1)}`;
   }
   // دنیای کودک تا وقتی صفحه‌ی بازی واقعاً نشان داده نشده روی صفحه می‌ماند؛
   // وگرنه بین این دو، منوی بزرگسال (که زیرش است) یک لحظه دیده می‌شود
@@ -613,6 +984,9 @@ $("hintLetterBtn").addEventListener("click", (e) => {
     locked = true;
     delete save.partial[playKey];
     const st = kwState();
+    const lv = kwLv("wheel");
+    kwWheelAt(lv);
+    st.lvs[lv] = (st.lvs[lv] || 0) + 1;
     st.lv = (st.lv || 0) + 1;
     persist();
     const key = playKey;
@@ -631,10 +1005,12 @@ function kwWheelWin() {
     <div class="kw-pic win">🎉</div>
     <div class="kw-word">${lnPick(["آفرین!", "عالی بود!", "ایول!", "باریکلا!"])}</div>
     <div class="kw-found">${puzzle.words.map((w) => `<span>${w}</span>`).join("")}</div>
-    <button class="kw-next" type="button" id="kwNextLevel">مرحله‌ی بعد ◀</button>`;
+    <button class="kw-next" type="button" id="kwNextLevel">مرحله‌ی بعد ◀</button>
+    <button class="kw-lv-chip kw-lv-${kwLv("wheel")}" type="button" id="kwLvChip">${kwLvInfo("wheel").stars} ${kwLvInfo("wheel").name} · عوض کن</button>`;
   kwThemeHook("kidswin", { lv: kwState().lv || 0 });
   kwReward();
   $("kwNextLevel").onclick = kwWheel;
+  kwWireBar("wheel");
 }
 
 // ---------------------------------------------------------------------------
@@ -719,8 +1095,8 @@ function kwThemesDone() {
 const kwParent = document.createElement("div");
 kwParent.className = "kw-parent hidden";
 kwParent.innerHTML = `<div class="kw-parent-card">
-  <div class="kw-parent-title">این ظاهر خریدنیه 🔒</div>
-  <div class="kw-parent-text">برای خرید، یکی از بزرگ‌ترها باید جواب بده:</div>
+  <div class="kw-parent-title" id="kwParentT">این ظاهر خریدنیه 🔒</div>
+  <div class="kw-parent-text" id="kwParentX">برای خرید، یکی از بزرگ‌ترها باید جواب بده:</div>
   <div class="kw-parent-q" id="kwParentQ"></div>
   <div class="kw-parent-opts" id="kwParentOpts"></div>
   <button class="card-link" type="button" id="kwParentNo">بستن</button>
@@ -733,7 +1109,9 @@ kwParent.addEventListener("click", (e) => {
 function kwParentClose() {
   kwParent.classList.add("hidden");
 }
-function kwParentGate(then) {
+function kwParentGate(then, title = "این ظاهر خریدنیه 🔒", text = "برای خرید، یکی از بزرگ‌ترها باید جواب بده:") {
+  $("kwParentT").textContent = title;
+  $("kwParentX").textContent = text;
   const a = 6 + Math.floor(Math.random() * 4);
   const b = 6 + Math.floor(Math.random() * 4);
   const right = a * b;

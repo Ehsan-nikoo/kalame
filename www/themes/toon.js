@@ -161,8 +161,11 @@
   function sceneSVG(id) {
     const rays = Array.from({ length: 10 }, (_, i) =>
       `<path d="M0 -40V-52" transform="rotate(${i * 36})" stroke="#ffd84a" stroke-width="7" stroke-linecap="round"/>`).join("");
-    const cloud = (x, y, s, cls) => `<g transform="translate(${x} ${y}) scale(${s})"><g class="toon-cloud ${cls}" fill="#fff">
-        <ellipse cx="0" cy="0" rx="34" ry="13"/><ellipse cx="14" cy="-9" rx="20" ry="15"/><ellipse cx="-14" cy="-6" rx="15" ry="11"/></g></g>`;
+    // ابرها و پرتوهای خورشید بیرون از svg بزرگ‌اند تا فقط جابه‌جا شوند و کل آسمان هر فریم دوباره کشیده نشود؛
+    // جا و اندازه به درصد صحنه‌ی ۴۰۰×۸۰۰ (همان preserveAspectRatio="xMidYMax slice")
+    const pc = (v, of) => +((v / of) * 100).toFixed(3) + "%";
+    const cloud = (x, y, s, cls) => `<div class="toon-cl ${cls}" style="left:${pc(x - 46 * s, 400)};top:${pc(y - 26 * s, 800)};width:${pc(92 * s, 400)};height:${pc(41 * s, 800)}"><svg viewBox="-46 -26 92 41"><g fill="#fff">
+        <ellipse cx="0" cy="0" rx="34" ry="13"/><ellipse cx="14" cy="-9" rx="20" ry="15"/><ellipse cx="-14" cy="-6" rx="15" ry="11"/></g></svg></div>`;
     const tree = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-22" width="8" height="24" rx="3" fill="#a8673a"/>
         <circle cy="-36" r="20" fill="#5bbf5a"/><circle cx="-9" cy="-42" r="7" fill="#7fd36e" opacity=".8"/>
         <circle cx="7" cy="-30" r="2.6" fill="#ff5a5a"/><circle cx="-8" cy="-28" r="2.6" fill="#ff5a5a"/><circle cx="3" cy="-46" r="2.6" fill="#ff5a5a"/></g>`;
@@ -176,11 +179,15 @@
       <defs><linearGradient id="${id}-sky" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#86cffd"/><stop offset=".45" stop-color="#bfe8ff"/><stop offset=".72" stop-color="#e6f8ff"/></linearGradient></defs>
       <rect width="400" height="800" fill="url(#${id}-sky)"/>
-      <g transform="translate(52 128)"><g class="toon-rays">${rays}</g><circle r="32" fill="#ffd84a" stroke="#ffc21a" stroke-width="3"/>
+    </svg>
+    <div class="toon-fx">
+      <div class="toon-sunrays"><svg viewBox="-56 -56 112 112">${rays}</svg></div>
+      <svg class="toon-sun" viewBox="-56 -56 112 112"><circle r="32" fill="#ffd84a" stroke="#ffc21a" stroke-width="3"/>
         <circle cx="-10" cy="-5" r="3.4" fill="#b07a10"/><circle cx="10" cy="-5" r="3.4" fill="#b07a10"/>
         <ellipse cx="-17" cy="6" rx="5" ry="3" fill="#ff9a6a" opacity=".55"/><ellipse cx="17" cy="6" rx="5" ry="3" fill="#ff9a6a" opacity=".55"/>
-        <path d="M-11 8q11 10 22 0" stroke="#b07a10" stroke-width="3.2" fill="none" stroke-linecap="round"/></g>
+        <path d="M-11 8q11 10 22 0" stroke="#b07a10" stroke-width="3.2" fill="none" stroke-linecap="round"/></svg>
       ${cloud(330, 150, 1, "")}${cloud(44, 300, 0.75, "c2")}${cloud(372, 372, 0.6, "c3")}
+      <svg class="toon-land" viewBox="0 460 400 340">
       <path d="M0 590Q90 540 190 576Q290 540 400 566V800H0Z" fill="#a6e07f"/>
       <g transform="translate(318 470)">
         <path d="M0 40L36 10L72 40V96H0Z" fill="#e8572a"/>
@@ -193,7 +200,8 @@
       <path d="M0 662Q120 618 236 652Q320 676 400 640V800H0Z" fill="#8fd96b"/>
       <path d="M0 736Q140 700 262 724Q340 738 400 716V800H0Z" fill="#6cc24a"/>
       ${flowers.join("")}
-    </svg>`;
+      </svg>
+    </div>`;
   }
 
   const PAL = () => (typeof TOUR_THEMES === "object" && TOUR_THEMES.toon ? TOUR_THEMES.toon.svg : "");
@@ -203,7 +211,7 @@
     const el = document.querySelector(".toon-pal");
     if (!el) return;
     el.classList.remove("hop", "no", "spin", "hi");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add(move);
   }
 
@@ -226,7 +234,7 @@
   function bump(cls) {
     const wheel = document.getElementById("wheel");
     wheel.classList.remove("toon-wobble", "toon-squash");
-    void wheel.offsetWidth;
+    void getComputedStyle(wheel).animationName;
     wheel.classList.add(cls);
   }
 

@@ -201,7 +201,7 @@ button { font-family: inherit; cursor: pointer; }
   color: #fff8ec; text-shadow: 0 1px 2px rgba(20, 60, 30, 0.6);
   box-shadow: 0 0 0 4px #d8d0bc, 0 0 0 5px #2fa4a9, 0 3px 8px rgba(30, 80, 100, 0.3);
 }
-.tc-ink .tcard-art { background: url("themes/ink/zarafshan.svg") 0 0 / 60px 60px, url("themes/ink/fibers.svg") 0 0 / 120px 120px, #f1e4c6; color: #1b130a; font-family: "Nastaliq", serif; font-weight: 400; line-height: 2.2; padding-bottom: 14px; box-shadow: inset 0 0 0 2px #c9a14a, inset 0 0 0 7px #1f3b73, inset 0 0 0 9px #c9a14a; }
+.tc-ink .tcard-art { background: url("themes/ink/zarafshan.svg") 0 0 / 60px 60px, url("themes/ink/fibers.webp") 0 0 / 120px 120px, #f1e4c6; color: #1b130a; font-family: "Nastaliq", serif; font-weight: 400; line-height: 2.2; padding-bottom: 14px; box-shadow: inset 0 0 0 2px #c9a14a, inset 0 0 0 7px #1f3b73, inset 0 0 0 9px #c9a14a; }
 .tc-toon .tcard-art {
   background:
     radial-gradient(circle at 26% 28%, #ffd84a 0 12%, transparent 13%),
@@ -212,6 +212,50 @@ button { font-family: inherit; cursor: pointer; }
   text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
   box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #ffc9a8;
 }
+.tc-sea .tcard-art {
+  background:
+    radial-gradient(circle at 74% 30%, transparent 0 7%, rgba(255, 255, 255, 0.9) 7.5% 9.5%, transparent 10%),
+    radial-gradient(circle at 84% 14%, transparent 0 4%, rgba(255, 255, 255, 0.85) 4.5% 6.5%, transparent 7%),
+    radial-gradient(ellipse 80% 30% at 50% 108%, #ffe2a6 0 70%, transparent 71%),
+    radial-gradient(ellipse 18% 34% at 18% 88%, #ff7fa8 0 60%, transparent 62%),
+    linear-gradient(#7fe0ff, #2a93d8);
+  color: #ff6b8b; font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400;
+  text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
+  box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #9fdcf7;
+}
+.tc-space .tcard-art {
+  background:
+    radial-gradient(circle at 22% 22%, #fff 0 1.4%, transparent 2%),
+    radial-gradient(circle at 80% 70%, #fff 0 1.2%, transparent 1.8%),
+    radial-gradient(circle at 60% 18%, #fff 0 1%, transparent 1.6%),
+    radial-gradient(circle at 78% 26%, #ffab6b 0 13%, transparent 14%),
+    radial-gradient(ellipse 30% 8% at 78% 26%, transparent 0 60%, #c9a8ff 62% 100%, transparent 100%),
+    radial-gradient(ellipse 80% 26% at 50% 106%, #c9b8ff 0 70%, transparent 71%),
+    linear-gradient(#1a1247, #5c40b4);
+  color: #ffd34a; font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400;
+  text-shadow: 0 2px 0 #6c4fe0, 0 -2px 0 #6c4fe0, 2px 0 0 #6c4fe0, -2px 0 0 #6c4fe0;
+  box-shadow: 0 0 0 3px #fff, 0 4px 0 3px #8a74e8;
+}
+/* شاهنامه: شمسه‌ی تذهیب با نگاره‌ی رستم سوار بر رخش (ساخته‌شده از همان نقش‌های themes/shahnameh-art.js) */
+.tc-tile .tcard-art {
+  width: 92px;
+  height: 92px;
+  margin: -10px 0 -6px;
+  background: url("themes/tile/shahnameh-card.png") center / contain no-repeat;
+  border-radius: 0;
+  filter: drop-shadow(0 3px 5px rgba(18, 48, 90, 0.4));
+}
+.tc-tile .tcard-art::before { content: none; }
+/* تخت جمشید: سکه‌ی زرین با نمای سه‌بعدی آپادانا (ساخته از همان صحنه‌ی themes/persepolis-3d.js) */
+.tc-persepolis .tcard-art {
+  width: 92px;
+  height: 92px;
+  margin: -10px 0 -6px;
+  background: url("themes/persepolis/card.png") center / contain no-repeat;
+  border-radius: 0;
+  filter: drop-shadow(0 3px 5px rgba(20, 14, 8, 0.45));
+}
+.tc-persepolis .tcard-art::before { content: none; }
 .tc-plain .tcard-art { background: linear-gradient(180deg, #ffffff, #efebe2); color: #5f8a7a; box-shadow: inset 0 0 0 3px #dfe9e3, 0 2px 6px rgba(47, 58, 58, 0.12); }
 
 /* ---------- منوی اصلی ---------- */
@@ -1044,11 +1088,10 @@ button { font-family: inherit; cursor: pointer; }
 [data-text="xlarge"] :is(.home-menu, .home-sub, .sheet-card, .card, .preview, .ach-list, .theme-list, .settings-list) { zoom: 1.25; }
 
 /* ---------- یادآوری راهنما: دکمه آرام چشمک می‌زند ---------- */
-.tool.nudge { animation: nudge 1.6s ease-in-out infinite; }
-@keyframes nudge {
-  0%, 100% { transform: none; box-shadow: 0 4px 0 var(--lip), 0 0 0 0 rgba(226, 176, 74, 0); }
-  50% { transform: scale(1.08); box-shadow: 0 4px 0 var(--lip), 0 0 0 6px rgba(226, 176, 74, 0.45); }
-}
+/* فقط بزرگ و کوچک می‌شود (کار کارت گرافیک) و چند بار؛ این چشمک وقتی می‌آید که بازیکن مدتی دست نزده،
+   پس حالت استراحت آن را نمی‌گیرد و حلقه‌ی سایه‌دار بی‌پایان هر فریم کل صفحه را دوباره می‌کشید */
+.tool.nudge { box-shadow: 0 4px 0 var(--lip), 0 0 0 4px rgba(226, 176, 74, 0.45); animation: nudge 1.6s ease-in-out 6; }
+@keyframes nudge { 50% { transform: scale(1.08); } }
 
 /* ---------- آموزش مرحله‌ی اول: انگشت روی دایره ---------- */
 .tutorial-hand {
@@ -1060,7 +1103,10 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
   color: var(--ink);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
-  transition: left 0.55s ease-in-out, top 0.55s ease-in-out, opacity 0.3s, scale 0.3s;
+  left: 0;
+  top: 0;
+  will-change: translate;
+  transition: translate 0.55s ease-in-out, opacity 0.3s, scale 0.3s;
 }
 .tutorial-hand.jump { transition: opacity 0.3s, scale 0.3s; }
 .tutorial-hand.lift { opacity: 0; scale: 1.3; }
@@ -2109,6 +2155,44 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
   --gm-float: #3f8a5a;
   --gm-radius: 22px;
 }
+[data-theme="tile"] {
+  --gm-glass: rgba(20, 53, 97, 0.62);
+  --gm-edge: rgba(217, 164, 65, 0.7);
+  --gm-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  --gm-chip: rgba(42, 159, 179, 0.22);
+  --gm-chip-ink: #efe3c6;
+  --gm-primary: linear-gradient(135deg, rgba(63, 183, 198, 0.95), rgba(28, 129, 151, 0.95));
+  --gm-primary-ink: #ffffff;
+  --gm-primary-edge: rgba(239, 227, 198, 0.75);
+  --gm-cta-bg: #e8b94a;
+  --gm-cta-ink: #2a1c05;
+  --gm-sheen: rgba(255, 255, 255, 0.16);
+  --gm-blob1: #2a9fb3;
+  --gm-blob2: #1d4a86;
+  --gm-blob3: #d9a441;
+  --gm-blob-op: 0.35;
+  --gm-float: #e8b94a;
+  --gm-radius: 10px;
+}
+[data-theme="persepolis"] {
+  --gm-glass: rgba(46, 41, 36, 0.66);
+  --gm-edge: rgba(217, 166, 62, 0.65);
+  --gm-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  --gm-chip: rgba(205, 189, 156, 0.18);
+  --gm-chip-ink: #ecdfc2;
+  --gm-primary: linear-gradient(135deg, rgba(240, 200, 96, 0.96), rgba(176, 126, 34, 0.96));
+  --gm-primary-ink: #2a1c08;
+  --gm-primary-edge: rgba(251, 227, 160, 0.8);
+  --gm-cta-bg: #3d3833;
+  --gm-cta-ink: #f0cd6e;
+  --gm-sheen: rgba(255, 255, 255, 0.14);
+  --gm-blob1: #d9a63e;
+  --gm-blob2: #2f7f8f;
+  --gm-blob3: #8e2430;
+  --gm-blob-op: 0.3;
+  --gm-float: #e8c46a;
+  --gm-radius: 6px;
+}
 [data-theme="ink"] {
   --gm-glass: rgba(255, 250, 235, 0.5);
   --gm-edge: rgba(176, 138, 74, 0.75);
@@ -2436,6 +2520,9 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .kg-kid { background: linear-gradient(160deg, #ffe08a, #ffb38a); border-color: rgba(255, 255, 255, 0.7); color: #4a2a10; }
 
 /* ===== بخش کودک ===== */
+/* دنیای کودک کل صفحه را می‌پوشاند؛ صفحه‌ها و پس‌زمینه‌ی متحرک زیرش بیهوده کشیده نشوند
+   (visibility و نه display: صفحه‌ی بازی زیر آن اندازه‌گیری و آماده می‌شود) */
+body:has(> #kidsWorld:not(.hidden)) > :is(.screen, .sea-bg, .sea-pal, .space-bg, .space-pal, .toon-bg, .toon-pal) { visibility: hidden; }
 .kw {
   position: fixed; inset: 0; z-index: 900; overflow-y: auto; scrollbar-width: none;
   display: flex; flex-direction: column; color: #3b2a1a; font-family: "Vazirmatn", sans-serif;
@@ -2484,15 +2571,16 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 
 /* بخش کودک: فهرست بازی‌ها و سه بازی تازه */
 .kw-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.4; color: #ff7a45; }
-.kw-menu { direction: rtl; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 380px; }
+/* پنج بازی و ظاهر بازی: دو ردیف سه‌تایی */
+.kw-menu { direction: rtl; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 380px; }
 .kw-game {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 8px 16px; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 16px 4px 12px; border: 0; cursor: pointer;
   border-radius: 26px; color: #fff; background: #ff8a5c; box-shadow: 0 6px 0 #d8653a; font-family: "Vazirmatn", sans-serif;
   transition: transform 0.1s ease;
 }
 .kw-game:active { transform: translateY(4px); box-shadow: 0 2px 0 #d8653a; }
-.kw-game span { font-size: 54px; line-height: 1.2; }
-.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 23px; line-height: 1.4; }
+.kw-game span { font-size: 44px; line-height: 1.2; }
+.kw-game b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 19px; line-height: 1.35; }
 .kw-g-wheel { background: #6cb8ff; box-shadow: 0 6px 0 #3f8fd8; }
 .kw-g-spell { background: #b48cff; box-shadow: 0 6px 0 #8a5fd8; }
 .kw-g-ef { background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a; }
@@ -2551,11 +2639,7 @@ html .board.aiming .cell.slot { cursor: pointer; outline: 2.5px dashed var(--coi
 .mode-kids .chain { display: none; }
 
 /* بخش کودک: دکمه‌ی ظاهر بازی (پهن، زیر چهار بازی) و سؤال بزرگ‌ترها پیش از خرید */
-.kw-game.kw-g-themes {
-  grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; padding: 12px 8px;
-  background: #ffc94d; box-shadow: 0 6px 0 #d9a326; color: #5a3d10;
-}
-.kw-game.kw-g-themes span { font-size: 34px; }
+.kw-game.kw-g-themes { background: #ffc94d; box-shadow: 0 6px 0 #d9a326; color: #5a3d10; }
 .kw-parent {
   position: fixed; inset: 0; z-index: 960; display: flex; align-items: center; justify-content: center;
   padding: 16px; background: rgba(20, 14, 8, 0.45);
@@ -2724,3 +2808,229 @@ button { touch-action: manipulation; }
 .kw-theme:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(59, 42, 26, 0.12); }
 .kw-themes-note { font-size: 15px; font-weight: 700; opacity: 0.7; }
 .sheet.kw-over { z-index: 950; }
+
+/* بخش کودک: انتخاب سختی، دکمه‌ی سختی بالای بازی، دور پنج‌تایی و جام */
+.kw-lv-head { display: flex; flex-direction: column; align-items: center; gap: 2px; animation: pop 0.35s ease; }
+.kw-lv-head span { font-size: 70px; line-height: 1.15; }
+.kw-lv-head b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 34px; line-height: 1.3; color: #ff7a45; }
+.kw-lvs { direction: rtl; display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 340px; }
+.kw-lv {
+  position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 14px; align-items: center;
+  padding: 14px 20px; border: 0; border-radius: 26px; cursor: pointer; color: #fff; text-align: right; font-family: "Vazirmatn", sans-serif;
+  transition: transform 0.1s ease; animation: kw-rise 0.4s ease backwards;
+}
+.kw-lv:nth-child(2) { animation-delay: 0.07s; }
+.kw-lv:nth-child(3) { animation-delay: 0.14s; }
+.kw-lv i { grid-row: 1 / 3; font-style: normal; font-size: 22px; letter-spacing: -2px; direction: ltr; min-width: 74px; text-align: center; }
+.kw-lv b { font-family: "Lalezar", "Vazirmatn", sans-serif; font-weight: 400; font-size: 30px; line-height: 1.25; }
+.kw-lv small { font-size: 14px; font-weight: 700; opacity: 0.92; line-height: 1.5; }
+.kw-lv:active { transform: translateY(4px); }
+.kw-lv-easy { background: #5bbf7a; box-shadow: 0 6px 0 #3e9a5a; }
+.kw-lv-mid { background: #ffb02e; box-shadow: 0 6px 0 #d98a12; }
+.kw-lv-hard { background: #ff6b6b; box-shadow: 0 6px 0 #d64545; }
+.kw-lv.sel { outline: 4px solid #fff; outline-offset: -4px; }
+.kw-lv.sel::after {
+  content: "✓"; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; background: #fff; color: #3b2a1a; font-weight: 900; font-size: 18px;
+}
+@keyframes kw-rise { from { transform: translateY(24px); opacity: 0; } }
+
+.kw-bar { direction: rtl; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; max-width: 380px; }
+.kw-lv-chip {
+  border: 0; cursor: pointer; padding: 7px 14px; border-radius: 99px; color: #fff; font-family: "Lalezar", "Vazirmatn", sans-serif;
+  font-size: 17px; line-height: 1.3; white-space: nowrap; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+.kw-lv-chip:active { transform: translateY(2px); }
+.kw-round i { width: 14px; height: 14px; }
+.kw-round i.done { background: #ffc22e; box-shadow: 0 0 0 2px #fff; }
+.kw-trophy { filter: drop-shadow(0 10px 18px rgba(255, 170, 40, 0.45)); }
+.kw-trophy-btns { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.kw-next.kw-harder { background: #ff6b6b; box-shadow: 0 6px 0 #d64545; font-size: 22px; padding: 10px 24px; }
+.kw-keys.many { gap: 8px; }
+.kw-keys.many .kw-key { width: 48px; height: 54px; font-size: 30px; }
+.kw-opts.three { flex-direction: column; align-items: center; gap: 10px; }
+.kw-opts.three .kw-opt { min-width: 200px; padding: 8px 18px; font-size: 30px; }
+
+/* قایم‌موشک حرف‌ها: حرفِ چشم‌دار، نقاشی‌هایی که از پشت بوته سرک می‌کشند */
+.kw-peeker { position: relative; animation: pop 0.35s ease, kw-peek-letter 3s ease-in-out 0.4s infinite; }
+.kw-peeker > span { line-height: 1; }
+.kw-eyes { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 22px; font-style: normal; }
+.kw-eyes b { width: 15px; height: 15px; border-radius: 50%; background: #fff; position: relative; animation: kw-blink 3.4s infinite; }
+.kw-eyes b::after { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #2a1a10; top: 5px; left: 3px; animation: kw-look 3s ease-in-out infinite; }
+.kw-peeker > span { margin-top: 18px; }
+@keyframes kw-peek-letter { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-8deg) translateX(4px); } 40% { transform: rotate(6deg) translateX(-4px); } 60% { transform: rotate(0); } }
+@keyframes kw-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes kw-look { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(5px); } 70% { transform: translateX(-2px); } }
+.kw-forms { direction: rtl; display: flex; flex-direction: column; gap: 4px; }
+.kw-forms span {
+  padding: 2px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.85); color: #e8572a; text-align: center;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 22px; line-height: 1.35;
+}
+.kw-need i { width: 16px; height: 16px; }
+.kw-need i.done { background: #5bbf7a; animation: pop 0.3s ease; }
+.kw-hide .kw-card { position: relative; overflow: hidden; padding-bottom: 14px; }
+.kw-hide .kw-card::after {
+  content: ""; position: absolute; left: -6px; right: -6px; bottom: -10px; height: 34px; pointer-events: none;
+  background: radial-gradient(circle at 12% 100%, #4fb06a 0 18px, transparent 19px), radial-gradient(circle at 38% 100%, #5fc27a 0 22px, transparent 23px),
+    radial-gradient(circle at 64% 100%, #4fb06a 0 20px, transparent 21px), radial-gradient(circle at 90% 100%, #5fc27a 0 22px, transparent 23px);
+  transition: transform 0.35s ease;
+}
+.kw-hide .kw-card.show::after { transform: translateY(24px); }
+.kw-hide .kw-card span { display: inline-block; animation: kw-peek 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards, kw-wiggle 2.8s ease-in-out 1.4s infinite; }
+.kw-hide .kw-card:nth-child(2n) span { animation-duration: 0.6s, 3.3s; }
+.kw-hide .kw-card:nth-child(3n) span { animation-duration: 0.6s, 2.4s; }
+.kw-hide .kw-card.show span, .kw-hide .kw-card:disabled span { animation: none; }
+.kw-hide .kw-card b { visibility: hidden; position: relative; z-index: 1; }
+.kw-hide .kw-card.show b { visibility: visible; animation: pop 0.3s ease; }
+.kw-card b em { font-style: normal; color: #e8572a; }
+.kw-card.right b em { color: #fff36b; }
+.kw-hide.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 300px; }
+.kw-hide.n4 .kw-card span { font-size: 64px; }
+.kw-hide.n9 { gap: 8px; }
+.kw-hide.n9 .kw-card { padding: 8px 4px 12px; }
+.kw-hide.n9 .kw-card span { font-size: 44px; }
+.kw-hide.n9 .kw-card b { font-size: 18px; }
+@keyframes kw-peek { from { transform: translateY(70%) scale(0.5); opacity: 0; } }
+@keyframes kw-wiggle { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-4px) rotate(-5deg); } 50% { transform: translateY(0) rotate(4deg); } }
+.kw-stage:has(.kw-hide) { gap: 12px; }
+.kw-stage:has(.kw-hide) .kw-letter { width: 78px; height: 78px; font-size: 50px; }
+.kw-stage:has(.kw-hide) .kw-ask { font-size: 17px; line-height: 1.6; }
+.kw-hide.n4 .kw-card { padding: 10px 4px 14px; }
+.kw-hide.n9 .kw-card span { font-size: 40px; }
+.kw-forms { flex-direction: row; }
+.kw-ef-head { flex-direction: column; gap: 8px; }
+@media (max-height: 700px) {
+  .kw-lv-head span { font-size: 54px; }
+  .kw-lv { padding: 10px 18px; }
+  .kw-hide.n9 .kw-card span { font-size: 38px; }
+  .kw-stage { gap: 14px; }
+}
+
+/* بخش‌بازی کودک: کلمه بخش‌بخش (هجا)؛ تکه‌ها حرکت (ـَ ـِ ـُ) دارند، برای همین با وزیر نوشته می‌شوند */
+.kw-game.kw-g-syl { background: #ff7eb6; box-shadow: 0 6px 0 #d85a92; }
+.kw-game.kw-g-syl:active { box-shadow: 0 2px 0 #d85a92; }
+.kw-syl { direction: rtl; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 380px; }
+.kw-syl-p {
+  min-width: 64px; padding: 4px 14px 8px; border-radius: 18px; background: rgba(255, 255, 255, 0.9); color: #3b2a1a;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1); font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 38px; line-height: 1.6; text-align: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.kw-syl-p.on { background: #ffc94d; color: #5a3d10; transform: scale(1.15) translateY(-4px); }
+.kw-syl-p.hole { border: 3px dashed #ff7eb6; background: rgba(255, 255, 255, 0.55); color: #ff7eb6; }
+.kw-syl-p.fill { background: #5bbf7a; color: #fff; animation: pop 0.3s ease; }
+.kw-syl-p.fill.on { background: #ffc94d; color: #5a3d10; }
+.kw-syl-dash { font-style: normal; font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 28px; color: rgba(59, 42, 26, 0.4); }
+.kw-syl-word { font-size: 52px; }
+.kw-claps { gap: 10px; }
+.kw-opt.kw-clap { min-width: 96px; padding: 10px 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.kw-clap span { font-size: 24px; line-height: 1.2; letter-spacing: -4px; }
+.kw-clap b { font-weight: 400; font-size: 30px; line-height: 1.2; }
+.kw-syl-slot, .kw-syl-key {
+  width: auto; min-width: 72px; height: 66px; padding: 0 14px 6px;
+  font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 32px; line-height: 1.6;
+}
+.kw-syl-slots { gap: 6px; }
+.kw-syl-opts .kw-opt { font-family: "Vazirmatn", sans-serif; font-weight: 700; line-height: 1.6; }
+.kw-syl.many { gap: 3px; flex-wrap: nowrap; }
+.kw-syl.many .kw-syl-p { min-width: 0; padding: 2px 9px 6px; font-size: 28px; border-radius: 14px; }
+.kw-syl.many .kw-syl-dash { font-size: 20px; }
+.kw-opts.three.kw-syl-opts { flex-direction: row; gap: 10px; }
+.kw-opts.three.kw-syl-opts .kw-opt { min-width: 92px; padding: 4px 14px 8px; }
+
+/* امتحان بخش کودک (kidsexam.js) */
+.kw-game.kw-g-exam {
+  grid-column: 1 / -1; flex-direction: row; gap: 12px; padding: 10px 8px;
+  background: #2fb8a6; box-shadow: 0 6px 0 #1f8a7c;
+}
+.kw-game.kw-g-exam span { font-size: 34px; }
+.kw-game.kw-g-exam b { font-size: 22px; }
+.kw-game.kw-g-exam:active { box-shadow: 0 2px 0 #1f8a7c; }
+.kx-head { display: flex; align-items: center; gap: 10px; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 34px; line-height: 1.3; color: #ff7a45;
+  text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff; }
+.kx-head span { font-size: 38px; text-shadow: none; }
+.kx-note { padding: 6px 16px; border-radius: 99px; background: rgba(255, 255, 255, 0.88); color: #5a3d22; font-size: 15px; font-weight: 700; line-height: 1.7; }
+.kx-menu { direction: rtl; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 340px; }
+.kx-btn {
+  display: flex; align-items: center; gap: 12px; padding: 12px 18px; border: 0; border-radius: 22px; cursor: pointer; text-align: right;
+  color: #fff; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 22px; line-height: 1.3; background: #ff8a5c; box-shadow: 0 5px 0 #d8653a;
+}
+.kx-btn span { font-size: 30px; }
+.kx-btn b { flex: 1; font-weight: 400; }
+.kx-btn small { font-family: "Vazirmatn", sans-serif; font-size: 13px; font-weight: 700; opacity: 0.9; }
+.kx-btn:active { transform: translateY(3px); }
+.kx-start { background: #5bbf7a; box-shadow: 0 5px 0 #3e9a5a; font-size: 26px; padding: 16px 18px; }
+.kx-code { background: #6cb8ff; box-shadow: 0 5px 0 #3f8fd8; }
+.kx-hist { background: #b48cff; box-shadow: 0 5px 0 #8a5fd8; }
+.kx-grown { background: #fff; color: #5a3d22; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12); font-size: 18px; }
+.kx-top { direction: rtl; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 360px; gap: 8px; }
+.kx-skill, .kx-count { padding: 5px 14px; border-radius: 99px; background: rgba(255, 255, 255, 0.9); color: #5a3d22; font-size: 14px; font-weight: 700; line-height: 1.6; }
+.kx-bar { width: 100%; max-width: 360px; height: 10px; border-radius: 99px; background: rgba(255, 255, 255, 0.6); overflow: hidden; margin-top: -12px; }
+.kx-bar i { display: block; height: 100%; border-radius: 99px; background: #5bbf7a; transition: width 0.3s ease; }
+.kx-miss { background: #ffb38a !important; color: #fff !important; box-shadow: 0 5px 0 #e08a5c !important; opacity: 1 !important; }
+.kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 340px; }
+.kx-cards .kw-card b { visibility: hidden; }
+.kx-cards .kw-card.show b { visibility: visible; }
+.kx-opts3 { flex-direction: row !important; flex-wrap: wrap; }
+.kx-opts3 .kw-opt { min-width: 96px !important; font-size: 28px !important; }
+.kx-card {
+  direction: rtl; width: 100%; max-width: 340px; padding: 12px 14px 10px; border-radius: 26px; background: #fff; color: #3b2a1a;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.kx-title { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; line-height: 1.25; color: #ff7a45; }
+.kx-name { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; line-height: 1.3; }
+.kx-meta { font-size: 13px; font-weight: 700; color: #8a6a4a; }
+.kx-big { font-size: 32px; line-height: 1.25; }
+.kx-dim { opacity: 0.18; filter: grayscale(1); }
+.kx-score { font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 24px; color: #3b9a5a; line-height: 1.4; }
+.kx-rows { width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+.kx-row { display: flex; align-items: center; gap: 8px; padding: 3px 12px; border-radius: 12px; background: #fff6e6; font-size: 14px; font-weight: 700; line-height: 1.7; }
+.kx-row span { flex: 1; }
+.kx-row b { font-size: 16px; letter-spacing: -2px; }
+.kx-row small { min-width: 36px; text-align: left; color: #8a6a4a; }
+.kx-weak { font-size: 14px; font-weight: 700; color: #ff7a45; line-height: 1.8; text-align: center; margin-top: 4px; }
+.kx-weak div { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.kx-weak i { font-style: normal; min-width: 36px; padding: 0 8px; border-radius: 12px; background: #ff8a5c; color: #fff; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 22px; line-height: 1.5; }
+.kx-actions { direction: rtl; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 10px; max-width: 360px; }
+.kx-actions .kw-next { font-size: 17px; padding: 8px 14px; }
+.kx-actions .card-link { flex-basis: 100%; }
+.kx-share { background: #6cb8ff; box-shadow: 0 6px 0 #3f8fd8; }
+.kx-hlist { width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 8px; max-height: 56vh; overflow-y: auto; padding: 2px 2px 6px; }
+.kx-hrow { direction: rtl; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 0; border-radius: 18px; background: #fff; color: #3b2a1a;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1); font-family: "Vazirmatn", sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
+.kx-hrow span { flex: 1; text-align: right; }
+.kx-hrow small { color: #8a6a4a; }
+.kx-code-boxes { direction: ltr; display: flex; gap: 5px; }
+.kx-code-boxes i { width: 32px; height: 44px; border-radius: 10px; background: rgba(255, 255, 255, 0.9); border: 2px dashed #b9a48a; display: grid; place-items: center;
+  font-style: normal; font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; color: #3b2a1a; }
+.kx-code-boxes i:nth-child(4) { margin-right: 10px; }
+.kx-code-boxes i.on { border: 2px solid #5bbf7a; }
+.kx-code-boxes.no { animation: ln-shake 0.4s ease; }
+.kx-code-msg { min-height: 22px; font-size: 14px; font-weight: 700; color: #e8572a; padding: 0 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.8); }
+.kx-code-msg:empty { background: none; }
+.kx-pad { direction: ltr; display: grid; grid-template-columns: repeat(3, 72px); gap: 10px; }
+.kx-key { height: 56px; border: 0; border-radius: 18px; background: #fff; color: #3b2a1a; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.12); cursor: pointer;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 30px; line-height: 1; }
+.kx-key[data-d="✓"] { background: #5bbf7a; color: #fff; box-shadow: 0 4px 0 #3e9a5a; }
+.kx-key:active { transform: translateY(3px); }
+.kx-name-in { width: 100%; max-width: 300px; padding: 12px 16px; border-radius: 18px; border: 3px solid #ffc94d; background: #fff; color: #3b2a1a;
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 26px; text-align: center; outline: none; }
+.kx-set { direction: rtl; width: 100%; max-width: 360px; padding: 12px; border-radius: 22px; background: #fff; color: #3b2a1a; display: flex; flex-direction: column; gap: 6px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1); }
+.kx-set-t { font-size: 15px; font-weight: 700; }
+.kx-set-n { font-size: 13px; font-weight: 700; color: #3b9a5a; }
+.kx-set-n b { color: #e8572a; }
+.kx-signs { display: flex; flex-wrap: wrap; gap: 4px; }
+.kx-sign { min-width: 33px; height: 33px; padding: 0 5px; border: 0; border-radius: 10px; background: #f1ebe2; color: #8a7a6a; cursor: pointer;
+  font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 18px; line-height: 1; }
+.kx-sign.on { background: #ffe6a8; color: #5a3d10; }
+.kx-sign.last { background: #ff8a5c; color: #fff; }
+.kx-seg, .kx-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.kx-cnt, .kx-sk { padding: 6px 14px; border: 2px solid #e6dccd; border-radius: 99px; background: #fff; color: #5a3d22; cursor: pointer;
+  font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 15px; line-height: 1.6; }
+.kx-cnt.on, .kx-sk.on { border-color: #5bbf7a; background: #e6f7ec; color: #2e7a48; }
+.kx-bigcode { direction: ltr; padding: 10px 22px; border-radius: 20px; background: #fff; color: #3b2a1a; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+  font-family: "Lalezar", "Vazirmatn", sans-serif; font-size: 48px; letter-spacing: 4px; line-height: 1.3; }
+.kw-lv-chip.kw-lv-focus { background: #ff8a5c; color: #fff; }
+.kx-explain { direction: rtl; max-width: 340px; padding: 8px 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.9); color: #5a3d22; font-size: 13.5px; font-weight: 700; line-height: 1.8; }
+/* صفحه‌های بلند امتحان روی گوشی‌های کوتاه از بالا شروع شوند و اسکرول بخورند */
+.kw-stage:has(.kx-card), .kw-stage:has(.kx-set) { justify-content: flex-start; gap: 12px; }

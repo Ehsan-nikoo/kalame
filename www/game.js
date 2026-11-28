@@ -5,18 +5,18 @@
 // ---------------------------------------------------------------------------
 
 const COINS_START = 50;        // هدیه‌ی شروع بازی
-const COINS_PER_LEVEL = 10;    // فقط بار اولی که یک مرحله تمام می‌شود
-const COST_HINT_LETTER = 15;   // باز کردن یک خانه
-const COST_HINT_WORD = 30;     // باز کردن یک کلمه‌ی کامل
+const COINS_PER_LEVEL = 5;     // فقط بار اولی که یک مرحله تمام می‌شود
+const COST_HINT_LETTER = 25;   // باز کردن یک خانه
+const COST_HINT_WORD = 40;     // باز کردن یک کلمه‌ی کامل
 // صندوق کلمه‌ها: هر کلمه‌ی درستی که در جدول نیست به صندوق می‌رود؛ هر بار که صندوق پر شود، باز می‌شود و سکه می‌دهد
 const CHEST_SIZE = 10;
-const CHEST_REWARD = 15;
+const CHEST_REWARD = 10;
 // جایزه‌ی هر سطح دستاوردها (سطح اول، دوم، ...)
-const ACH_REWARDS = [10, 20, 30, 40, 50, 75, 100];
+const ACH_REWARDS = [5, 10, 15, 20, 30, 40, 60];
 // جایزه‌ی روزانه: روز اول تا هفتمِ آمدن پشت سر هم به بازی؛ بعد از روز هفتم دوباره از روز اول.
 // اگر یک روز نیاید، از روز اول شروع می‌شود. میانگین هفته حدود ۱۷ سکه در روز است،
-// یعنی بیشتر از یک راهنمای «یک حرف» (۱۵ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
-const DAILY_REWARDS = [10, 10, 15, 15, 20, 20, 30];
+// یعنی نزدیک به یک راهنمای «یک حرف» (۲۵ سکه)؛ تا سکه‌ی مرحله‌ها هنوز اصلی‌ترین درآمد باشد.
+const DAILY_REWARDS = [5, 5, 10, 10, 10, 15, 20];
 // بسته‌های فروشگاه سکه. id باید دقیقاً همان «شناسه‌ی محصول» باشد که در پنل کافه‌بازار و مایکت
 // (از نوع «مصرف‌شدنی») ساخته‌اید. قیمت را خود فروشگاه می‌دهد و اینجا نوشته نمی‌شود.
 const COIN_PACKS = [
@@ -32,11 +32,15 @@ const THEMES = [
   { id: "stars", name: "صور فلکی", desc: "آسمان شب کویر و حکاکی صورت‌های فلکی", product: "theme_stars", price: 99000 },
   { id: "carpet", name: "قالی‌باف", desc: "با هر کلمه، گره به گره یک قالی بافته می‌شود", product: "theme_carpet", price: 79000 },
   { id: "caravan", name: "کاروان ابریشم", desc: "سفر با کاروان از کرمان تا ماسوله", product: "theme_caravan", price: 59000 },
+  { id: "tile", name: "شاهنامه", desc: "۱۰۷ داستان شاهنامه به ترتیب، از کیومرث تا فردوسی؛ با هر مرحله تکه‌ای از نگاره‌ی سه‌بعدی رنگ می‌گیرد", product: "theme_tile", price: 99000 },
+  { id: "persepolis", name: "تخت جمشید", desc: "۴۰ بنای ایران باستان، از تخت جمشید و پاسارگاد تا طاق کسری و طاق بستان؛ با هر مرحله تکه‌ای از بنا سه‌بعدی ساخته می‌شود", product: "theme_persepolis", price: 99000 },
   { id: "garden", name: "حوض و باغ", desc: "حوض ماهی‌ها و باغی که با هر مرحله گل می‌دهد", product: "theme_garden", price: 49000 },
   { id: "ink", name: "قلم و مرکب", desc: "کاغذ کاهی، تذهیب و خط نستعلیق" },
   { id: "plain", name: "ساده", desc: "آرام و سبک، مناسب گوشی‌های ضعیف" },
   // kids: فقط در بخش کودک (kids.js) دیده می‌شود، نه در صفحه‌ی ظاهرهای بزرگسال
   { id: "toon", name: "مزرعه‌ی شاد", desc: "کارتونی و رنگی؛ با هر مرحله یه حیوون به مزرعه میاد", kids: true },
+  { id: "sea", name: "زیر دریا", desc: "ماهی و مرجان و حباب؛ با هر مرحله یه دوست دریایی به آکواریوم میاد", product: "theme_sea", price: 39000, kids: true },
+  { id: "space", name: "سفر فضایی", desc: "موشک و سیاره‌های خندان؛ با هر مرحله به یه سیاره‌ی تازه می‌رسیم", product: "theme_space", price: 39000, kids: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -90,15 +94,18 @@ function readExtras(data) {
   };
 }
 
+// ظاهر بازیکن تازه (بدون صفحه‌ی انتخاب ظاهر در شروع؛ اول صفحه‌ی کودک/بزرگسال می‌آید)
+const DEFAULT_THEME = "ink";
+
 function loadSave() {
-  const fresh = { theme: null, unlocked: 0, coins: COINS_START, partial: {}, daily: { last: null, streak: 0 }, tips: {}, ...readExtras({}) };
+  const fresh = { theme: DEFAULT_THEME, unlocked: 0, coins: COINS_START, partial: {}, daily: { last: null, streak: 0 }, tips: {}, ...readExtras({}) };
   try {
     const data = JSON.parse(localStorage.getItem(SAVE_KEY));
     if (data && Number.isInteger(data.unlocked) && data.unlocked >= 0) {
       const daily = data.daily && typeof data.daily === "object" ? data.daily : {};
       return {
         ...readExtras(data),
-        theme: typeof data.theme === "string" ? data.theme : null,
+        theme: typeof data.theme === "string" ? data.theme : DEFAULT_THEME,
         unlocked: data.unlocked,
         coins: Number.isInteger(data.coins) && data.coins >= 0 ? data.coins : COINS_START,
         partial: data.partial && typeof data.partial === "object" ? data.partial : {},
@@ -167,6 +174,21 @@ function applyTheme(id) {
   document.documentElement.dataset.theme = id;
   const def = themeDefs[id];
   if (def && def.setup) themeTeardown = def.setup() || null;
+  syncBackdrop();
+}
+
+// اندروید: رنگ پشت نوار پایین گوشی (روی WebViewهای قدیمی‌تر دیده می‌شود) هم‌رنگ پس‌زمینه‌ی ظاهر؛
+// تا صفحه‌ی بارگذاری هست، همان بنفش خودش می‌ماند (MainActivity)
+function syncBackdrop() {
+  const plugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Backdrop;
+  if (!plugin || document.getElementById("loading")) return;
+  const pick = (el) => getComputedStyle(el).backgroundColor;
+  let c = pick(document.body);
+  if (/rgba\(.*,\s*0\)|transparent/.test(c)) c = pick(document.documentElement);
+  const m = c.match(/\d+(\.\d+)?/g);
+  if (!m || m.length < 3 || (m.length > 3 && +m[3] === 0)) return;
+  const hex = "#" + m.slice(0, 3).map((v) => Math.round(+v).toString(16).padStart(2, "0")).join("");
+  plugin.set({ color: hex }).catch(() => {});
 }
 
 // فایل‌های دیگر (مثل extras.js) می‌توانند به رویدادهای بازی گوش کنند
@@ -184,6 +206,12 @@ function emit(name, detail) {
 function levelName(i) {
   const def = themeDefs[activeTheme];
   return def && def.name ? def.name(i) : "";
+}
+
+// اسمی که روی نقشه‌ی مرحله‌ها کنار اولین مرحله‌ی هر بخش نوشته می‌شود؛ ظاهر می‌تواند شکل دیگری بدهد (مثلاً «داستان ۷ · فریدون و ضحاک»)
+function mapName(i) {
+  const def = themeDefs[activeTheme];
+  return def && def.mapName ? def.mapName(i) : levelName(i);
 }
 
 // ---------------------------------------------------------------------------
@@ -454,7 +482,7 @@ function flashWord(word) {
   for (const el of wordCells(word)) {
     el.style.animation = "";
     el.classList.remove("again");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add("again");
   }
 }
@@ -766,7 +794,7 @@ function addToChest(word) {
   const done = () => {
     updateChest();
     btn.classList.remove("bump");
-    void btn.offsetWidth;
+    void getComputedStyle(btn).animationName;
     btn.classList.add("bump");
   };
   if (calm() || !to.width) return done();
@@ -944,7 +972,7 @@ function praise(word) {
   const el = $("praise");
   el.textContent = text;
   el.classList.remove("show");
-  void el.offsetWidth;
+  void getComputedStyle(el).animationName;
   el.classList.add("show");
 }
 
@@ -973,7 +1001,7 @@ function updateCoins() {
 function bumpCoins() {
   for (const el of document.querySelectorAll(".coins")) {
     el.classList.remove("bump");
-    void el.offsetWidth;
+    void getComputedStyle(el).animationName;
     el.classList.add("bump");
   }
 }
@@ -1025,7 +1053,7 @@ function showPreview(text, kind, ms) {
   clearTimeout(previewTimer);
   previewEl.textContent = text;
   previewEl.className = "preview";
-  void previewEl.offsetWidth;
+  void getComputedStyle(previewEl).animationName;
   previewEl.className = "preview " + kind;
   previewTimer = setTimeout(hidePreview, ms);
 }
@@ -1143,7 +1171,7 @@ function flyCoins(amount, from, target) {
       shown += amount / N;
       count.textContent = faDigits(Math.round(shown));
       ghost.classList.remove("bump");
-      void ghost.offsetWidth;
+      void getComputedStyle(ghost).animationName;
       ghost.classList.add("bump");
       if (k === N - 1) {
         updateCoins();
@@ -1488,7 +1516,7 @@ function renderHome() {
   renderEvent();
   $("continueSub").textContent = allDone && ready
     ? "همه‌ی مرحله‌ها تموم شده"
-    : `مرحله‌ی ${faDigits(next + 1)} · ${chapterInfo(chapterOf(next)).name}`;
+    : `مرحله‌ی ${faDigits(next + 1)} · ${(themeDefs[activeTheme] || {}).subName ? levelName(next) : chapterInfo(chapterOf(next)).name}`;
 
   // اولین بار هر روز که منو باز می‌شود، جایزه‌ی روزانه نشان داده می‌شود
   if (rewardDue()) setTimeout(() => {
@@ -1555,13 +1583,13 @@ function renderLevels() {
       if (status === "done") return showLevelSheet(i);
       if (status === "current") return play(i);
       btn.classList.remove("nope");
-      void btn.offsetWidth;
+      void getComputedStyle(btn).animationName;
       btn.classList.add("nope");
     };
     track.appendChild(btn);
 
     // اسم هر فصل (صورت فلکی، شهر، قالی، باغ) کنار اولین مرحله‌اش، طرف دیگر جاده
-    const name = levelName(i);
+    const name = mapName(i);
     if (name && name !== prevName) {
       const label = document.createElement("span");
       label.className = "map-label" + (status === "locked" ? " locked" : "");
@@ -1714,7 +1742,10 @@ function hideLoading() {
     }, 380);
     setTimeout(() => {
       el.classList.add("done");
-      setTimeout(() => el.remove(), 500);
+      setTimeout(() => {
+        el.remove();
+        syncBackdrop();
+      }, 500);
     }, 1000);
   }, wait);
 }

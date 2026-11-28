@@ -49,7 +49,7 @@ async function sharePng(url, name, text, title) {
 // ۱. راهنمای «معنی»
 // ---------------------------------------------------------------------------
 
-const COST_HINT_MEANING = 10;
+const COST_HINT_MEANING = 20;
 let clueWord = null; // کلمه‌ای که معنی‌اش نشان داده شده (تا پیدا نشده، دوباره دیدنش مجانی است)
 
 const clueBtn = document.createElement("button");

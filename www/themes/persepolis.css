@@ -1,0 +1,342 @@
+/* ظاهر «تخت جمشید»: سنگ آهک گرم و سنگ سیاه صیقلی، نقش گل دوازده‌پر، طلای هخامنشی و آجر لعابی فیروزه‌ای شوش.
+   جدول روی لوح سنگی با نوار گل‌ها، گل نیلوفر سنگی زیر حروف و سکه‌ی زرین دریک برای هر حرف. کارتونی نیست. */
+
+:root[data-theme="persepolis"] {
+  --bg: #2e2620;
+  --surface: rgba(30, 24, 19, 0.6);
+  --ink: #f1e7d2;
+  --muted: #c9b99a;
+  --accent: #d9a63e;
+  --accent-ink: #1e160c;
+  --accent-soft: rgba(217, 166, 62, 0.14);
+  --tint: rgba(47, 127, 143, 0.18);
+  --edge: rgba(217, 166, 62, 0.4);
+  --wrong: #ff9e8c;
+  --line: #e8c46a;
+  --coin: #d9a63e;
+  --lip: rgba(18, 14, 10, 0.8);
+  --lip-primary: #7a5410;
+  --lip-glow: rgba(217, 166, 62, 0.3);
+  --stone: #cdbd9c;
+  --stone2: #b9a785;
+  --basalt: #3d3833;
+  --glaze: #2f7f8f;
+  --crimson: #8e2430;
+  --complete-delay: 1400;
+  --conf-0: #d9a63e;
+  --conf-1: #cdbd9c;
+  --conf-2: #2f7f8f;
+  --conf-3: #8e2430;
+  --prs-bg: url("persepolis/rosette-bg.svg");
+  --prs-band: url("persepolis/rosette-band.svg");
+}
+
+/* دیوار: سنگ تیره با گل‌های دوازده‌پر کم‌رنگ؛ وسط صفحه کمی روشن‌تر */
+[data-theme="persepolis"] body {
+  background-color: #2e2620;
+  background-image:
+    radial-gradient(120% 75% at 50% 45%, rgba(70, 56, 42, 0.35) 20%, rgba(24, 19, 15, 0.55) 75%, rgba(14, 11, 8, 0.8) 100%),
+    var(--prs-bg);
+  background-size: 100% 100%, 72px 72px;
+}
+/* حاشیه‌ی دور صفحه: نوار گل‌های سنگی میان دو خط طلا */
+.prs-border {
+  position: fixed;
+  inset: 5px;
+  pointer-events: none;
+  z-index: 2;
+  border: 1.5px solid #d9a63e;
+  box-shadow: 0 0 0 1px rgba(14, 11, 8, 0.7);
+}
+.prs-border::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  padding: 9px;
+  background: var(--prs-band) 0 0 / 9px 9px, #b9a785;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0.9;
+}
+.prs-border::after { content: ""; position: absolute; inset: 12px; border: 1px solid #d9a63e; }
+[data-theme="persepolis"] .screen { padding: calc(env(safe-area-inset-top) + 24px) 22px calc(env(safe-area-inset-bottom) + 24px); }
+
+/* ---------- منو ---------- */
+[data-theme="persepolis"] .logo {
+  color: #ecdfc2;
+  font-size: 80px;
+  text-shadow: 0 1px 0 #b9a785, 0 2px 0 #9c8a68, 0 3px 0 #6e5d44, 0 4px 0 #3d3833, 0 10px 20px rgba(0, 0, 0, 0.6);
+}
+[data-theme="persepolis"] .logo::after {
+  content: "";
+  display: block;
+  width: 168px;
+  height: 16px;
+  margin: -6px auto 0;
+  background:
+    linear-gradient(#d9a63e, #d9a63e) 0 50% / 60px 1.2px no-repeat,
+    linear-gradient(#d9a63e, #d9a63e) 100% 50% / 60px 1.2px no-repeat,
+    url("persepolis/rosette-gold.svg") 50% 50% / 16px 16px no-repeat;
+}
+[data-theme="persepolis"] .home-sub { color: #d9a63e; }
+[data-theme="persepolis"] .scene-caption { color: #ecdfc2; font-weight: 700; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); }
+[data-theme="persepolis"] .screen-title,
+[data-theme="persepolis"] .card-title { color: #e8c46a; }
+
+/* ---------- نمای سه‌بعدی بنا در قاب سنگی با کتیبه‌ی زرین ---------- */
+.prs-frame {
+  position: relative;
+  padding: 8px;
+  margin-top: 14px;
+  border-radius: 4px;
+  background: var(--prs-band) 0 0 / 8px 8px, #b9a785;
+  box-shadow: inset 0 0 0 1.5px #d9a63e, inset 0 0 0 6.5px rgba(46, 38, 32, 0.15), inset 0 0 0 8px #3d3833, 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+.prs-view { position: relative; width: 100%; aspect-ratio: 1 / 0.62; border-radius: 2px; overflow: hidden; background: linear-gradient(#a9c8df, #efe2c8); box-shadow: 0 0 0 1px #d9a63e; touch-action: pan-y; }
+.prs-canvas { display: block; width: 100% !important; height: 100% !important; cursor: grab; }
+.prs-canvas:active { cursor: grabbing; }
+.prs-title {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 0 18px;
+  font-family: var(--display);
+  font-size: 16px;
+  line-height: 1.9;
+  color: #f0cd6e;
+  background: linear-gradient(#4a443e, #2f2a25);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1.2px #d9a63e, inset 0 0 0 3.5px #2f2a25, inset 0 0 0 4.3px rgba(217, 166, 62, 0.5), 0 3px 8px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.prs-line { margin: 10px 4px 2px; font-size: 13px; line-height: 1.9; color: #d9cdb4; text-align: center; }
+.prs-done .prs-frame { margin: 8px 0 10px; }
+.prs-home { filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45)); }
+.prs-home.prs-frame { margin-top: 24px; flex: none; }
+.prs-home .prs-view { aspect-ratio: auto; max-width: 100%; }
+[data-theme="persepolis"] .prs-tight .logo { font-size: 52px; line-height: 1.25; }
+[data-theme="persepolis"] .prs-tight .prs-home.prs-frame { margin-top: 18px; }
+
+/* ---------- دکمه‌ها: سنگ سیاه صیقلی با لبه‌ی طلا ---------- */
+[data-theme="persepolis"] .menu-btn,
+[data-theme="persepolis"] .icon-btn,
+[data-theme="persepolis"] .coins,
+[data-theme="persepolis"] .level-label,
+[data-theme="persepolis"] .tool {
+  background:
+    radial-gradient(ellipse 90% 50% at 30% 0%, rgba(255, 255, 255, 0.12), transparent 70%),
+    linear-gradient(#4a443e, #37322d 60%, #2b2723);
+  border-color: rgba(217, 166, 62, 0.7);
+  color: #ecdfc2;
+}
+[data-theme="persepolis"] .menu-btn,
+[data-theme="persepolis"] .icon-btn,
+[data-theme="persepolis"] .tool {
+  box-shadow: 0 3px 0 #15110d, 0 8px 16px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(236, 223, 194, 0.12);
+}
+[data-theme="persepolis"] .menu-btn { border-radius: 6px; }
+[data-theme="persepolis"] .menu-btn::after { inset: 4px; border-radius: 4px; border: 1px solid rgba(217, 166, 62, 0.3); }
+[data-theme="persepolis"] .menu-btn.primary,
+[data-theme="persepolis"] .card-btn {
+  background:
+    radial-gradient(ellipse 80% 55% at 30% 0%, rgba(255, 255, 255, 0.4), transparent 60%),
+    linear-gradient(#f0c860, #d9a63e 50%, #b07e22);
+  border-color: #7a5410;
+  color: #2a1c08;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.5);
+  --ring: inset 0 0 0 1.5px #fbe3a0, inset 0 0 0 3px rgba(122, 84, 16, 0.4);
+}
+[data-theme="persepolis"] .menu-btn.primary::after,
+[data-theme="persepolis"] .card-btn::after { border: none; }
+[data-theme="persepolis"] .tool { --lip: #15110d; }
+[data-theme="persepolis"] .icon-btn,
+[data-theme="persepolis"] .coins { border-width: 1px; }
+/* سکه: دریک زرین */
+[data-theme="persepolis"] .coin-icon {
+  background: radial-gradient(circle at 38% 32%, #fff1c0 0 14%, #e8c060 24%, #c8922e 62%, #8a6216 72%);
+  box-shadow: 0 0 0 1px #6b4a12, inset 0 0 0 2px rgba(255, 230, 160, 0.35);
+}
+
+[data-theme="persepolis"] .level-label { color: #c9b99a; border-radius: 6px; }
+[data-theme="persepolis"] .level-label.has-name { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 12px; line-height: 1.3; }
+[data-theme="persepolis"] .level-label .ll-num { font-size: 11px; opacity: 0.85; }
+[data-theme="persepolis"] .level-label .ll-name { font-family: var(--display); font-weight: 400; font-size: 17px; color: #e8c46a; }
+[data-theme="persepolis"] .level-label .ll-name::before { content: none; }
+
+/* ---------- جدول: لوح سنگ آهک با نوار گل‌های سنگی ----------
+   قاب با padding و پس‌زمینه‌ی padding-box کشیده می‌شود؛ game.js جایش را با --board-chrome حساب می‌کند.
+   خانه‌ی خالی، گودی تراشیده در سنگ است؛ کلمه که پیدا شد، سنگ سیاه صیقلی با حرف زرین یا آجر لعابی فیروزه‌ای می‌نشیند. */
+[data-theme="persepolis"] .board-area { padding: 24px 0; --board-chrome-x: 44px; --board-chrome-y: 54px; }
+[data-theme="persepolis"] .board {
+  gap: 4px;
+  padding: 12px;
+  border: 1.5px solid #d9a63e;
+  border-radius: 3px;
+  background:
+    radial-gradient(ellipse at 40% 30%, rgba(255, 248, 228, 0.25), transparent 70%) content-box,
+    linear-gradient(#d4c5a4, #c4b28e) content-box,
+    var(--prs-band) 0 0 / 12px 12px padding-box,
+    #b9a785 padding-box;
+  box-shadow:
+    inset 0 0 0 10.5px rgba(46, 38, 32, 0.12),
+    inset 0 0 0 12px #6b5a44,
+    0 0 0 4px #3d3833,
+    0 0 0 5.5px #d9a63e,
+    0 18px 34px rgba(0, 0, 0, 0.5);
+}
+[data-theme="persepolis"] .cell { border-radius: 3px; font-weight: 800; }
+[data-theme="persepolis"] .cell.slot {
+  background: linear-gradient(#b4a07c, #c6b490);
+  box-shadow: inset 2px 2px 3px rgba(60, 45, 30, 0.55), inset -1px -1px 2px rgba(255, 248, 228, 0.6), 0 0 0 1px rgba(107, 90, 68, 0.45);
+}
+[data-theme="persepolis"] .cell.filled {
+  --c1: #4f4943; --c2: #2c2824;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 30% 18%, rgba(255, 255, 255, 0.22), transparent 70%),
+    linear-gradient(145deg, var(--c1), var(--c2));
+  color: #f0cd6e;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 0 0 1.5px #d9a63e, inset 0 0 0 2.5px rgba(0, 0, 0, 0.4), 0 2px 2px rgba(40, 30, 20, 0.5);
+  animation: prs-set 0.55s cubic-bezier(.2, .9, .3, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+/* یک در میان آجر لعابی فیروزه‌ای شوش */
+[data-theme="persepolis"] .cell:nth-child(3n+2).filled { --c1: #3a96a6; --c2: #23626f; color: #fbf1d6; }
+[data-theme="persepolis"] .cell.again { animation: prs-tap 0.45s ease; }
+@keyframes prs-set {
+  0% { transform: translateY(-10px) scale(1.12); opacity: 0; box-shadow: 0 14px 18px rgba(0, 0, 0, 0.35); }
+  60% { transform: translateY(1px) scale(0.98); opacity: 1; }
+  100% { transform: none; }
+}
+@keyframes prs-tap { 40% { transform: scale(1.08); filter: brightness(1.2); } }
+[data-theme="persepolis"] .cell.prs-glint::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 232, 160, 0.7) 48%, transparent 60%);
+  transform: translateX(-120%);
+  animation: prs-glint 0.8s ease-out var(--g, 0ms) both;
+  pointer-events: none;
+}
+@keyframes prs-glint { to { transform: translateX(120%); } }
+
+/* ---------- پیش‌نمایش و پیام‌ها ---------- */
+[data-theme="persepolis"] .preview { border-radius: 6px; }
+[data-theme="persepolis"] .preview.show { background: rgba(43, 39, 35, 0.9); color: #ecdfc2; box-shadow: inset 0 0 0 1px rgba(217, 166, 62, 0.6); }
+[data-theme="persepolis"] .preview.right { background: #2f7f8f; color: #fff; box-shadow: inset 0 0 0 1.5px #ecdfc2; }
+[data-theme="persepolis"] .preview.wrong { background: rgba(43, 39, 35, 0.9); color: #ff9e8c; }
+[data-theme="persepolis"] .preview.bonus { background: #d9a63e; color: #2a1c08; }
+[data-theme="persepolis"] .preview.note { color: #ecdfc2; }
+[data-theme="persepolis"] .praise {
+  color: #f0cd6e;
+  font-size: 48px;
+  text-shadow: 0 1px 0 #b07e22, 0 2px 0 #7a5410, 0 3px 0 #3d3833, 0 0 22px rgba(217, 166, 62, 0.6);
+}
+
+/* ---------- دایره‌ی حروف: گل نیلوفر سنگی و سکه‌های زرین ---------- */
+[data-theme="persepolis"] .wheel { background: none; box-shadow: none; }
+[data-theme="persepolis"] .wheel.prs-shake { animation: prs-shake 0.4s ease; }
+@keyframes prs-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.prs-panel { position: absolute; inset: -5%; }
+.prs-panel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.55)); }
+[data-theme="persepolis"] .wheel-lines polyline { stroke-width: 4; }
+[data-theme="persepolis"] .wheel-lines { filter: drop-shadow(0 0 2px rgba(20, 14, 8, 0.9)); }
+[data-theme="persepolis"] .letter {
+  width: 22%;
+  height: 22%;
+  background:
+    radial-gradient(ellipse 60% 40% at 34% 24%, rgba(255, 250, 220, 0.75), transparent 70%),
+    radial-gradient(circle, #e8c060 0 58%, #c8922e 64%, #f3d684 70%, #a8781e 76%, #6b4a12 80%);
+  color: #4a2e0c;
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 236, 180, 0.6);
+  box-shadow: 0 4px 8px rgba(20, 14, 8, 0.55);
+}
+[data-theme="persepolis"] .letter.active {
+  background:
+    radial-gradient(ellipse 60% 40% at 34% 24%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(circle, #3a96a6 0 58%, #23626f 66%, #f3d684 70%, #a8781e 76%, #6b4a12 80%);
+  color: #fbf1d6;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 14px rgba(243, 214, 132, 0.6), 0 4px 8px rgba(20, 14, 8, 0.55);
+}
+
+/* ---------- پایان مرحله ---------- */
+[data-theme="persepolis"] .overlay,
+[data-theme="persepolis"] .sheet { background: radial-gradient(ellipse at 50% 40%, rgba(46, 38, 32, 0.55), rgba(14, 11, 8, 0.85)); }
+[data-theme="persepolis"] .card {
+  background:
+    radial-gradient(130% 90% at 50% 0%, rgba(217, 166, 62, 0.14), transparent 60%),
+    linear-gradient(#3a342e, #2b2723);
+  color: #ecdfc2;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1.5px #d9a63e, inset 0 0 0 7px #3a342e, inset 0 0 0 8.5px rgba(205, 189, 156, 0.6), 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+[data-theme="persepolis"] .card-text,
+[data-theme="persepolis"] .meaning-text { color: #d9cdb4; }
+[data-theme="persepolis"] .meaning-word { color: #e8c46a; }
+[data-theme="persepolis"] .card-link { color: #c9b99a; }
+[data-theme="persepolis"] .confetti { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; }
+
+/* ---------- فهرست‌ها و پنجره‌ها ---------- */
+[data-theme="persepolis"] .tcard,
+[data-theme="persepolis"] .ach,
+[data-theme="persepolis"] .reward-day {
+  background: linear-gradient(rgba(74, 68, 62, 0.8), rgba(43, 39, 35, 0.88));
+  border: 1px solid rgba(217, 166, 62, 0.5);
+  color: #ecdfc2;
+}
+[data-theme="persepolis"] .tcard,
+[data-theme="persepolis"] .ach { border-radius: 6px; box-shadow: inset 0 0 0 3px rgba(20, 16, 12, 0.5), inset 0 0 0 4px rgba(205, 189, 156, 0.3), 0 4px 10px rgba(0, 0, 0, 0.35); }
+[data-theme="persepolis"] .tcard.selected { border-color: #e8c46a; box-shadow: inset 0 0 0 3px rgba(20, 16, 12, 0.5), inset 0 0 0 4px #2f7f8f, 0 0 0 2px #e8c46a, 0 0 18px rgba(217, 166, 62, 0.35); }
+[data-theme="persepolis"] .reward-day { border-radius: 6px; }
+[data-theme="persepolis"] .reward-day.today { border-color: #e8c46a; box-shadow: 0 0 0 2px #e8c46a, 0 0 16px rgba(217, 166, 62, 0.35); }
+[data-theme="persepolis"] .ach.ready { box-shadow: 0 0 0 2px #e8c46a, 0 0 16px rgba(217, 166, 62, 0.35); }
+[data-theme="persepolis"] .ach-icon { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #5a544e, #2b2723); color: #e8c46a; box-shadow: inset 0 0 0 1.5px #d9a63e; }
+[data-theme="persepolis"] .ach.done .ach-icon { background: radial-gradient(circle at 35% 30%, #fff1c6, #d9a63e 55%, #8a6216); color: #2a1c08; }
+[data-theme="persepolis"] .ach-bar,
+[data-theme="persepolis"] .chest-bar { background: rgba(0, 0, 0, 0.35); }
+[data-theme="persepolis"] .ach-bar span,
+[data-theme="persepolis"] .chest-bar span { background: linear-gradient(90deg, #b07e22, #f0c860); opacity: 1; }
+[data-theme="persepolis"] .meaning + .meaning,
+[data-theme="persepolis"] .level-words .meaning + .meaning { border-top: 1px solid rgba(217, 166, 62, 0.35); }
+[data-theme="persepolis"] .level-words { border-color: rgba(217, 166, 62, 0.45); }
+[data-theme="persepolis"] { --chest-wood: #5a4632; --chest-wood-2: #3a2c1e; --chest-band: #d9a63e; }
+
+/* نقشه‌ی مرحله‌ها */
+[data-theme="persepolis"] .lv { background: linear-gradient(#4a443e, #2f2a25); color: #ecdfc2; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(217, 166, 62, 0.6); }
+[data-theme="persepolis"] .lv.done { background: radial-gradient(circle at 38% 32%, #fbe3a0, #d9a63e 55%, #a8781e); color: #2a1c08; box-shadow: inset 0 0 0 1.5px #6b4a12; }
+[data-theme="persepolis"] .lv.current { box-shadow: 0 0 0 3px #e8c46a, 0 0 16px rgba(217, 166, 62, 0.45); }
+[data-theme="persepolis"] .map-road { stroke: rgba(205, 189, 156, 0.25); }
+[data-theme="persepolis"] .map-stitch { stroke: #d9a63e; }
+[data-theme="persepolis"] .map-done { stroke: #2f7f8f; }
+[data-theme="persepolis"] .map-label { color: #e8c46a; background: rgba(43, 39, 35, 0.9); border-color: rgba(217, 166, 62, 0.6); }
+[data-theme="persepolis"] .map-label { max-width: none; white-space: pre; overflow: visible; text-overflow: clip; text-align: center; line-height: 1.7; border-radius: 6px; padding: 4px 12px; font-size: 13px; }
+[data-theme="persepolis"] .map-marker { background: #d9a63e; }
+
+/* ---------- آموزش: «سرباز جاویدان» (نیم‌رخ سنگی، نه کارتونی) ---------- */
+[data-theme="persepolis"] .tour-card {
+  background: linear-gradient(#3a342e, #2b2723);
+  color: #ecdfc2;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1.5px #d9a63e, inset 0 0 0 6px #3a342e, inset 0 0 0 7.5px rgba(205, 189, 156, 0.6), 0 16px 40px rgba(0, 0, 0, 0.6);
+  padding-top: 20px;
+}
+[data-theme="persepolis"] .tour-next { border-radius: 6px; background: linear-gradient(#f0c860, #d9a63e 50%, #b07e22); color: #2a1c08; box-shadow: inset 0 0 0 1px #fbe3a0, 0 3px 0 #15110d; }
+[data-theme="persepolis"] .tour-skip { border-radius: 6px; color: #c9b99a; border-color: rgba(217, 166, 62, 0.5); background: transparent; }
+[data-theme="persepolis"] .tour-dots i { background: rgba(236, 223, 194, 0.25); }
+[data-theme="persepolis"] .tour-dots i.on { background: #e8c46a; }
+[data-theme="persepolis"] .tour-hole { box-shadow: 0 0 0 9999px rgba(14, 11, 8, 0.75), 0 0 0 2.5px #e8c46a, 0 0 22px 6px rgba(217, 166, 62, 0.45); }
+[data-theme="persepolis"] .tour-kalami .tk-spear { animation: prs-guard 3.6s ease-in-out infinite; transform-origin: 50px 60px; }
+@keyframes prs-guard { 50% { transform: rotate(-3deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="persepolis"] .tour-kalami .tk-spear { animation: none; }
+}

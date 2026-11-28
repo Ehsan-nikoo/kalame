@@ -269,7 +269,7 @@ function deliverMore(purchase, fromEl) {
 // ۴. محافظ رکورد: اگر فقط دیروز نیامده، با سکه رکورد روزهای پشت سر هم را نجات می‌دهد
 // ---------------------------------------------------------------------------
 
-const STREAK_SAVE_COST = 40;
+const STREAK_SAVE_COST = 50;
 
 const streakSheet = makeSheet("streakSheet", `
   <div class="streak-fire" aria-hidden="true">🔥</div>
@@ -320,7 +320,7 @@ streakSheet.addEventListener("click", (e) => {
 // ۵. کلمه‌ی روز: هر روز یک کلمه‌ی کمتر شنیده با معنی‌اش (در منو و در اعلان ظهر)
 // ---------------------------------------------------------------------------
 
-const WORD_DAY_COINS = 5;
+const WORD_DAY_COINS = 3;
 let wordPool = null;
 
 function wordOfDay(date) {
@@ -550,7 +550,7 @@ function isMode() {
 const SPEED_TIME = 60;        // ثانیه
 const SPEED_BONUS_TIME = 10;  // ثانیه‌ی اضافه برای کامل کردن هر جدول
 const SPEED_BASE = 3000;      // مرحله‌های حالت سرعتی از اینجا به بعد ساخته می‌شوند (۷ حرفی)
-const SPEED_MAX_COINS = 30;   // جایزه‌ی بار اول هر روز
+const SPEED_MAX_COINS = 15;   // جایزه‌ی بار اول هر روز
 
 let speed = null;     // { score, words, end, round, seed }
 let modeTimer = 0;

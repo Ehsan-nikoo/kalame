@@ -540,7 +540,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("snap");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("snap");
       },
       shuffle() {

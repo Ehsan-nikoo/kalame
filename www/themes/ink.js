@@ -56,7 +56,7 @@
         word.animate(
           [
             { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
-            { opacity: 0, transform: "translate(-50%, -50%) scale(0.5)", filter: "blur(3px)" },
+            { opacity: 0, transform: "translate(-50%, -50%) scale(0.5)" }, // بدون blur: روی گوشی ضعیف گران است
           ],
           { duration: 380, easing: "ease-in", fill: "forwards" }
         ).finished
@@ -76,7 +76,7 @@
       const a = (i * Math.PI) / 8 - Math.PI / 2, r = i % 2 ? 9 : 17;
       return (Math.cos(a) * r).toFixed(2) + "," + (Math.sin(a) * r).toFixed(2);
     }).join(" ");
-    return `<svg class="home-shamseh" viewBox="-52 -52 104 104" aria-hidden="true"><g class="spin">
+    return `<svg class="home-shamseh" viewBox="-52 -52 104 104" aria-hidden="true"><g>
         ${dots}<circle r="44" fill="#1f3b73" stroke="#c9a14a" stroke-width="1.2"/>${petals}
         <circle r="22" fill="#f6ead0" stroke="#c9a14a" stroke-width="1.2"/>
         <polygon points="${star}" fill="#8b2b1a"/><circle r="4" fill="#c9a14a"/>
@@ -186,14 +186,10 @@
     setup() {
       document.body.insertAdjacentHTML(
         "beforeend",
-        `<div class="frame" aria-hidden="true"></div>
-         <svg class="ink-defs" width="0" height="0" style="position:absolute" aria-hidden="true">
-           <filter id="ink-rough"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3"/>
-             <feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
-         </svg>`
+        `<div class="frame" aria-hidden="true"></div>`
       );
       addToranj();
-      return () => document.querySelectorAll(".frame, .ink-defs, .toranj, .ink-word").forEach((el) => el.remove());
+      return () => document.querySelectorAll(".frame, .toranj, .ink-word").forEach((el) => el.remove());
     },
 
     on: {
@@ -205,7 +201,7 @@
         // لوگو هر بار با قلم از راست به چپ نوشته می‌شود
         const logo = document.querySelector("#screenHome .logo");
         logo.classList.remove("write");
-        void logo.offsetWidth;
+        void getComputedStyle(logo).animationName;
         logo.classList.add("write");
       },
       found(d) {
@@ -229,7 +225,7 @@
         );
         setTimeout(() => {
           card.classList.remove("thump");
-          void card.offsetWidth;
+          void getComputedStyle(card).animationName;
           card.classList.add("thump");
         }, 600);
         if (d.finished) document.getElementById("overlayTitle").textContent = "دیوان کامل شد!";

@@ -12,8 +12,8 @@
 // ۱. کمک‌های تازه
 // ---------------------------------------------------------------------------
 
-const COST_HINT_TARGET = 20; // یک خانه، هر جا که بازیکن بخواهد
-const COST_HINT_ROCKET = 45; // چند خانه‌ی تصادفی با هم
+const COST_HINT_TARGET = 30; // یک خانه، هر جا که بازیکن بخواهد
+const COST_HINT_ROCKET = 55; // چند خانه‌ی تصادفی با هم
 const ROCKET_CELLS = 5;
 
 const TARGET_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
@@ -116,7 +116,7 @@ rocketBtn.addEventListener("click", hintRocket);
 // هر فصل یک ضرب‌المثل دارد. هر مرحله‌ای که بار اول تمام شود یک تکه‌ی دیگرش را نشان می‌دهد
 // و آخر فصل کامل می‌شود، با معنی‌اش و چند سکه.
 
-const PROVERB_REWARD = 10;
+const PROVERB_REWARD = 5;
 
 // فهرست ضرب‌المثل‌ها در proverbs.js
 
@@ -252,7 +252,7 @@ function renderProverbBtn() {
 const EF_TIME = 90;         // ثانیه
 const EF_POINTS = 10;       // هر جواب درست
 const EF_ALL_BONUS = 20;    // همه‌ی دسته‌ها درست
-const EF_MAX_COINS = 25;    // جایزه‌ی بار اول هر روز
+const EF_MAX_COINS = 15;    // جایزه‌ی بار اول هر روز
 
 // «سیب زمینی»، «سیب‌زمینی» و «آلو / الو» یکی حساب می‌شوند
 const efNorm = (w) =>
@@ -552,7 +552,7 @@ function syncWidget() {
 // اگر آن را بدون راهنما تمام کند، تاج 👑 آن مرحله را روی نقشه می‌گیرد (بار اول با سکه).
 
 const VARIANT_PREFIX = "v:";
-const CROWN_REWARD = 15;
+const CROWN_REWARD = 10;
 const isVariant = () => typeof playKey === "string" && playKey.startsWith(VARIANT_PREFIX);
 
 function crowns() {

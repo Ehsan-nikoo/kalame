@@ -3,12 +3,15 @@
   "appName": "کلمه",
   "webDir": "www",
   "android": {
-    "backgroundColor": "#f4f1ea"
+    "backgroundColor": "#3b2d8f"
   },
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_kalame",
       "iconColor": "#5f8a7a"
+    },
+    "SystemBars": {
+      "initialViewportFitValueHint": "cover"
     }
   }
 }

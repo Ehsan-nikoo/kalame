@@ -101,6 +101,34 @@ const TOUR_THEMES = {
       <path d="M14 36h36" stroke="#c9a14a" stroke-width="3"/>
       ${TK_EYES(44)}<path d="M27 52c3 2.6 7 2.6 10 0" fill="none" stroke="#f6ecd2" stroke-width="2.2" stroke-linecap="round"/>${TK_CHEEKS(51, 12)}`,
   },
+  // شاهنامه: «نقّال»؛ به جای چهره، شمسه‌ی تذهیب که ترنج وسطش آرام می‌چرخد (این ظاهر کارتونی نیست)
+  tile: {
+    hi: "آفرین! من نقّال شاهنامه‌ام؛ با هر کلمه، یه تیکه از نگاره‌ی داستان رنگ می‌گیره.",
+    go: "بریم سراغ داستان!",
+    svg: `<polygon points="30.7,8.0 32.0,1.0 33.3,8.0" fill="#1d3a7a"/><polygon points="36.9,8.5 39.4,4.5 39.5,9.2" fill="#1d3a7a"/><polygon points="42.8,10.6 47.5,5.2 45.1,11.9" fill="#1d3a7a"/><polygon points="48.0,14.1 52.2,11.8 49.9,16.0" fill="#1d3a7a"/><polygon points="52.1,18.9 58.8,16.5 53.4,21.2" fill="#1d3a7a"/><polygon points="54.8,24.5 59.5,24.6 55.5,27.1" fill="#1d3a7a"/><polygon points="56.0,30.7 63.0,32.0 56.0,33.3" fill="#1d3a7a"/><polygon points="55.5,36.9 59.5,39.4 54.8,39.5" fill="#1d3a7a"/><polygon points="53.4,42.8 58.8,47.5 52.1,45.1" fill="#1d3a7a"/><polygon points="49.9,48.0 52.2,52.2 48.0,49.9" fill="#1d3a7a"/><polygon points="45.1,52.1 47.5,58.8 42.8,53.4" fill="#1d3a7a"/><polygon points="39.5,54.8 39.4,59.5 36.9,55.5" fill="#1d3a7a"/><polygon points="33.3,56.0 32.0,63.0 30.7,56.0" fill="#1d3a7a"/><polygon points="27.1,55.5 24.6,59.5 24.5,54.8" fill="#1d3a7a"/><polygon points="21.2,53.4 16.5,58.8 18.9,52.1" fill="#1d3a7a"/><polygon points="16.0,49.9 11.8,52.2 14.1,48.0" fill="#1d3a7a"/><polygon points="11.9,45.1 5.2,47.5 10.6,42.8" fill="#1d3a7a"/><polygon points="9.2,39.5 4.5,39.4 8.5,36.9" fill="#1d3a7a"/><polygon points="8.0,33.3 1.0,32.0 8.0,30.7" fill="#1d3a7a"/><polygon points="8.5,27.1 4.5,24.6 9.2,24.5" fill="#1d3a7a"/><polygon points="10.6,21.2 5.2,16.5 11.9,18.9" fill="#1d3a7a"/><polygon points="14.1,16.0 11.8,11.8 16.0,14.1" fill="#1d3a7a"/><polygon points="18.9,11.9 16.5,5.2 21.2,10.6" fill="#1d3a7a"/><polygon points="24.5,9.2 24.6,4.5 27.1,8.5" fill="#1d3a7a"/><g fill="#e3b24f"><circle cx="32.0" cy="9.0" r="2.6"/><circle cx="40.8" cy="10.8" r="2.6"/><circle cx="48.3" cy="15.7" r="2.6"/><circle cx="53.2" cy="23.2" r="2.6"/><circle cx="55.0" cy="32.0" r="2.6"/><circle cx="53.2" cy="40.8" r="2.6"/><circle cx="48.3" cy="48.3" r="2.6"/><circle cx="40.8" cy="53.2" r="2.6"/><circle cx="32.0" cy="55.0" r="2.6"/><circle cx="23.2" cy="53.2" r="2.6"/><circle cx="15.7" cy="48.3" r="2.6"/><circle cx="10.8" cy="40.8" r="2.6"/><circle cx="9.0" cy="32.0" r="2.6"/><circle cx="10.8" cy="23.2" r="2.6"/><circle cx="15.7" cy="15.7" r="2.6"/><circle cx="23.2" cy="10.8" r="2.6"/><circle cx="32" cy="32" r="23"/></g><circle cx="32" cy="32" r="21.4" fill="#efe3c6"/><circle cx="32" cy="32" r="20.6" fill="#1d3a7a"/>
+      <g class="tk-tile"><path transform="rotate(0 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(45 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(90 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(135 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(180 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(225 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(270 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><path transform="rotate(315 32 32)" d="M32 13 C35 15 36 18 33.6 21 C32.6 21.6 32 22.4 32 22.4 C32 22.4 31.4 21.6 30.4 21 C28 18 29 15 32 13Z" fill="#e3b24f" stroke="#6b4a12" stroke-width=".3"/><circle cx="32" cy="32" r="8" fill="#e3b24f"/><circle cx="32" cy="32" r="6.6" fill="#efe3c6"/><path transform="rotate(0 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#a8322a"/><path transform="rotate(45 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#2a9fb3"/><path transform="rotate(90 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#a8322a"/><path transform="rotate(135 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#2a9fb3"/><path transform="rotate(180 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#a8322a"/><path transform="rotate(225 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#2a9fb3"/><path transform="rotate(270 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#a8322a"/><path transform="rotate(315 32 32)" d="M32 30 C33.6 28.6 33.6 26.4 32 25.2 C30.4 26.4 30.4 28.6 32 30Z" fill="#2a9fb3"/><circle cx="32" cy="32" r="1.6" fill="#c48f2c"/></g>
+      <ellipse cx="24" cy="20" rx="9" ry="4" fill="#fff" opacity=".18" transform="rotate(-35 24 20)"/>`,
+  },
+  // تخت جمشید: «سرباز جاویدان»؛ نیم‌رخ سنگی مثل نقش‌برجسته‌های پلکان آپادانا، با نیزه‌ای که آرام تکان می‌خورد (کارتونی نیست)
+  persepolis: {
+    hi: "درود! من سرباز جاویدانم؛ با هر کلمه، یه تیکه از کاخ‌های تخت جمشید دوباره ساخته می‌شه.",
+    go: "بریم بسازیم!",
+    svg: `<circle cx="32" cy="32" r="30" fill="#d9a63e"/><circle cx="32" cy="32" r="28.4" fill="#3d3833"/><circle cx="32" cy="32" r="26.6" fill="#cdbd9c"/>
+      <g stroke="#5e4c38" stroke-width=".7" stroke-linejoin="round">
+        <path d="M15 61C15 50 20 44 28.5 42.2H40.5C47 44 50 50 50 61Z" fill="#bcaa86"/>
+        <path d="M25 47c2 5 2.6 9 2.4 14M33 44.6c.6 5 .4 11-.2 16M41 46c-1 5-1 10-.4 15" fill="none" opacity=".6"/>
+        <path d="M27.5 36.5V43.5H35V36.5Z" fill="#cdbd9c"/>
+        <path d="M21.6 18.6L20.4 8.6H38.6L37.4 18.6Z" fill="#b9a785"/>
+        <path d="M24 10V18M27 10V18M30 10V18M33 10V18M36 10V18" opacity=".7"/>
+        <path d="M21.8 18.6H37.4L38.4 22.6L42.6 27L39.6 27.8L39.9 29.8L38.6 30.8H29C25.6 30.8 22.6 28.6 21.8 25Z" fill="#dacbaa"/>
+        <circle cx="23.2" cy="28.4" r="3.6" fill="#9c8868"/>
+        <path d="M29 30.2H39.2C40.8 33.4 41 37.6 40.2 42H31C29.4 38.4 28.6 34.2 29 30.2Z" fill="#9c8868"/>
+        <path d="M29.4 21.6c2 .2 2.6 3.2.4 4.4" fill="none"/>
+      </g>
+      <g fill="#5e4c38"><circle cx="30.8" cy="32.5" r=".75"/><circle cx="33.0" cy="32.5" r=".75"/><circle cx="35.2" cy="32.5" r=".75"/><circle cx="37.4" cy="32.5" r=".75"/><circle cx="31.400000000000002" cy="35" r=".75"/><circle cx="33.6" cy="35" r=".75"/><circle cx="35.800000000000004" cy="35" r=".75"/><circle cx="38.0" cy="35" r=".75"/><circle cx="30.8" cy="37.5" r=".75"/><circle cx="33.0" cy="37.5" r=".75"/><circle cx="35.2" cy="37.5" r=".75"/><circle cx="37.4" cy="37.5" r=".75"/><circle cx="31.400000000000002" cy="40" r=".75"/><circle cx="33.6" cy="40" r=".75"/><circle cx="35.800000000000004" cy="40" r=".75"/><circle cx="38.0" cy="40" r=".75"/><circle cx="21.6" cy="26.4" r=".7"/><circle cx="23.8" cy="26" r=".7"/><circle cx="22.4" cy="28.6" r=".7"/><circle cx="24.6" cy="28.4" r=".7"/><circle cx="23.2" cy="30.6" r=".7"/><path d="M34.4 22.2q1.5-1 2.8 0q-1.3.9-2.8 0z"/><path d="M34 20.6q1.8-1.2 3.6-.2" fill="none" stroke="#5e4c38" stroke-width=".6"/></g>
+      <g class="tk-spear"><path d="M51 7V58" stroke="#5e4c38" stroke-width="1.6"/><path d="M51 2.4l2.2 5.4h-4.4z" fill="#d9a63e" stroke="#7a5410" stroke-width=".4"/><circle cx="51" cy="57.4" r="2.2" fill="#d9a63e" stroke="#7a5410" stroke-width=".4"/><ellipse cx="48.6" cy="47" rx="3" ry="2.4" fill="#dacbaa" stroke="#5e4c38" stroke-width=".6"/></g>
+      <ellipse cx="22" cy="17" rx="9" ry="4" fill="#fff" opacity=".14" transform="rotate(-35 22 17)"/>`,
+  },
   // مزرعه‌ی شاد (بخش کودک): «جوجو»، جوجه‌ی زرد مزرعه؛ همین جوجو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
   toon: {
     hi: "آفرین! 🐥 من جوجوام، از مزرعه اومدم پیشت.",
@@ -113,6 +141,32 @@ const TOUR_THEMES = {
       ${TK_EYES(34, 7.5)}
       <path d="M27.5 42q4.5-3.4 9 0q-4.5 4.6-9 0Z" fill="#ff8a3a"/>
       ${TK_CHEEKS(42, 13.5)}`,
+  },
+  // زیر دریا (بخش کودک): «هشتی»، هشت‌پای کوچولوی بنفش؛ همین هشتی گوشه‌ی صفحه‌ی بازی هم شنا می‌کند
+  sea: {
+    hi: "آفرین! 🐙 من هشتی‌ام، از ته دریا اومدم پیشت.",
+    go: "بریم زیر آب!",
+    svg: `<g fill="none" stroke="#a77ce8" stroke-width="5" stroke-linecap="round">
+        <path d="M17 40q-8 8 -5 15q2 4 6 1"/><path d="M24 44q-3 9 -1 13q2 3 5 0"/><path d="M32 45v10q0 4 3 3"/>
+        <path d="M40 44q3 9 1 13q-2 3 -5 0"/><path d="M47 40q8 8 5 15q-2 4 -6 1"/></g>
+      <g fill="#ffd0f0"><circle cx="13" cy="51" r="1.2"/><circle cx="24" cy="54" r="1.2"/><circle cx="40" cy="54" r="1.2"/><circle cx="51" cy="51" r="1.2"/></g>
+      <path d="M12 34c0-14 9-24 20-24s20 10 20 24c0 7-9 11-20 11s-20-4-20-11Z" fill="#b98cf2"/>
+      <ellipse cx="24" cy="19" rx="6" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-25 24 19)"/>
+      <g fill="#9a6ae0"><circle cx="40" cy="17" r="2.2"/><circle cx="45" cy="23" r="1.5"/><circle cx="20" cy="27" r="1.3"/></g>
+      ${TK_EYES(31, 7.5)}${TK_SMILE(39)}${TK_CHEEKS(37, 13.5)}
+      <g fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"><circle cx="54" cy="12" r="3"/><circle cx="58" cy="5" r="1.8"/></g>`,
+  },  // سفر فضایی (بخش کودک): «زیپو»، آدم‌فضایی سبز با دو شاخک؛ همین زیپو گوشه‌ی صفحه‌ی بازی هم می‌ایستد
+  space: {
+    hi: "آفرین! 👽 من زیپوام، از یه سیاره‌ی دور اومدم پیشت.",
+    go: "بریم فضا!",
+    svg: `<g class="zp-ant" stroke="#58d97a" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M24 16q-4 -7 -8 -9"/><path d="M40 16q4 -7 8 -9"/></g>
+      <circle cx="16" cy="7" r="3.6" fill="#ffd34a"/><circle cx="48" cy="7" r="3.6" fill="#ffd34a"/>
+      <path d="M22 56v4h6M42 56v4h-6" stroke="#3fb862" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <ellipse cx="12" cy="42" rx="4" ry="6" fill="#58d97a" transform="rotate(30 12 42)"/><ellipse cx="52" cy="42" rx="4" ry="6" fill="#58d97a" transform="rotate(-30 52 42)"/>
+      <path d="M12 36c0-13 9-22 20-22s20 9 20 22c0 13-9 22-20 22s-20-9-20-22Z" fill="#7cf08a"/>
+      <path d="M17 46h30q-2 9 -15 10q-13 -1 -15 -10z" fill="#9a7cff"/><circle cx="32" cy="50" r="2.4" fill="#ffd34a"/>
+      <ellipse cx="22" cy="23" rx="5" ry="3" fill="#fff" opacity=".4" transform="rotate(-30 22 23)"/>
+      ${TK_EYES(32, 8)}${TK_SMILE(40)}${TK_CHEEKS(38, 14)}`,
   },
 };
 
@@ -197,7 +251,7 @@ function tourShow() {
   tourEl.querySelector(".tour-next").textContent = i === steps.length - 1 ? tourWords(step.last || "تموم!") : "بعدی";
   tourEl.querySelectorAll(".tour-dots i").forEach((d, k) => d.classList.toggle("on", k === i));
   tourCard.classList.remove("pop");
-  void tourCard.offsetWidth;
+  void getComputedStyle(tourCard).animationName;
   tourCard.classList.add("pop");
   if (typeof sound === "function") sound("tap");
 }

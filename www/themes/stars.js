@@ -43,7 +43,7 @@
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   // لایه‌ی متحرک (ستاره‌های چشمک‌زن، جرقه‌ها، صورت فلکی) با وضوح کمتر کشیده می‌شود تا گوشی سبک بماند
   const fdpr = Math.min(window.devicePixelRatio || 1, 1.5);
-  const IDLE_MS = 50;  // وقتی فقط ستاره‌ها چشمک می‌زنند، ۲۰ بار در ثانیه کافی است
+  const IDLE_MS = 80;  // وقتی فقط ستاره‌ها چشمک می‌زنند، حدود ۱۲ بار در ثانیه کافی است (کم‌مصرف‌تر برای گوشی)
   let canvas, ctx, frameId, backdrop = null, lastDraw = 0, busyUntil = 0;
   let stars = [], sparks = [], meteorSky = null, nextMeteor = 3000, lastTime = 0;
   let lastLetters = [];
@@ -321,6 +321,8 @@
     }));
   }
 
+  let napping = false;
+  const wakeSky = () => { if (napping) { napping = false; frameId = requestAnimationFrame(frame); } };
   function frame(time) {
     frameId = requestAnimationFrame(frame);
     // وقتی شهاب، جرقه یا صورت فلکی در حال حرکت نیست، کمتر کشیده می‌شود
@@ -329,6 +331,8 @@
     const lite = !!document.documentElement.dataset.lite;
     const idle = lite ? 400 : IDLE_MS;
     if (!busy && time - lastDraw < idle) return;
+    // در حالت استراحت (feel.js) آسمان ساکن می‌ماند و هیچ چیز کشیده نمی‌شود
+    if (!busy && document.documentElement.dataset.rest) { napping = true; cancelAnimationFrame(frameId); return; } // حلقه هم می‌خوابد تا با لمس بعدی
     // وقتی فقط جرقه‌های پشت انگشت در حرکت‌اند، ۳۰ فریم در ثانیه بس است و فرصت بیشتری به کشیدن انگشت می‌ماند
     if (busy && !meteorSky && time >= busyUntil && dragging && time - lastDraw < 32) return;
     lastDraw = time;
@@ -509,12 +513,16 @@
       resize();
       window.addEventListener("resize", resize);
       window.addEventListener("pointermove", trail);
+      window.addEventListener("kalame-wake", wakeSky);
+      napping = false;
       frameId = requestAnimationFrame(frame);
 
       return () => {
         cancelAnimationFrame(frameId);
         window.removeEventListener("resize", resize);
         window.removeEventListener("pointermove", trail);
+        window.removeEventListener("kalame-wake", wakeSky);
+        napping = false;
         document.querySelectorAll(".sky, .dunes, .meteor, .astrolabe").forEach((el) => el.remove());
         sparks = [];
         cons = null;
@@ -554,7 +562,7 @@
       wrong() {
         const wheel = document.getElementById("wheel");
         wheel.classList.remove("dim");
-        void wheel.offsetWidth;
+        void getComputedStyle(wheel).animationName;
         wheel.classList.add("dim");
       },
       shuffle() {

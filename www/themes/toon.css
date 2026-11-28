@@ -37,6 +37,18 @@
 .toon-bg svg, .toon-kw svg { width: 100%; height: 100%; display: block; }
 [data-theme="toon"] .kw { background: #bfe6ff; }
 .toon-rays { transform-box: fill-box; transform-origin: center; animation: toon-spin 16s linear infinite; }
+/* صحنه‌ی بزرگ پس‌زمینه: toon-fx هم‌اندازه‌ی viewBox ‏۴۰۰×۸۰۰ با xMidYMax slice؛ فقط این تکه‌ها حرکت می‌کنند */
+.toon-bg, .toon-kw { container-type: size; overflow: hidden; }
+.toon-fx { position: absolute; left: 50%; bottom: 0; width: max(100vw, 50vh); width: max(100cqw, 50cqh); aspect-ratio: 1 / 2; transform: translateX(-50%); }
+.toon-fx > * { position: absolute; display: block; }
+.toon-fx svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.toon-fx .toon-sunrays, .toon-fx .toon-sun { left: -1%; top: 9%; width: 28%; height: 14%; }
+.toon-sunrays { will-change: transform; animation: toon-spin 16s linear infinite; }
+.toon-fx .toon-land { left: 0; top: 57.5%; height: 42.5%; }
+.toon-cl { will-change: transform; animation: toon-cl 9s ease-in-out infinite alternate; }
+.toon-cl.c2 { animation-duration: 12s; animation-direction: alternate-reverse; }
+.toon-cl.c3 { animation-duration: 15s; }
+@keyframes toon-cl { from { transform: translateX(-10.87%); } to { transform: translateX(10.87%); } }
 .toon-cloud { animation: toon-drift 9s ease-in-out infinite alternate; }
 .toon-cloud.c2 { animation-duration: 12s; animation-direction: alternate-reverse; }
 .toon-cloud.c3 { animation-duration: 15s; }
@@ -227,12 +239,12 @@
 /* مزرعه جای عنوان بالای بازی‌ها را گرفته؛ کاشی‌ها کمی جمع‌تر تا همه در یک صفحه جا شوند */
 [data-theme="toon"] .toon-farm-btn ~ .kw-title { display: none; }
 [data-theme="toon"] .kw-menu { gap: 12px; }
-[data-theme="toon"] .kw-game { padding: 14px 8px 12px; }
-[data-theme="toon"] .kw-game span { font-size: 46px; }
+[data-theme="toon"] .kw-game { padding: 14px 4px 10px; }
+[data-theme="toon"] .kw-game span { font-size: 40px; }
 @media (max-height: 700px) {
   [data-theme="toon"] .toon-farm-btn { max-width: 250px; }
-  [data-theme="toon"] .kw-game { padding: 10px 8px 8px; }
-  [data-theme="toon"] .kw-game span { font-size: 40px; }
+  [data-theme="toon"] .kw-game { padding: 10px 4px 8px; }
+  [data-theme="toon"] .kw-game span { font-size: 36px; }
 }
 [data-theme="toon"] .kw-themes-note { opacity: 1; color: #3b5a72; }
 [data-theme="toon"] .kw-slot { background: rgba(255, 255, 255, 0.85); border-color: #8cc9e8; }
@@ -301,5 +313,5 @@
 [data-theme="toon"] .tour-hole { box-shadow: 0 0 0 9999px rgba(20, 60, 100, 0.58), 0 0 0 4px #ffe08a, 0 0 24px 8px rgba(255, 216, 74, 0.6); }
 
 @media (prefers-reduced-motion: reduce) {
-  .toon-rays, .toon-cloud, .toon-farm .toon-a, .toon-pal .tk-eyes { animation: none; }
+  .toon-rays, .toon-cloud, .toon-sunrays, .toon-cl, .toon-farm .toon-a, .toon-pal .tk-eyes { animation: none; }
 }
